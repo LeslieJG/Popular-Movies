@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SOmewhat copied from Sunshine app code
+using this to show how to layout each view in  alist  view
+eventually it will be changed to a grdiview-->
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/list_item_movies_textview"
+    android:gravity="center"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    >
+
+</TextView>
+
+
