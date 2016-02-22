@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
+
+
+
+
+
+
+    <!-- API Key for theMovieDB.ORG    Replace with your own API key for running [CHAR LIMIT=NONE] -->
+    <string name="api_key" translatable="false">547bc9d14e2d25a3e3429d2f7c8292db</string>
 </resources>
