@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -46,7 +47,7 @@ public class MainActivityFragment extends Fragment {
         };
         List<String> movieData = new ArrayList<String>(Arrays.asList(data));
 
-        Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
+        // Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
 
         //create/ initialize an adapter that will populate each list item
         mMovieAdapter = new ArrayAdapter<String>(
@@ -54,7 +55,7 @@ public class MainActivityFragment extends Fragment {
                 R.layout.list_item_movies, // The name of the layout ID.
                 R.id.list_item_movies_textview, // The ID of the textview to populate.
                 movieData); //the ArrayList of data
-               // new ArrayList<String>()); //the ArrayList of data
+        // new ArrayList<String>()); //the ArrayList of data
 
         //infalte the fragment view
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -62,14 +63,20 @@ public class MainActivityFragment extends Fragment {
 
         // now bind the adapter to the actual listView so it knows which view it is populating
         // Get a reference to the ListView, and attach this adapter to it.
-         ListView listView = (ListView) rootView.findViewById(R.id.listview_movies); //this is not "final" in the course
+        ListView listView = (ListView) rootView.findViewById(R.id.listview_movies);
         listView.setAdapter(mMovieAdapter);
 
+        //adding click listener
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int listItemClicked, long itemClicked) {
+
+                Toast.makeText(getActivity(), "Item clicked is number " + itemClicked + " and the contents of the item are " + mMovieAdapter.getItem((int) itemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
+            }
+        });
 
 
-
-
-        // return inflater.inflate(R.layout.fragment_main, container, false);
+        // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
         return rootView;
     }
 }
