@@ -1,7 +1,9 @@
 package com.gmail.lgelberger.popularmovies;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,10 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +27,10 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
     ArrayAdapter<String> mMovieAdapterForList; //need this as global variable within class so all subclasses can access it
     ArrayAdapter<String> mMovieAdapterForGrid; //need this as global variable within class so all subclasses can access it
+
+    //used for logging - to keep the log tag the same as the class name
+    private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
+
 
     public MainActivityFragment() {
     }
@@ -47,8 +57,20 @@ public class MainActivityFragment extends Fragment {
                 "Movie 11"
         };
         List<String> movieData = new ArrayList<String>(Arrays.asList(data));
-
         // Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
+
+
+        //Now let's try to get real data
+
+        //build URL
+        //trying to make URL
+        URL movieURL = makeURL();
+        Log.v(LOG_TAG, "The movie URL is " + movieURL);
+        Toast.makeText(getActivity(), "The URL is " + movieURL, Toast.LENGTH_LONG).show(); //this works and gets th
+
+
+        // call API for data
+
 
         //create/ initialize an adapter that will populate each list item
         mMovieAdapterForList = new ArrayAdapter<String>(
@@ -93,7 +115,7 @@ public class MainActivityFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
         gridView.setAdapter(mMovieAdapterForGrid);
 
-        //adding click listener
+        //adding click listener for grid
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
@@ -104,5 +126,51 @@ public class MainActivityFragment extends Fragment {
 
         // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
         return rootView;
+    }
+
+    /**
+     * Makes URL to access API to get movie info
+     *
+     * @return URL for themoviedb.org
+     */
+    private URL makeURL() {
+        URL url2 = null; //url to be built
+
+        //copied from SUnshine
+        // These two need to be declared outside the try/catch
+        // so that they can be closed in the finally block.
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        // Will contain the raw JSON response as a string.
+        String forecastJsonStr = null;
+
+        // parameters for the URL weather call
+        String format = "json";
+        String units = "metric";
+        int numDays = 7;
+
+        final String MOVIE_BASE_URL =
+                "http://api.themoviedb.org/3";
+        // final String QUERY_PARAM = "q";
+        // final String FORMAT_PARAM = "mode";
+        //  final String UNITS_PARAM = "units";
+        //  final String DAYS_PARAM = "cnt";
+        //  final String APPID_PARAM = "APPID";
+
+        Uri.Builder builtUri2 = new Uri.Builder();
+        builtUri2.scheme("https")
+                .authority("api.themoviedb.org")
+                .appendPath("3")
+                .appendPath("discover")
+                .appendPath("movie")
+                .appendQueryParameter("sort_by", "popularity.desc")
+                .appendQueryParameter("api_key", getString(R.string.api_key));
+        try {
+            url2 = new URL(builtUri2.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url2;
     }
 }
