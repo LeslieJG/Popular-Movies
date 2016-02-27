@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,6 +15,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -70,6 +74,8 @@ public class MainActivityFragment extends Fragment {
 
 
         // call API for data
+        // String initialData = getInitialData(movieURL);
+        // Log.v(LOG_TAG, "The initial Data from URL is " + initialData);
 
 
         //create/ initialize an adapter that will populate each list item
@@ -124,6 +130,11 @@ public class MainActivityFragment extends Fragment {
         });
 
 
+        //try the network code here to see if it works
+        URL url = makeURL();
+        FetchMovieTask movieTask = new FetchMovieTask();
+        movieTask.execute(url);
+
         // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
         return rootView;
     }
@@ -139,16 +150,16 @@ public class MainActivityFragment extends Fragment {
         //copied from SUnshine
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
+       // HttpURLConnection urlConnection = null;
+      //  BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String forecastJsonStr = null;
+      //  String forecastJsonStr = null;
 
         // parameters for the URL weather call
-        String format = "json";
-        String units = "metric";
-        int numDays = 7;
+       // String format = "json";
+       // String units = "metric";
+       // int numDays = 7;
 
         final String MOVIE_BASE_URL =
                 "http://api.themoviedb.org/3";
@@ -172,5 +183,115 @@ public class MainActivityFragment extends Fragment {
             e.printStackTrace();
         }
         return url2;
+    }
+
+
+    /**
+     * *made the networking stuff an AsyncTask for now to get it off main thread
+     *
+     * Should check for network connectivity before making network calls - Have not
+     * implememnted this yet!!!!
+     *
+     * <p/>
+     * Params, the type of the parameters sent to the task upon execution.
+     * Progress, the type of the progress units published during the background computation.
+     * Result, the type of the result of the background computation.
+     * <p/>
+     * <p/>
+     * Param String will be the URL to call the moviedb
+     */
+    public class FetchMovieTask extends AsyncTask<URL, Void, String> {
+
+        //used for logging - to keep the log tag the same as the class name
+        private final String LOG_TAG = FetchMovieTask.class.getSimpleName(); //name of FetchWeatherTask class
+
+
+        @Override
+        protected String doInBackground(URL... params) {
+
+            //check to see if URL is passed in
+            if (params.length == 0) //no URL passed in
+            {
+                Log.e(LOG_TAG, "No URL passed in");
+                return null;
+            }
+
+            URL url = params[0]; //get the URL from the input parameters
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr = null;
+
+
+            try {
+
+                // Create the request to themoviedb.org, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                movieJsonStr = buffer.toString();
+                //return the movie JSON info as String
+                return movieJsonStr;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace(); //the URL was malformed
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the movie data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+
+            // This will only happen if there was an error getting or parsing the movie data.
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            //eventually load this data into my adapter for gridview and display it
+
+            //for now, just use a verbose tag for debugging
+            Log.v(LOG_TAG, "The results from the network call is " + result); //for debugging
+
+        }
     }
 }
