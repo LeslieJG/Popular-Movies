@@ -14,6 +14,10 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +38,6 @@ public class MainActivityFragment extends Fragment {
 
     //used for logging - to keep the log tag the same as the class name
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
-
 
     public MainActivityFragment() {
     }
@@ -96,14 +99,14 @@ public class MainActivityFragment extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listview_movies);
         listView.setAdapter(mMovieAdapterForList);
 
-        //adding click listener
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        //adding click listener - delete listener for now as I transisition to gridview
+       /* listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int listItemClicked, long itemClicked) {
 
                 Toast.makeText(getActivity(), "Item clicked is number " + itemClicked + " and the contents of the item are " + mMovieAdapterForList.getItem((int) itemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
             }
-        });
+        });*/
 
 
         //*** Now do the same with GridView
@@ -135,6 +138,12 @@ public class MainActivityFragment extends Fragment {
         FetchMovieTask movieTask = new FetchMovieTask();
         movieTask.execute(url);
 
+        //now parse JSON to get info from it
+
+
+
+
+
         // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
         return rootView;
     }
@@ -147,6 +156,7 @@ public class MainActivityFragment extends Fragment {
     private URL makeURL() {
         URL url2 = null; //url to be built
 
+        //URL should look like
         //copied from SUnshine
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -248,6 +258,9 @@ public class MainActivityFragment extends Fragment {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
+                   // buffer.append(line + "\n");  //restore this line after deleting line below
+                   // buffer.append(line + (System.getProperty("line.separator"))); //experimental delete when done
+                    //buffer.append(line);
                     buffer.append(line + "\n");
                 }
 
@@ -283,15 +296,125 @@ public class MainActivityFragment extends Fragment {
             return null;
         }
 
+        /**
+         *
+         * @param result is the JSON string from themoviedb.org
+         */
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
+            //for now, just use a verbose tag for debugging
+            Log.v(LOG_TAG, "The results from the network call is \n " + result); //for debugging
+
+
             //eventually load this data into my adapter for gridview and display it
 
-            //for now, just use a verbose tag for debugging
-            Log.v(LOG_TAG, "The results from the network call is " + result); //for debugging
+            //first break apart the JSON
 
+            //right now just load the movie titles into the array adapter
+
+            try {
+                String[] movieTitles = getMovieDataFromJson(result);
+
+                for (int i = 0; i < movieTitles.length; i++) {
+
+
+                    //load these titles into adapter
+                 //   mMovieAdapterForGrid.add(movieTitles[i]); //confirm that this is how to add the data tothe adapter
+                }
+
+                //right now just put make the movie titles into an array list
+                List<String> movieTitleArrayList = new ArrayList<String>(Arrays.asList(movieTitles));
+
+                //now clear the gridview adapter
+                mMovieAdapterForGrid.clear();
+                mMovieAdapterForGrid.addAll(movieTitleArrayList);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+        }
+
+        /**
+         * Take the complete string representing the entire initial movie call to themoviedb.org
+         * and pull out the data we need for the grid view
+         *
+         * FOr now I'm just returning the String array of movie titles
+         *
+         */
+        private String[] getMovieDataFromJson(String movieJsonStr) throws JSONException { // throws JSONException
+
+
+            // These are the names of the JSON objects that need to be extracted.
+
+
+            final String TMBD_RESULTS = "results";
+            final String TMDB_POSTER_PATH = "poster_path";
+            final String TMDB_TITLE = "title";
+            //final String OWM_MAX = "max";
+           // final String OWM_MIN = "min";
+           // final String OWM_DESCRIPTION = "main";
+
+            JSONObject movieJSON = new JSONObject(movieJsonStr); //create JSON object from input string
+            JSONArray movieArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of movies
+
+
+          //  String movieJPGRelativePath = null;
+
+//now get an array of images (or at least image URLs
+            //probably better to get the images here, but for now I'll just get the URLS
+            //change this later!!!!!
+            //screw it.. just get the
+
+
+          //  You will need to append a base path ahead of this relative path to build the complete url you will need to fetch the image using Picasso.
+          //  It’s constructed using 3 parts:
+          //  The base URL will look like: http://image.tmdb.org/t/p/.
+           // Then you will need a ‘size’, which will be one of the following: "w92", "w154", "w185", "w342", "w500", "w780", or "original". For most phones we recommend using “w185”.
+          //  And finally the poster path returned by the query, in this case “/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg”
+          //  Combining these three parts gives us a final url of http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
+
+          //  This is also explained explicitly in the API documentation for /configuration.
+
+            //for now just make a string of the image URL
+            String[] imageURLRelativePath = new String[movieArray.length()]; //change 20 to be the length of the JSON array of results
+
+            String[] movieTitle = new String[movieArray.length()]; //to store the movie title
+
+
+            for (int i = 0; i < movieArray.length(); i++) {
+
+                // Get the JSON object representing the movie
+                JSONObject movieDetails = movieArray.getJSONObject(i);
+
+                // realtive path to movie jpg is in "poster_path"
+              //  imageURLRelativePath[i] = movieDetails.getString(TMDB_POSTER_PATH);
+
+                //get movie title
+                movieTitle[i] = movieDetails.getString(TMDB_TITLE);
+
+                //JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
+               // description = weatherObject.getString(OWM_DESCRIPTION);
+
+                // Temperatures are in a child object called "temp".  Try not to name variables
+                // "temp" when working with temperature.  It confuses everybody.
+               // JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
+              //  double high = temperatureObject.getDouble(OWM_MAX);
+               // double low = temperatureObject.getDouble(OWM_MIN);
+
+               // highAndLow = formatHighLows(high, low);
+                //resultStrs[i] = day + " - " + description + " - " + highAndLow;
+            }
+
+            /*for (String s : resultStrs) { //just for debugging
+                Log.v(LOG_TAG, "Forecast entry: " + s); //go through entire array and log all contents
+            }*/
+            return movieTitle;
         }
     }
 }
