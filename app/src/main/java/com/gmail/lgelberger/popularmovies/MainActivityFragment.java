@@ -32,7 +32,6 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-   // ArrayAdapter<String> mMovieAdapterForList; //need this as global variable within class so all subclasses can access it
     ArrayAdapter<String> mMovieAdapterForGrid; //need this as global variable within class so all subclasses can access it
 
     //used for logging - to keep the log tag the same as the class name
@@ -65,9 +64,7 @@ public class MainActivityFragment extends Fragment {
         List<String> movieData = new ArrayList<String>(Arrays.asList(data));
         // Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
 
-
         //Now let's try to get real data
-
         //build URL
         //trying to make URL
         URL movieURL = makeURL();
@@ -79,38 +76,11 @@ public class MainActivityFragment extends Fragment {
         // String initialData = getInitialData(movieURL);
         // Log.v(LOG_TAG, "The initial Data from URL is " + initialData);
 
-
-        //create/ initialize an adapter that will populate each list item
-      /*  mMovieAdapterForList = new ArrayAdapter<String>(
-                getActivity(), // The current context (this activity)
-                R.layout.list_item_movies, // The name of the layout ID.
-                R.id.list_item_movies_textview, // The ID of the textview to populate.
-                movieData); //the ArrayList of data*/
-        // new ArrayList<String>()); //the ArrayList of data
-
-
         //infalte the fragment view
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 
-        // now bind the adapter to the actual listView so it knows which view it is populating
-        // Get a reference to the ListView, and attach this adapter to it.
-       /* ListView listView = (ListView) rootView.findViewById(R.id.listview_movies);
-        listView.setAdapter(mMovieAdapterForList);*/
-
-        //adding click listener - delete listener for now as I transisition to gridview
-       /* listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int listItemClicked, long itemClicked) {
-
-                Toast.makeText(getActivity(), "Item clicked is number " + itemClicked + " and the contents of the item are " + mMovieAdapterForList.getItem((int) itemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
-            }
-        });*/
-
-
-        //*** Now do the same with GridView
         //create/ initialize an adapter that will populate each grid item
-        //is this the correct way to make a gridView adapter??????? - research!
         mMovieAdapterForGrid = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
                 R.layout.grid_item_movies, // The name of the layout ID File.
@@ -140,9 +110,6 @@ public class MainActivityFragment extends Fragment {
         //now parse JSON to get info from it
 
 
-
-
-
         // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
         return rootView;
     }
@@ -159,16 +126,16 @@ public class MainActivityFragment extends Fragment {
         //copied from SUnshine
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
-       // HttpURLConnection urlConnection = null;
-      //  BufferedReader reader = null;
+        // HttpURLConnection urlConnection = null;
+        //  BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-      //  String forecastJsonStr = null;
+        //  String forecastJsonStr = null;
 
         // parameters for the URL weather call
-       // String format = "json";
-       // String units = "metric";
-       // int numDays = 7;
+        // String format = "json";
+        // String units = "metric";
+        // int numDays = 7;
 
         final String MOVIE_BASE_URL =
                 "http://api.themoviedb.org/3";
@@ -197,16 +164,16 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * *made the networking stuff an AsyncTask for now to get it off main thread
-     *
+     * <p>
      * Should check for network connectivity before making network calls - Have not
      * implememnted this yet!!!!
-     *
-     * <p/>
+     * <p>
+     * <p>
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
      * Result, the type of the result of the background computation.
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * Param String will be the URL to call the moviedb
      */
     public class FetchMovieTask extends AsyncTask<URL, Void, String> {
@@ -257,8 +224,8 @@ public class MainActivityFragment extends Fragment {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                   // buffer.append(line + "\n");  //restore this line after deleting line below
-                   // buffer.append(line + (System.getProperty("line.separator"))); //experimental delete when done
+                    // buffer.append(line + "\n");  //restore this line after deleting line below
+                    // buffer.append(line + (System.getProperty("line.separator"))); //experimental delete when done
                     //buffer.append(line);
                     buffer.append(line + "\n");
                 }
@@ -296,7 +263,6 @@ public class MainActivityFragment extends Fragment {
         }
 
         /**
-         *
          * @param result is the JSON string from themoviedb.org
          */
         @Override
@@ -305,11 +271,6 @@ public class MainActivityFragment extends Fragment {
 
             //for now, just use a verbose tag for debugging
             Log.v(LOG_TAG, "The results from the network call is \n " + result); //for debugging
-
-
-            //eventually load this data into my adapter for gridview and display it
-
-            //first break apart the JSON
 
             //right now just load the movie titles into the array adapter
 
@@ -320,7 +281,7 @@ public class MainActivityFragment extends Fragment {
 
 
                     //load these titles into adapter
-                 //   mMovieAdapterForGrid.add(movieTitles[i]); //confirm that this is how to add the data tothe adapter
+                    //   mMovieAdapterForGrid.add(movieTitles[i]); //confirm that this is how to add the data tothe adapter
                 }
 
                 //right now just put make the movie titles into an array list
@@ -335,35 +296,25 @@ public class MainActivityFragment extends Fragment {
             }
 
 
-
-
         }
 
         /**
          * Take the complete string representing the entire initial movie call to themoviedb.org
          * and pull out the data we need for the grid view
-         *
+         * <p>
          * FOr now I'm just returning the String array of movie titles
-         *
          */
         private String[] getMovieDataFromJson(String movieJsonStr) throws JSONException { // throws JSONException
-
-
             // These are the names of the JSON objects that need to be extracted.
-
-
             final String TMBD_RESULTS = "results";
             final String TMDB_POSTER_PATH = "poster_path";
             final String TMDB_TITLE = "title";
-            //final String OWM_MAX = "max";
-           // final String OWM_MIN = "min";
-           // final String OWM_DESCRIPTION = "main";
 
             JSONObject movieJSON = new JSONObject(movieJsonStr); //create JSON object from input string
             JSONArray movieArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of movies
 
 
-          //  String movieJPGRelativePath = null;
+            //  String movieJPGRelativePath = null;
 
 //now get an array of images (or at least image URLs
             //probably better to get the images here, but for now I'll just get the URLS
@@ -371,14 +322,14 @@ public class MainActivityFragment extends Fragment {
             //screw it.. just get the
 
 
-          //  You will need to append a base path ahead of this relative path to build the complete url you will need to fetch the image using Picasso.
-          //  It’s constructed using 3 parts:
-          //  The base URL will look like: http://image.tmdb.org/t/p/.
-           // Then you will need a ‘size’, which will be one of the following: "w92", "w154", "w185", "w342", "w500", "w780", or "original". For most phones we recommend using “w185”.
-          //  And finally the poster path returned by the query, in this case “/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg”
-          //  Combining these three parts gives us a final url of http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
+            //  You will need to append a base path ahead of this relative path to build the complete url you will need to fetch the image using Picasso.
+            //  It’s constructed using 3 parts:
+            //  The base URL will look like: http://image.tmdb.org/t/p/.
+            // Then you will need a ‘size’, which will be one of the following: "w92", "w154", "w185", "w342", "w500", "w780", or "original". For most phones we recommend using “w185”.
+            //  And finally the poster path returned by the query, in this case “/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg”
+            //  Combining these three parts gives us a final url of http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
 
-          //  This is also explained explicitly in the API documentation for /configuration.
+            //  This is also explained explicitly in the API documentation for /configuration.
 
             //for now just make a string of the image URL
             String[] imageURLRelativePath = new String[movieArray.length()]; //change 20 to be the length of the JSON array of results
@@ -392,22 +343,11 @@ public class MainActivityFragment extends Fragment {
                 JSONObject movieDetails = movieArray.getJSONObject(i);
 
                 // realtive path to movie jpg is in "poster_path"
-              //  imageURLRelativePath[i] = movieDetails.getString(TMDB_POSTER_PATH);
+                //  imageURLRelativePath[i] = movieDetails.getString(TMDB_POSTER_PATH);
 
                 //get movie title
                 movieTitle[i] = movieDetails.getString(TMDB_TITLE);
 
-                //JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
-               // description = weatherObject.getString(OWM_DESCRIPTION);
-
-                // Temperatures are in a child object called "temp".  Try not to name variables
-                // "temp" when working with temperature.  It confuses everybody.
-               // JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
-              //  double high = temperatureObject.getDouble(OWM_MAX);
-               // double low = temperatureObject.getDouble(OWM_MIN);
-
-               // highAndLow = formatHighLows(high, low);
-                //resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
             /*for (String s : resultStrs) { //just for debugging
