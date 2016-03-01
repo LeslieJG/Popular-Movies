@@ -10,27 +10,12 @@
     tools:context="com.gmail.lgelberger.popularmovies.MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:text="Hello World! Bla bla"
         />
 
-
-
-
-    <!--  ListView currently is overtop of Textview
-      WIll have to change this-->
-
-    <ListView
-        android:id="@+id/listview_movies"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
-
-    <!-- GridView (instead of listview -->
     <GridView
         android:id="@+id/gridview_movies"
         android:layout_width="match_parent"
@@ -41,6 +26,5 @@
         android:verticalSpacing="8dp"
         android:horizontalSpacing="8dp"
         />
-
 
 </LinearLayout>

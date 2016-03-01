@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -33,7 +32,7 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-    ArrayAdapter<String> mMovieAdapterForList; //need this as global variable within class so all subclasses can access it
+   // ArrayAdapter<String> mMovieAdapterForList; //need this as global variable within class so all subclasses can access it
     ArrayAdapter<String> mMovieAdapterForGrid; //need this as global variable within class so all subclasses can access it
 
     //used for logging - to keep the log tag the same as the class name
@@ -82,11 +81,11 @@ public class MainActivityFragment extends Fragment {
 
 
         //create/ initialize an adapter that will populate each list item
-        mMovieAdapterForList = new ArrayAdapter<String>(
+      /*  mMovieAdapterForList = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
                 R.layout.list_item_movies, // The name of the layout ID.
                 R.id.list_item_movies_textview, // The ID of the textview to populate.
-                movieData); //the ArrayList of data
+                movieData); //the ArrayList of data*/
         // new ArrayList<String>()); //the ArrayList of data
 
 
@@ -96,8 +95,8 @@ public class MainActivityFragment extends Fragment {
 
         // now bind the adapter to the actual listView so it knows which view it is populating
         // Get a reference to the ListView, and attach this adapter to it.
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_movies);
-        listView.setAdapter(mMovieAdapterForList);
+       /* ListView listView = (ListView) rootView.findViewById(R.id.listview_movies);
+        listView.setAdapter(mMovieAdapterForList);*/
 
         //adding click listener - delete listener for now as I transisition to gridview
        /* listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
