@@ -2,11 +2,24 @@
     <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
 
-
-
-
-
-
     <!-- API Key for theMovieDB.ORG    Replace with your own API key for running [CHAR LIMIT=NONE] -->
     <string name="api_key" translatable="false">547bc9d14e2d25a3e3429d2f7c8292db</string>
+
+   <!-- values for building movie query url  -->
+    <string name="movie_query_url_scheme" translatable="false">https</string>
+    <string name="movie_query_url_authority" translatable="false">api.themoviedb.org</string>
+    <string name="movie_query_url_dbversion" translatable="false">3</string>
+    <string name="movie_query_discover" translatable="false">discover</string>
+    <string name="movei_query_movie"  translatable="false">movie</string>
+    <string name="movie_query_key_sort_by" translatable="false">sort_by</string>
+    <string name="movie_query_value_popularity" translatable="false">popularity.desc</string>
+    <string name="movie_query_key_api_key" translatable="false">api_key</string>
+
+    <!-- search keys for analysing JSON data from moviedb.org-->
+    <string name="movie_json_key_results" translatable="false">results</string>
+    <string name="movie_json_key_title" translatable="false">title</string>
+
+
 </resources>
+
+

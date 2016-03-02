@@ -45,8 +45,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         //try actually creating stuff in the fragment before the fragment returns the inflated view
-        // Create some dummy data for the ListView. (Or Grid View)
-        // Try listview first
+        // Create some dummy data for the Grid View
         // Here's a sample movie list
         String[] data = {
                 "MOvie 1",
@@ -69,7 +68,7 @@ public class MainActivityFragment extends Fragment {
         //trying to make URL
         URL movieURL = makeURL();
         Log.v(LOG_TAG, "The movie URL is " + movieURL);
-        Toast.makeText(getActivity(), "The URL is " + movieURL, Toast.LENGTH_LONG).show(); //this works and gets th
+       // Toast.makeText(getActivity(), "The URL is " + movieURL, Toast.LENGTH_LONG).show(); //this works and gets th
 
 
         // call API for data
@@ -137,8 +136,7 @@ public class MainActivityFragment extends Fragment {
         // String units = "metric";
         // int numDays = 7;
 
-        final String MOVIE_BASE_URL =
-                "http://api.themoviedb.org/3";
+        final String MOVIE_BASE_URL = "http://api.themoviedb.org/3"; //never used right now
         // final String QUERY_PARAM = "q";
         // final String FORMAT_PARAM = "mode";
         //  final String UNITS_PARAM = "units";
@@ -146,13 +144,13 @@ public class MainActivityFragment extends Fragment {
         //  final String APPID_PARAM = "APPID";
 
         Uri.Builder builtUri2 = new Uri.Builder();
-        builtUri2.scheme("https")
-                .authority("api.themoviedb.org")
-                .appendPath("3")
-                .appendPath("discover")
-                .appendPath("movie")
-                .appendQueryParameter("sort_by", "popularity.desc")
-                .appendQueryParameter("api_key", getString(R.string.api_key));
+        builtUri2.scheme(getString(R.string.movie_query_url_scheme))
+                .authority(getString(R.string.movie_query_url_authority))
+                .appendPath(getString(R.string.movie_query_url_dbversion))
+                .appendPath(getString(R.string.movie_query_discover))
+                .appendPath(getString(R.string.movei_query_movie))
+                .appendQueryParameter(getString(R.string.movie_query_key_sort_by), getString(R.string.movie_query_value_popularity))
+                .appendQueryParameter(getString(R.string.movie_query_key_api_key), getString(R.string.api_key));
         try {
             url2 = new URL(builtUri2.toString());
         } catch (MalformedURLException e) {
@@ -306,9 +304,9 @@ public class MainActivityFragment extends Fragment {
          */
         private String[] getMovieDataFromJson(String movieJsonStr) throws JSONException { // throws JSONException
             // These are the names of the JSON objects that need to be extracted.
-            final String TMBD_RESULTS = "results";
+            final String TMBD_RESULTS = getString(R.string.movie_json_key_results);
             final String TMDB_POSTER_PATH = "poster_path";
-            final String TMDB_TITLE = "title";
+            final String TMDB_TITLE = getString(R.string.movie_json_key_title);
 
             JSONObject movieJSON = new JSONObject(movieJsonStr); //create JSON object from input string
             JSONArray movieArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of movies
