@@ -69,9 +69,9 @@ public class MainActivityFragment extends Fragment {
         //Now let's try to get real data
         //build URL
         //trying to make URL
-        URL movieURL = makeURL();
+        URL movieURL = makeMovieQueryURL();
         Log.v(LOG_TAG, "The movie URL is " + movieURL);
-       // Toast.makeText(getActivity(), "The URL is " + movieURL, Toast.LENGTH_LONG).show(); //this works and gets th
+        // Toast.makeText(getActivity(), "The URL is " + movieURL, Toast.LENGTH_LONG).show(); //this works and gets th
 
 
         // call API for data
@@ -106,19 +106,19 @@ public class MainActivityFragment extends Fragment {
 
 
         //try the network code here to see if it works
-        URL url = makeURL();
+        URL url = makeMovieQueryURL();
 
         //check for internet connectivity first
         //check to see if device is connected to network
         //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
         ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if (!isConnected){
+        if (!isConnected) {
             Toast.makeText(getActivity(), "No Internet Connection. Connect to internet and try again", Toast.LENGTH_LONG).show();
             //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
         } else { // if there is internet, get the movie date
@@ -139,60 +139,67 @@ public class MainActivityFragment extends Fragment {
      *
      * @return URL for themoviedb.org
      */
-    private URL makeURL() {
-        URL url2 = null; //url to be built
+    private URL makeMovieQueryURL() {
+        URL url = null; //url to be built
 
-        //URL should look like
-        //copied from SUnshine
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
-        // HttpURLConnection urlConnection = null;
-        //  BufferedReader reader = null;
-
-        // Will contain the raw JSON response as a string.
-        //  String forecastJsonStr = null;
-
-        // parameters for the URL weather call
-        // String format = "json";
-        // String units = "metric";
-        // int numDays = 7;
-
-        final String MOVIE_BASE_URL = "http://api.themoviedb.org/3"; //never used right now
-        // final String QUERY_PARAM = "q";
-        // final String FORMAT_PARAM = "mode";
-        //  final String UNITS_PARAM = "units";
-        //  final String DAYS_PARAM = "cnt";
-        //  final String APPID_PARAM = "APPID";
-
-        Uri.Builder builtUri2 = new Uri.Builder();
-        builtUri2.scheme(getString(R.string.movie_query_url_scheme))
-                .authority(getString(R.string.movie_query_url_authority))
-                .appendPath(getString(R.string.movie_query_url_dbversion))
+        Uri builtUri = Uri.parse(getString(R.string.movie_query_url_base)).buildUpon()
                 .appendPath(getString(R.string.movie_query_discover))
                 .appendPath(getString(R.string.movei_query_movie))
                 .appendQueryParameter(getString(R.string.movie_query_key_sort_by), getString(R.string.movie_query_value_popularity))
-                .appendQueryParameter(getString(R.string.movie_query_key_api_key), getString(R.string.api_key));
+                .appendQueryParameter(getString(R.string.movie_query_key_api_key), getString(R.string.api_key))
+                .build();
+
         try {
-            url2 = new URL(builtUri2.toString());
+            url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return url2;
+        return url;
     }
 
 
     /**
+     * Makes URL to access API to get movie info
+     *
+     * @return URL for themoviedb.org
+     */
+    private URL makePosterURL(String posterPath) {
+        URL url = null; //url to be built
+
+       // It’s constructed using 3 parts:
+       // The base URL will look like: http://image.tmdb.org/t/p/.
+       // Then you will need a ‘size’, which will be one of the following: "w92", "w154", "w185", "w342", "w500", "w780", or "original". For most phones we recommend using “w185”.
+      //  And finally the poster path returned by the query, in this case “/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg”
+      //  Combining these three parts gives us a final url of http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
+
+        Uri builtUri = Uri.parse(getString(R.string.poster_url_base)).buildUpon()
+                .appendPath(getString(R.string.poster_url_poster_size))
+                .appendPath(posterPath)
+                .build();
+
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
+    }
+
+
+
+
+    /**
      * *made the networking stuff an AsyncTask for now to get it off main thread
-     * <p>
+     * <p/>
      * Should check for network connectivity before making network calls - Have not
      * implememnted this yet!!!!
-     * <p>
-     * <p>
+     * <p/>
+     * <p/>
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
      * Result, the type of the result of the background computation.
-     * <p>
-     * <p>
+     * <p/>
+     * <p/>
      * Param String will be the URL to call the moviedb
      */
     public class FetchMovieTask extends AsyncTask<URL, Void, String> {
@@ -220,8 +227,6 @@ public class MainActivityFragment extends Fragment {
 
             // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
-
-
 
 
             try {
@@ -321,7 +326,7 @@ public class MainActivityFragment extends Fragment {
         /**
          * Take the complete string representing the entire initial movie call to themoviedb.org
          * and pull out the data we need for the grid view
-         * <p>
+         * <p/>
          * FOr now I'm just returning the String array of movie titles
          */
         private String[] getMovieDataFromJson(String movieJsonStr) throws JSONException { // throws JSONException
@@ -336,7 +341,7 @@ public class MainActivityFragment extends Fragment {
 
             //  String movieJPGRelativePath = null;
 
-//now get an array of images (or at least image URLs
+            //now get an array of images (or at least image URLs
             //probably better to get the images here, but for now I'll just get the URLS
             //change this later!!!!!
             //screw it.. just get the
