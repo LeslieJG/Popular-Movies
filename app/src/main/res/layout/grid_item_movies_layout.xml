@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Somewhat copied from Sunshine app code
 using this to show how to layout each view in gridiview-->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/grid_item_movies_textview"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-</TextView>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerInside"
+        android:src="@drawable/test_movie_poster" />
+
+    <TextView
+        android:id="@+id/grid_item_movies_textview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:text="Movie name" />
+
+</RelativeLayout>
