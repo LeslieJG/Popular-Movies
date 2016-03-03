@@ -37,6 +37,10 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
     ArrayAdapter<String> mMovieAdapterForGrid; //need this as global variable within class so all subclasses can access it
 
+    //declare gridview here as opposed to OnCreateView?
+    //declare custom MovieAdapter
+    MovieAdapter movieAdapter;
+
     //used for logging - to keep the log tag the same as the class name
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
@@ -46,6 +50,13 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+
+
+
+
+
 
         //try actually creating stuff in the fragment before the fragment returns the inflated view
         // Create some dummy data for the Grid View
@@ -82,6 +93,9 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 
+
+
+
         //create/ initialize an adapter that will populate each grid item
         mMovieAdapterForGrid = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
@@ -93,6 +107,7 @@ public class MainActivityFragment extends Fragment {
         // now bind the adapter to the actual gridView so it knows which view it is populating
         // Get a reference to the gridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+
         gridView.setAdapter(mMovieAdapterForGrid);
 
         //adding click listener for grid
@@ -103,6 +118,41 @@ public class MainActivityFragment extends Fragment {
                         + mMovieAdapterForGrid.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
             }
         });
+
+
+
+// ZZZZZZ
+        //for the real data make a list of MovieDataProvider Objects
+        //for loop - iterate over all the incoming data
+        //in for loop -
+        //      MovieDateProvider = new MovieDataProvider(moviePoster resource[i], movieTitle[i])
+        //
+
+        //initialize Custom MovieAdapter that will populate each grid item
+      /*  movieAdapter = new MovieAdapter(getActivity(), // The current context (this activity)
+                R.layout.grid_item_movies_layout, // The name of the layout ID File.);
+                movieData); //the ArrayList of data   --//error it needs an array of objects not a list - how to fix?*/
+
+        //prabeesh's way of initializing
+        //get Activity - he has it as getApplicationContext()
+        movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);
+
+        //for loop to add each of the MovieDataProviderObjects
+        // for .......      movieAdapter.add(movieDataProvider)
+        //or just make the moveDataProvider list and just add it as part of the initialization
+        // i.e. just make sure the constructor can take care of it
+        // or just addAll
+
+
+
+        //now set the adapter to work with gridView
+        //gridView.setAdapter(movieAdapter);
+
+
+
+
+        ///ZZZZZZZZ
+
 
 
         //try the network code here to see if it works
@@ -166,11 +216,11 @@ public class MainActivityFragment extends Fragment {
     private URL makePosterURL(String posterPath) {
         URL url = null; //url to be built
 
-       // It’s constructed using 3 parts:
-       // The base URL will look like: http://image.tmdb.org/t/p/.
-       // Then you will need a ‘size’, which will be one of the following: "w92", "w154", "w185", "w342", "w500", "w780", or "original". For most phones we recommend using “w185”.
-      //  And finally the poster path returned by the query, in this case “/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg”
-      //  Combining these three parts gives us a final url of http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
+        // It’s constructed using 3 parts:
+        // The base URL will look like: http://image.tmdb.org/t/p/.
+        // Then you will need a ‘size’, which will be one of the following: "w92", "w154", "w185", "w342", "w500", "w780", or "original". For most phones we recommend using “w185”.
+        //  And finally the poster path returned by the query, in this case “/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg”
+        //  Combining these three parts gives us a final url of http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
 
         Uri builtUri = Uri.parse(getString(R.string.poster_url_base)).buildUpon()
                 .appendPath(getString(R.string.poster_url_poster_size))
@@ -184,8 +234,6 @@ public class MainActivityFragment extends Fragment {
         }
         return url;
     }
-
-
 
 
     /**
