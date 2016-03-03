@@ -85,7 +85,7 @@ public class MainActivityFragment extends Fragment {
         //create/ initialize an adapter that will populate each grid item
         mMovieAdapterForGrid = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
-                R.layout.grid_item_movies, // The name of the layout ID File.
+                R.layout.grid_item_movies_layout, // The name of the layout ID File.
                 R.id.grid_item_movies_textview, // The ID of the textview to populate.
                 movieData); //the ArrayList of data
 
