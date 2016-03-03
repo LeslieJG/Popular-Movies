@@ -1,5 +1,8 @@
 package com.gmail.lgelberger.popularmovies;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -96,15 +99,33 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
-                Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are " + mMovieAdapterForGrid.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
+                Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are "
+                        + mMovieAdapterForGrid.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
             }
         });
 
 
         //try the network code here to see if it works
         URL url = makeURL();
-        FetchMovieTask movieTask = new FetchMovieTask();
-        movieTask.execute(url);
+
+        //check for internet connectivity first
+        //check to see if device is connected to network
+        //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if (!isConnected){
+            Toast.makeText(getActivity(), "No Internet Connection. Connect to internet and try again", Toast.LENGTH_LONG).show();
+            //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
+        } else { // if there is internet, get the movie date
+            FetchMovieTask movieTask = new FetchMovieTask();
+            movieTask.execute(url);
+        }
+
 
         //now parse JSON to get info from it
 
@@ -201,6 +222,8 @@ public class MainActivityFragment extends Fragment {
             String movieJsonStr = null;
 
 
+
+
             try {
 
                 // Create the request to themoviedb.org, and open the connection
@@ -276,7 +299,6 @@ public class MainActivityFragment extends Fragment {
                 String[] movieTitles = getMovieDataFromJson(result);
 
                 for (int i = 0; i < movieTitles.length; i++) {
-
 
                     //load these titles into adapter
                     //   mMovieAdapterForGrid.add(movieTitles[i]); //confirm that this is how to add the data tothe adapter
