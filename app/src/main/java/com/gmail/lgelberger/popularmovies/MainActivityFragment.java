@@ -52,12 +52,6 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-
-
-
-
-
-
         //try actually creating stuff in the fragment before the fragment returns the inflated view
         // Create some dummy data for the Grid View
         // Here's a sample movie list
@@ -77,6 +71,22 @@ public class MainActivityFragment extends Fragment {
         List<String> movieData = new ArrayList<String>(Arrays.asList(data));
         // Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
 
+
+        //let me do the same with pics
+        int[] dummyPics = {R.drawable.test_movie_poster_1,
+                R.drawable.test_movie_poster_2,
+                R.drawable.test_movie_poster_3,
+                R.drawable.test_movie_poster_4,
+                R.drawable.test_movie_poster_1,
+                R.drawable.test_movie_poster_2,
+                R.drawable.test_movie_poster_3,
+                R.drawable.test_movie_poster_4,
+                R.drawable.test_movie_poster_1,
+                R.drawable.test_movie_poster_2,
+                R.drawable.test_movie_poster_3};
+
+        List dummyPicList = new ArrayList(Arrays.asList(dummyPics));
+
         //Now let's try to get real data
         //build URL
         //trying to make URL
@@ -93,9 +103,6 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 
-
-
-
         //create/ initialize an adapter that will populate each grid item
         mMovieAdapterForGrid = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
@@ -107,7 +114,6 @@ public class MainActivityFragment extends Fragment {
         // now bind the adapter to the actual gridView so it knows which view it is populating
         // Get a reference to the gridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
-
         gridView.setAdapter(mMovieAdapterForGrid);
 
         //adding click listener for grid
@@ -118,7 +124,6 @@ public class MainActivityFragment extends Fragment {
                         + mMovieAdapterForGrid.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
             }
         });
-
 
 
 // ZZZZZZ
@@ -144,15 +149,11 @@ public class MainActivityFragment extends Fragment {
         // or just addAll
 
 
-
         //now set the adapter to work with gridView
         //gridView.setAdapter(movieAdapter);
 
 
-
-
         ///ZZZZZZZZ
-
 
 
         //try the network code here to see if it works
