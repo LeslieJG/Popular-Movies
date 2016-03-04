@@ -35,7 +35,7 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-    ArrayAdapter<String> mMovieAdapterForGrid; //need this as global variable within class so all subclasses can access it
+    ArrayAdapter<String> mMovieAdapterForGridTextOnly; //need this as global variable within class so all subclasses can access it
 
     //declare gridview here as opposed to OnCreateView?
     //declare custom MovieAdapter
@@ -104,24 +104,55 @@ public class MainActivityFragment extends Fragment {
 
 
         //create/ initialize an adapter that will populate each grid item
-        mMovieAdapterForGrid = new ArrayAdapter<String>(
+        mMovieAdapterForGridTextOnly = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
                 R.layout.grid_item_movies_layout, // The name of the layout ID File.
                 R.id.grid_item_movies_textview, // The ID of the textview to populate.
                 movieData); //the ArrayList of data
 
 
+
+        //try my custom adapter here
+        movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);
+
+        //load data into my custom adapter
+        int i = 0; //loop counter
+        for (String title : data){ //loop through all the data
+            MovieDataProvider movieDataProvider = new MovieDataProvider(dummyPics[i], title); //make a new dataprovider object
+                // with the image resource and the title string for dummy data
+
+            movieAdapter.add(movieDataProvider);// add each movie into the adapter's own list
+
+        i++; //increment loop counter
+        }
+
+
+
+
+
         // now bind the adapter to the actual gridView so it knows which view it is populating
         // Get a reference to the gridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
-        gridView.setAdapter(mMovieAdapterForGrid);
+
+
+        //set adapter to gridview
+        //gridView.setAdapter(mMovieAdapterForGridTextOnly); //just for textview
+        gridView.setAdapter(movieAdapter); //my custom adapter
 
         //adding click listener for grid
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
+              //  Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are "
+               //         + mMovieAdapterForGridTextOnly.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();
+                //this works and gets the item number
+
                 Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are "
-                        + mMovieAdapterForGrid.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show(); //this works and gets the item number
+                        + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();
+                //this works and gets the item number
+
+
+
             }
         });
 
@@ -140,7 +171,8 @@ public class MainActivityFragment extends Fragment {
 
         //prabeesh's way of initializing
         //get Activity - he has it as getApplicationContext()
-        movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);
+
+      /*  movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);*/
 
         //for loop to add each of the MovieDataProviderObjects
         // for .......      movieAdapter.add(movieDataProvider)
@@ -355,15 +387,20 @@ public class MainActivityFragment extends Fragment {
                 for (int i = 0; i < movieTitles.length; i++) {
 
                     //load these titles into adapter
-                    //   mMovieAdapterForGrid.add(movieTitles[i]); //confirm that this is how to add the data tothe adapter
+                    //   mMovieAdapterForGridTextOnly.add(movieTitles[i]); //confirm that this is how to add the data tothe adapter
                 }
 
                 //right now just put make the movie titles into an array list
                 List<String> movieTitleArrayList = new ArrayList<String>(Arrays.asList(movieTitles));
 
                 //now clear the gridview adapter
-                mMovieAdapterForGrid.clear();
-                mMovieAdapterForGrid.addAll(movieTitleArrayList);
+                mMovieAdapterForGridTextOnly.clear();
+                mMovieAdapterForGridTextOnly.addAll(movieTitleArrayList);
+
+
+                //need to put data into movie adapter (and NOT moveAdapterforGridTextONly.
+
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
