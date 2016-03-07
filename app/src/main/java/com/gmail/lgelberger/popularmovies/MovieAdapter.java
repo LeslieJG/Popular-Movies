@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +35,7 @@ import java.util.List;
 public class MovieAdapter extends ArrayAdapter{
     List movieList = new ArrayList(); //the list of all the movieData that we will be putting into gridView
 
+    Context context;
 
    //Constructor - OK use this one, with a list
     public MovieAdapter(Context context, int resource, List objects) {
@@ -42,6 +45,9 @@ public class MovieAdapter extends ArrayAdapter{
     //Constructor - this is the one Prabeesh recommends - but you will need to add the list separately (as opposed to when it is constructed)
     public MovieAdapter(Context context, int resource) {
         super(context, resource);
+
+        //added this for picasso to work
+        this.context = context;
     }
 
 
@@ -133,9 +139,17 @@ public class MovieAdapter extends ArrayAdapter{
             MovieDataProvider dataProvider;
             dataProvider = (MovieDataProvider) this.getItem(position);
 
+            String moviePosterURLAsString = dataProvider.getMoviePosterUrl();
+
             //now set data resources
-            handler.moviePoster.setImageResource(dataProvider.getMovie_poster_resource());
-            handler.movieTitle.setText(dataProvider.getMovie_title());
+           // handler.moviePoster.setImageResource(dataProvider.getMoviePosterResource());
+
+       Picasso.with(context).load(moviePosterURLAsString).into(handler.moviePoster);
+ //       Picasso.with(context).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(handler.moviePoster);
+        //http://image.tmdb.org/t/p/w185/%2FinVq3FRqcYIRl2la8iZikYYxFNR.jpg //this doesn't work - the above one does
+//      /inVq3FRqcYIRl2la8iZikYYxFNR.jpg
+
+            handler.movieTitle.setText(dataProvider.getMovieTitle());
 
         //return the gridItem (or row is listview)
             return gridItem; //gridItem is the convertView that is passed in, now that it is
