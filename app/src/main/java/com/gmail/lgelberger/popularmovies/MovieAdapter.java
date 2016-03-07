@@ -18,6 +18,13 @@ import java.util.List;
  * Modelled on the custom adapter at
  * https://plus.google.com/s/ListView%20with%20Custom%20Adapter%20Prabeesh%20R%20K/top
  *
+ *
+ * The pattern id as folloew
+ * if the convertView (which is just a strange parameter name for views that may be recycled)
+ * does not exist, create it.
+ * Then use the appropriate data (determined by the current position
+ * to configure the view, which is then returned.
+ *
  * Have to override a bunch of methods
  * add
  *add all
@@ -80,17 +87,23 @@ public class MovieAdapter extends ArrayAdapter{
     /**
      * return each grid item (or row for listView) of data to the gridView
      *
+     * if the convertView (which is just a strange parameter name for views that may be recycled)
+     * does not exist, create it.
+     * Then use the appropriate data (determined by the current position
+     * to configure the view, which is then returned.
+     *
      * @param position gridPosition
      * @param convertView the gridView we are populating
      * @param parent    the parent of the gridView
-     * @return
+     * @return the convertView that is passed in, but modified with all the data for the grid
+     *
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View gridItem = convertView; //the convertView is the gridView item that is passed in
         DataHandler handler; //will contain the types of views in my custom view
 
-        //check to see if gridItem is available (exists). If not assign data
+        //check to see if gridItem exists, if not create it.
         if (gridItem == null) {
             LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

@@ -10,6 +10,7 @@ package com.gmail.lgelberger.popularmovies;
  * and the text for the movie Title
  *
  * as you get the information from a JSON file or url call, instantiate this class for each item
+ * This can be "added" to the movieAdapter. I.e. these are the objects in the movieApater internal ArrayList
  */
 public class MovieDataProvider {
     private int movie_poster_resource;
