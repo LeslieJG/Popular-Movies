@@ -14,10 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,18 +89,12 @@ public class MainActivityFragment extends Fragment {
         //infalte the fragment view
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ////////////////////////////////////////////////////////////////TESTING////////////
-        //ZZZ Test
-        //populate the test_imageview - then use Picasso to try to do this
-        ImageView myTestImageView = (ImageView) rootView.findViewById(R.id.test_imageview);
-        myTestImageView.setImageResource(R.drawable.test_movie_poster);
-        //now try to have picasso over write the image with an image from URL
-        // url is     http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg
-        //mainMovieContext = getContext();
-        //  Picasso.with(mainMovieContext).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(myTestImageView);
-        Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(myTestImageView);
 
-        ////////////////////END TEST/////////////////////////////
+        /*ImageView myTestImageView = (ImageView) rootView.findViewById(R.id.test_imageview);
+        myTestImageView.setImageResource(R.drawable.test_movie_poster);
+        Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(myTestImageView);
+*/
+
 
 
         //create/ initialize an adapter that will populate each grid item

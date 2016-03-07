@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SOmewhat copied from Sunshine app code
 using this to show how to layout each view in  alist  view
-eventually it will be changed to a grdiview-->
+eventually it will be changed to a grdiview
+
+NOT NEEDED DELETE
+-->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
