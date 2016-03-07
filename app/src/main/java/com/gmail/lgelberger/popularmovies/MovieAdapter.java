@@ -16,38 +16,37 @@ import java.util.List;
 
 /**
  * Created by Leslie on 2016-03-03.
- *
+ * <p>
  * Modelled on the custom adapter at
  * https://plus.google.com/s/ListView%20with%20Custom%20Adapter%20Prabeesh%20R%20K/top
- *
- *
+ * <p>
+ * <p>
  * The pattern id as folloew
  * if the convertView (which is just a strange parameter name for views that may be recycled)
  * does not exist, create it.
  * Then use the appropriate data (determined by the current position
  * to configure the view, which is then returned.
- *
+ * <p>
  * Have to override a bunch of methods
  * add
- *add all
- *
+ * add all
  */
-public class MovieAdapter extends ArrayAdapter{
+public class MovieAdapter extends ArrayAdapter {
     List movieList = new ArrayList(); //the list of all the movieData that we will be putting into gridView
-
-    Context context;
-
-   //Constructor - OK use this one, with a list
-    public MovieAdapter(Context context, int resource, List objects) {
-        super(context, resource, objects);
-    }
+    Context context; //needed for picasso
 
     //Constructor - this is the one Prabeesh recommends - but you will need to add the list separately (as opposed to when it is constructed)
     public MovieAdapter(Context context, int resource) {
         super(context, resource);
 
-        //added this for picasso to work
-        this.context = context;
+        this.context = context; //added this for picasso to work
+    }
+
+
+    //Constructor - OK use this one, with a list
+    public MovieAdapter(Context context, int resource, List objects) {
+        super(context, resource, objects);
+        this.context = context; //added this for picasso to work
     }
 
 
@@ -81,10 +80,10 @@ public class MovieAdapter extends ArrayAdapter{
 
     /**
      * needed to populate a gridview item. This is new and NOT an override
-     create the view types that exist in the gridview layout that this adapter will
-     be populating
+     * create the view types that exist in the gridview layout that this adapter will
+     * be populating
      */
-    static class DataHandler{
+    static class DataHandler {
         ImageView moviePoster;
         TextView movieTitle;
     }
@@ -92,24 +91,23 @@ public class MovieAdapter extends ArrayAdapter{
 
     /**
      * return each grid item (or row for listView) of data to the gridView
-     *
+     * <p>
      * if the convertView (which is just a strange parameter name for views that may be recycled)
      * does not exist, create it.
      * Then use the appropriate data (determined by the current position
      * to configure the view, which is then returned.
      *
-     * @param position gridPosition
+     * @param position    gridPosition
      * @param convertView the gridView we are populating
-     * @param parent    the parent of the gridView
+     * @param parent      the parent of the gridView
      * @return the convertView that is passed in, but modified with all the data for the grid
-     *
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View gridItem = convertView; //the convertView is the gridView item that is passed in
         DataHandler handler; //will contain the types of views in my custom view
 
-        //check to see if gridItem exists, if not create it.
+        //if no griditem, make it
         if (gridItem == null) {
             LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -124,36 +122,28 @@ public class MovieAdapter extends ArrayAdapter{
 
             //now attatch each view component into grid item
             gridItem.setTag(handler);
-        }
-        else {
+        } else {
             // if gridItem exisits already, no need to make a new one
             //just populate our handler with the items that already exist in this gridItem
             handler = (DataHandler) gridItem.getTag();
-
-
         }
 
+        //Configure the View
 
-            //now we have to get each object from the MovieDataProvider (i.e. each movie will have it's own object)
-            //we need to get the data
-            MovieDataProvider dataProvider;
-            dataProvider = (MovieDataProvider) this.getItem(position);
+        //now we have to get each object from the MovieDataProvider (i.e. each movie will have it's own object)
+        //we need to get the data
+        MovieDataProvider dataProvider = (MovieDataProvider) this.getItem(position);
 
-            String moviePosterURLAsString = dataProvider.getMoviePosterUrl();
+        String moviePosterURLString = dataProvider.getMoviePosterUrl();
 
-            //now set data resources
-           // handler.moviePoster.setImageResource(dataProvider.getMoviePosterResource());
+        //now set data resources
+        // handler.moviePoster.setImageResource(dataProvider.getMoviePosterResource());
+        Picasso.with(context).load(moviePosterURLString).into(handler.moviePoster);
+        handler.movieTitle.setText(dataProvider.getMovieTitle());
 
-       Picasso.with(context).load(moviePosterURLAsString).into(handler.moviePoster);
- //       Picasso.with(context).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(handler.moviePoster);
-        //http://image.tmdb.org/t/p/w185/%2FinVq3FRqcYIRl2la8iZikYYxFNR.jpg //this doesn't work - the above one does
-//      /inVq3FRqcYIRl2la8iZikYYxFNR.jpg
-
-            handler.movieTitle.setText(dataProvider.getMovieTitle());
-
-        //return the gridItem (or row is listview)
-            return gridItem; //gridItem is the convertView that is passed in, now that it is
-                                //set with the correct information -return it
+        // return the view
+        return gridItem; //gridItem is the convertView that is passed in, now that it is
+        //set with the correct information -return it
         //return super.getView(position, convertView, parent); //default return method - overriden
 
 

@@ -39,19 +39,13 @@ import java.util.List;
  */
 public class MainActivityFragment extends Fragment {
     ArrayAdapter<String> mMovieAdapterForGridTextOnly; //need this as global variable within class so all subclasses can access it
+    MovieAdapter movieAdapter;//declare custom MovieAdapter
 
-    //declare gridview here as opposed to OnCreateView?
-    //declare custom MovieAdapter
-    MovieAdapter movieAdapter;
-
-    //used for logging - to keep the log tag the same as the class name
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
-    //Have the context here so I can pass it to the MoiveAdapter for Picasso - Experimental - it may not be needed
-    Context mainMovieContext = getContext();
-
-
-
+    /**
+     * constructor
+     */
     public MainActivityFragment() {
     }
 
@@ -95,10 +89,6 @@ public class MainActivityFragment extends Fragment {
         List dummyPicList = new ArrayList(Arrays.asList(dummyPics));
 
 
-
-
-
-
         //infalte the fragment view
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -109,36 +99,23 @@ public class MainActivityFragment extends Fragment {
         myTestImageView.setImageResource(R.drawable.test_movie_poster);
         //now try to have picasso over write the image with an image from URL
         // url is     http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg
-        mainMovieContext = getContext();
-        Picasso.with(mainMovieContext).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(myTestImageView);
-
+        //mainMovieContext = getContext();
+        //  Picasso.with(mainMovieContext).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(myTestImageView);
+        Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(myTestImageView);
 
         ////////////////////END TEST/////////////////////////////
 
 
         //create/ initialize an adapter that will populate each grid item
-        mMovieAdapterForGridTextOnly = new ArrayAdapter<String>(
+       /* mMovieAdapterForGridTextOnly = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
                 R.layout.grid_item_movies_layout, // The name of the layout ID File.
                 R.id.grid_item_movies_textview, // The ID of the textview to populate.
-                movieData); //the ArrayList of data
+                movieData); //the ArrayList of data*/
 
 
         //try my custom adapter here
         movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //this one works well without picaso
-       // movieAdapter = new MovieAdapter(mainMovieContext, R.layout.grid_item_movies_layout); //using this to try for Picasso to work
-
-      /*  //load data into my custom adapter - ommitted for now
-        int i = 0; //loop counter
-        for (String title : data) { //loop through all the data
-            MovieDataProvider movieDataProvider = new MovieDataProvider(dummyPics[i], title); //make a new dataprovider object
-            // with the image resource and the title string for dummy data
-
-            movieAdapter.add(movieDataProvider);// add each movie into the adapter's own list
-
-            i++; //increment loop counter
-        }
-*/
 
         // now bind the adapter to the actual gridView so it knows which view it is populating
         // Get a reference to the gridView, and attach this adapter to it.
@@ -152,46 +129,10 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
-                //  Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are "
-                //         + mMovieAdapterForGridTextOnly.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();
-                //this works and gets the item number
-
                 Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are "
-                        + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();
-                //this works and gets the item number
+                        + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
             }
         });
-
-
-// ZZZZZZ
-        //for the real data make a list of MovieDataProvider Objects
-        //for loop - iterate over all the incoming data
-        //in for loop -
-        //      MovieDateProvider = new MovieDataProvider(moviePoster resource[i], movieTitle[i])
-        //
-
-        //initialize Custom MovieAdapter that will populate each grid item
-      /*  movieAdapter = new MovieAdapter(getActivity(), // The current context (this activity)
-                R.layout.grid_item_movies_layout, // The name of the layout ID File.);
-                movieData); //the ArrayList of data   --//error it needs an array of objects not a list - how to fix?*/
-
-        //prabeesh's way of initializing
-        //get Activity - he has it as getApplicationContext()
-
-      /*  movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);*/
-
-        //for loop to add each of the MovieDataProviderObjects
-        // for .......      movieAdapter.add(movieDataProvider)
-        //or just make the moveDataProvider list and just add it as part of the initialization
-        // i.e. just make sure the constructor can take care of it
-        // or just addAll
-
-
-        //now set the adapter to work with gridView
-        //gridView.setAdapter(movieAdapter);
-
-
-        ///ZZZZZZZZ
 
 
         //try the network code here to see if it works
@@ -258,13 +199,7 @@ public class MainActivityFragment extends Fragment {
         // The base URL will look like: http://image.tmdb.org/t/p/.
         // Then you will need a ‘size’, which will be one of the following: "w92", "w154", "w185", "w342", "w500", "w780", or "original". For most phones we recommend using “w185”.
         //  And finally the poster path returned by the query, in this case “/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg”
-        //  Combining these three parts gives us a final url of http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
-
-       /* Uri builtUri = Uri.parse(getString(R.string.poster_url_base)).buildUpon()
-                .appendPath(getString(R.string.poster_url_poster_size))
-                .appendPath(posterPath)
-                .build();*/
-
+        //  Combining these three parts gives us a final url of  e.g. http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
 
         Uri builtUri = Uri.parse(getString(R.string.poster_url_base)).buildUpon()
                 .appendPath(getString(R.string.poster_url_poster_size))
@@ -295,8 +230,7 @@ public class MainActivityFragment extends Fragment {
      * Param String will be the URL to call the moviedb
      */
     public class FetchMovieTask extends AsyncTask<URL, Void, String> {
-        //used for logging - to keep the log tag the same as the class name
-        private final String LOG_TAG = FetchMovieTask.class.getSimpleName(); //name of FetchWeatherTask class
+        private final String LOG_TAG = FetchMovieTask.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
 
         @Override
         protected String doInBackground(URL... params) {
@@ -314,8 +248,7 @@ public class MainActivityFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = null;
+            String movieJsonStr = null; // Will contain the raw JSON response as a string.
 
             try {
                 // Create the request to themoviedb.org, and open the connection
@@ -337,9 +270,6 @@ public class MainActivityFragment extends Fragment {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    // buffer.append(line + "\n");  //restore this line after deleting line below
-                    // buffer.append(line + (System.getProperty("line.separator"))); //experimental delete when done
-                    //buffer.append(line);
                     buffer.append(line + "\n");
                 }
 
@@ -348,8 +278,6 @@ public class MainActivityFragment extends Fragment {
                     return null;
                 }
                 movieJsonStr = buffer.toString();
-
-                //Log.v(LOG_TAG, "movie URL is " + movieJsonStr );
 
                 //return the movie JSON info as String
                 return movieJsonStr; // successful, done here (except for finally block)
@@ -387,69 +315,28 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-
-
-
-            //for now, just use a verbose tag for debugging
-            // Log.v(LOG_TAG, "The results from the network call is \n " + result); //for debugging
-
-            //right now just load the movie titles into the movieAdapter
+            //load the movie titles into the movieAdapter
             try {
-
-
-                //String[] movieTitles = getMovieDataFromJson(result);
                 MovieDataProvider[] movieData = getMovieDataFromJson(result);
 
                 movieAdapter.clear(); //clear all the old movie data out
-
-                //add the movieData to the Adapter
-                for (int i = 0; i < movieData.length; i++){
-                    //load the movieData into adapter
-                    movieAdapter.add(movieData[i]);
+                for (int i = 0; i < movieData.length; i++) { //add the movieData to the Adapter
+                    movieAdapter.add(movieData[i]); //load the movieData into adapter
                 }
-
-
-               /* for (int i = 0; i < movieTitles.length; i++) {
-                    //load these titles into adapter
-                    //   mMovieAdapterForGridTextOnly.add(movieTitles[i]); //confirm that this is how to add the data tothe adapter
-                }
-                //right now just put make the movie titles into an array list
-                List<String> movieTitleArrayList = new ArrayList<String>(Arrays.asList(movieTitles));
-
-                //now clear the gridview adapter
-                mMovieAdapterForGridTextOnly.clear();
-                mMovieAdapterForGridTextOnly.addAll(movieTitleArrayList);*/
-
-                //need to put data into movie adapter (and NOT moveAdapterforGridTextONly.
-
-
-                //ZZZ put loop here for getting movie title AND movie poster relative path
-                //load data into my custom adapter
-               /* int i = 0; //loop counter
-                for (String title : data) { //loop through all the data
-                    MovieDataProvider movieDataProvider = new MovieDataProvider(dummyPics[i], title); //make a new dataprovider object
-                    // with the image resource and the title string for dummy data
-
-                    movieAdapter.add(movieDataProvider);// add each movie into the adapter's own list
-
-                    i++; //increment loop counter
-                }*/
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
+
         /**
          * Take the complete string representing the entire initial movie call to themoviedb.org
-         * and pull out the data we need for the grid view
-         * <p/>
-         * <p/>
-         * <p/>
-         * FOr now I'm just returning the String array of movie titles
+         * and pull out the data needed for the grid view
+         *
+         * @param movieJsonStr the JSON of all the movie data from themoviedb.org
+         * @return array of MovieDataProvider obects to hold the info for each movie
+         * @throws JSONException
          */
-        //private String[] getMovieDataFromJson(String movieJsonStr) throws JSONException { // throws JSONException
         private MovieDataProvider[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
             // These are the names of the JSON objects that need to be extracted.
             final String TMBD_RESULTS = getString(R.string.movie_json_key_results);
@@ -459,52 +346,21 @@ public class MainActivityFragment extends Fragment {
             JSONObject movieJSON = new JSONObject(movieJsonStr); //create JSON object from input string
             JSONArray movieArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of movies
 
-            //for debugging
-            int arrayLengthShouldBe = movieArray.length();
 
-            String[] moviePosterRelativePath = new String[movieArray.length()];  //delete - to store relative path of movie poster - delete
             String[] movieTitle = new String[movieArray.length()]; //to store the movie title
-
             URL[] moviePosterFullURL = new URL[movieArray.length()];//to store full URL of movie poster
-
             MovieDataProvider[] movieDataProviderArrayFromJSON = new MovieDataProvider[movieArray.length()]; //array of Movie Data Providers
 
-
+            //load the info needed into movieDataProviderArray
             for (int i = 0; i < movieArray.length(); i++) {
-                // Get the JSON object representing the movie
-                JSONObject movieDetails = movieArray.getJSONObject(i);
+                JSONObject movieDetails = movieArray.getJSONObject(i);// Get the JSON object representing the movie
+                movieTitle[i] = movieDetails.getString(TMDB_TITLE);//get movie title
+                moviePosterFullURL[i] = makePosterURL(movieDetails.getString(TMDB_POSTER_PATH)); //get movie URL
 
-                //get movie title
-                movieTitle[i] = movieDetails.getString(TMDB_TITLE);
-
-                //for debugging
-                String testMoviePosterRelativePath = movieDetails.getString(TMDB_POSTER_PATH);
-
-                //get movie URL
-                moviePosterFullURL[i] = makePosterURL(movieDetails.getString(TMDB_POSTER_PATH));
-
-                //for debuggin
-                String urlStringTest = String.valueOf(moviePosterFullURL[i]);
-
-                // realtive path to movie jpg is in "poster_path"
-                //  moviePosterRelativePath[i] = movieDetails.getString(TMDB_POSTER_PATH);
-
-                //add to movieDataProviderArrayFromJSON
-               // movieDataProviderArrayFromJSON[i].setMovieTitle(movieTitle[i]);
-               // movieDataProviderArrayFromJSON[i].setMoviePosterUrl(String.valueOf(moviePosterFullURL[i])); //hopefully this converts it to a String
-
-                //perhaps try to initialize array differently
-                movieDataProviderArrayFromJSON[i] = new MovieDataProvider(movieTitle[i],String.valueOf(moviePosterFullURL[i]));
-
-
+                movieDataProviderArrayFromJSON[i] = new MovieDataProvider(movieTitle[i], String.valueOf(moviePosterFullURL[i]));
             }
 
-            /*for (String s : resultStrs) { //just for debugging
-                Log.v(LOG_TAG, "Forecast entry: " + s); //go through entire array and log all contents
-            }*/
-
             return movieDataProviderArrayFromJSON;
-            //return movieTitle;
         }
     }
 }
