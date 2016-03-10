@@ -1,6 +1,8 @@
 package com.gmail.lgelberger.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
+
         /* Don't think I need snackbar - delete later if needed LJG
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -25,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
+
+
+        //need to put this here to load the default preferences for app.
+        //3 arguments   (context, xml file for settings, reload defaults more than once)
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
 
     }
@@ -45,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            startActivity(new Intent(this, SettingsActivity.class)); //add this line to launch settings
+
             return true;
         }
 

@@ -5,10 +5,10 @@
     <!-- API Key for theMovieDB.ORG    Replace with your own API key for running [CHAR LIMIT=NONE] -->
     <string name="api_key" translatable="false">547bc9d14e2d25a3e3429d2f7c8292db</string>
 
-   <!-- values for building movie query url  -->
+    <!-- values for building movie query url  -->
     <string name="movie_query_url_base" translatable="false">http://api.themoviedb.org/3</string>
     <string name="movie_query_discover" translatable="false">discover</string>
-    <string name="movei_query_movie"  translatable="false">movie</string>
+    <string name="movei_query_movie" translatable="false">movie</string>
     <string name="movie_query_key_sort_by" translatable="false">sort_by</string>
     <string name="movie_query_value_popularity" translatable="false">popularity.desc</string>
     <string name="movie_query_key_api_key" translatable="false">api_key</string>
@@ -21,6 +21,19 @@
     <string name="movie_json_key_results" translatable="false">results</string>
     <string name="movie_json_key_title" translatable="false">title</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
+    <!-- Settings Strings-->
+    <!-- Name for Application Settings [CHAR LIMIT=30] -->
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Movie Sort Order Preferences [CHAR LIMIT=NONE]-->
+    <string name="movie_sort_order_key" translatable="false">movie_sort_order_key</string>
+    <string name="movie_sort_order_title" translatable="false">Movie Sort Order</string>
+    <string name="movie_sort_order_default_value" translatable="false">mostPopular</string>
 
 
 </resources>
