@@ -32,6 +32,7 @@ import android.preference.PreferenceFragment;
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     //added to have reference to movie_sort_order_key
 
+    //SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,17 +40,14 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
-
-
     }
-
-
 
 
     /**
      * needed for implements OnSharedPreferenceChangeListener
      * as described in http://developer.android.com/guide/topics/ui/settings.html#ReadingPrefs
-     *
+     * This is needed to make a sharedPreferencesListener
+     * <p>
      * will change the preferrence summary if changed
      *
      * @param sharedPreferences
@@ -68,9 +66,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             }
         } else if (!(pref instanceof CheckBoxPreference)) {
             //don't change summary of checkbox preference, but change all others
-            // Set summary to be the user-description for the selected value
 
-            pref.setSummary(sharedPreferences.getString(key, ""));
+            pref.setSummary(sharedPreferences.getString(key, "")); // Set summary to be the user-description for the selected value
         }
     }
 
