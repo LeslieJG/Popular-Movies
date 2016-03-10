@@ -8,7 +8,9 @@
         android:summary="summary"
         android:title="My check box" />
 
-    <!-- "%s" just makes the android:summary the default entry (or the current entry) -->
+    <!-- "%s" just makes the android:summary the default entry (or the current entry)
+     android:summary="%s" - this works well for my phone - listener not needed to change summary
+     -->
     <ListPreference
         android:defaultValue="@string/movie_sort_order_default_value"
         android:entries="@array/sort_order_entries"
