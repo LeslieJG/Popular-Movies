@@ -1,11 +1,14 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +43,7 @@ public class MainActivityFragment extends Fragment {
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
+
     /**
      * constructor
      */
@@ -51,6 +55,8 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         //try actually creating stuff in the fragment before the fragment returns the inflated view
+        final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
+
 
         // Create some dummy data for the Grid View
         // Here's a sample movie list
@@ -96,7 +102,6 @@ public class MainActivityFragment extends Fragment {
 */
 
 
-
         //create/ initialize an adapter that will populate each grid item
        /* mMovieAdapterForGridTextOnly = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
@@ -120,16 +125,40 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
+
+
+                //launch the detail activity with explicit intent
+
+              //  Intent detailActivityStarter = new Intent()
+                startActivity(new Intent(getContext(), DetailActivity.class));
+
+
                 Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are "
                         + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
             }
         });
 
 
-        //try the network code here to see if it works
-        URL movieQueryURL = makeMovieQueryURL();
+        //*******************WORKING HERE ******************
+        //make the movie query url based on Shared preferences
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
+
+        /*Log.v(LOG_TAG, "In Main activity fragment, The movie sort order is " + movieSortOrder);
+
+        if (movieSortOrder == null){
+            Log.v(LOG_TAG, "IMPORTANT, sort order is NULL!!!!!!");
+        }*/
+
+
+        //URL movieQueryURL = makeMovieQueryURL();
+        URL movieQueryURL = makeMovieQueryURL(movieSortOrder);
         Log.v(LOG_TAG, "The movie URL is " + movieQueryURL);
         Toast.makeText(getActivity(), "The movie URL is " + movieQueryURL, Toast.LENGTH_LONG).show();
+
+//**********************END WORKING HERE ********************************
+// it works but doesn't refresh when settings have been changed.
+        //get it to refresh for setting change
 
 
         //check for internet connectivity first
@@ -156,18 +185,28 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * Makes URL to access API to get movie info
+     * <p/>
+     * movie shoud now look like this
+     * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
      * @return URL for themoviedb.org
      */
-    private URL makeMovieQueryURL() {
+    private URL makeMovieQueryURL(String sortOrder) {
         URL url = null; //url to be built
 
+
+       /* Uri builtUri = Uri.parse(getString(R.string.movie_query_url_base)).buildUpon()
+                .appendPath(getString(R.string.movie_query_movie))
+                .appendPath(getString(R.string.movie_query_popular))
+                .appendQueryParameter(getString(R.string.movie_query_key_api_key), getString(R.string.api_key))
+                .build();*/
+
         Uri builtUri = Uri.parse(getString(R.string.movie_query_url_base)).buildUpon()
-                .appendPath(getString(R.string.movie_query_discover))
-                .appendPath(getString(R.string.movei_query_movie))
-                .appendQueryParameter(getString(R.string.movie_query_key_sort_by), getString(R.string.movie_query_value_popularity))
+                .appendPath(getString(R.string.movie_query_movie))
+                .appendPath(sortOrder)
                 .appendQueryParameter(getString(R.string.movie_query_key_api_key), getString(R.string.api_key))
                 .build();
+
 
         try {
             url = new URL(builtUri.toString());

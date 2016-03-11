@@ -9,9 +9,15 @@
 
 
     <!-- the values you want to save when you do some action with the respective entry value.-->
-    <string-array name="sort_order_values">
+   <!-- <string-array name="sort_order_values">
         <item>mostPopular</item>
         <item>highestRated</item>
+    </string-array>
+-->
+
+    <string-array name="sort_order_values">
+        <item>@string/movie_query_popular</item>
+        <item>@string/movie_query_top_rated</item>
     </string-array>
 
 
