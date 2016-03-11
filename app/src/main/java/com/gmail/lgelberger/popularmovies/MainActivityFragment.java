@@ -370,24 +370,36 @@ public class MainActivityFragment extends Fragment {
         private MovieDataProvider[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
             // These are the names of the JSON objects that need to be extracted.
             final String TMBD_RESULTS = getString(R.string.movie_json_key_results);
-            final String TMDB_POSTER_PATH = "poster_path";
+            final String TMDB_POSTER_PATH = getString(R.string.movie_json_key_poster_path);
             final String TMDB_TITLE = getString(R.string.movie_json_key_title);
+            //new ones for detail activity here
+            final String TMDB_ORIGINAL_TITLE = getString(R.string.movie_json_key_original_title);
+            final String TMDB_OVERVIEW = getString(R.string.movie_json_key_overview);
+            final String TMDB_VOTE_AVERAGE = getString(R.string.movie_json_key_vote_average);
+            final String TMDB_RELEASE_DATE = getString(R.string.movie_json_key_release_date);
 
             JSONObject movieJSON = new JSONObject(movieJsonStr); //create JSON object from input string
             JSONArray movieArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of movies
 
-
-            String[] movieTitle = new String[movieArray.length()]; //to store the movie title
-            URL[] moviePosterFullURL = new URL[movieArray.length()];//to store full URL of movie poster
             MovieDataProvider[] movieDataProviderArrayFromJSON = new MovieDataProvider[movieArray.length()]; //array of Movie Data Providers
 
             //load the info needed into movieDataProviderArray
             for (int i = 0; i < movieArray.length(); i++) {
                 JSONObject movieDetails = movieArray.getJSONObject(i);// Get the JSON object representing the movie
-                movieTitle[i] = movieDetails.getString(TMDB_TITLE);//get movie title
-                moviePosterFullURL[i] = makePosterURL(movieDetails.getString(TMDB_POSTER_PATH)); //get movie URL
 
-                movieDataProviderArrayFromJSON[i] = new MovieDataProvider(movieTitle[i], String.valueOf(moviePosterFullURL[i]));
+                URL moviePosterURL = makePosterURL(movieDetails.getString(TMDB_POSTER_PATH)); //get movie URL
+
+                //TRYING not to use arrays
+                movieDataProviderArrayFromJSON[i] = new MovieDataProvider();
+                movieDataProviderArrayFromJSON[i].setMovieTitle(movieDetails.getString(TMDB_TITLE));
+                movieDataProviderArrayFromJSON[i].setMoviePosterUrl(String.valueOf(moviePosterURL));
+
+                //new stuff here
+                movieDataProviderArrayFromJSON[i].setOriginalTitle(movieDetails.getString(TMDB_ORIGINAL_TITLE));
+                movieDataProviderArrayFromJSON[i].setOverview(TMDB_OVERVIEW);
+                movieDataProviderArrayFromJSON[i].setVoteAverage(TMDB_VOTE_AVERAGE);
+                movieDataProviderArrayFromJSON[i].setReleaseDate(TMDB_RELEASE_DATE);
+
             }
 
             return movieDataProviderArrayFromJSON;

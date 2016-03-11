@@ -11,9 +11,41 @@
 
 
     <TextView
+        android:id="@+id/textview_original_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Detail Activity"/>
+        android:text="Original Title"/>
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/imageview_poster_thumbnail"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textview_plot_synopsis"
+        android:text="Plot Sysnopsis"
+        android:layout_alignBottom="@id/imageview_poster_thumbnail"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textview_user_rating"
+        android:text="User Rating"
+        android:layout_below="@+id/textview_plot_synopsis"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textview_release_date"
+        android:text="Release Date"
+        android:layout_below="@+id/imageview_poster_thumbnail"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 
 
