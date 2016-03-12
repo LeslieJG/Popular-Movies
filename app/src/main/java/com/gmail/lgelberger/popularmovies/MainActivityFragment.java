@@ -41,6 +41,12 @@ public class MainActivityFragment extends Fragment {
     ArrayAdapter<String> mMovieAdapterForGridTextOnly; //need this as global variable within class so all subclasses can access it
     MovieAdapter movieAdapter;//declare custom MovieAdapter
 
+    //perhaps make this an arraylist or just list
+   // MovieDataProvider[] movieData; //will contain array of all the movie data needed - writen in AsyncTask onPostExecute() - for now;
+
+    List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>();
+
+
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
 
@@ -73,7 +79,7 @@ public class MainActivityFragment extends Fragment {
                 "Movie 10",
                 "Movie 11"
         };
-        List<String> movieData = new ArrayList<String>(Arrays.asList(data));
+        final List<String> movieData = new ArrayList<String>(Arrays.asList(data));
         // Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
 
         //let me do the same with pics
@@ -129,11 +135,22 @@ public class MainActivityFragment extends Fragment {
 
                 //launch the detail activity with explicit intent
 
-              //  Intent detailActivityStarter = new Intent()
-                startActivity(new Intent(getContext(), DetailActivity.class));
+    /////////////////IMPORTANT/////////////
+                /////////////// ADD movieDataProvider (correct position in array) to intent to detail fragment can interpret it
+                //  Intent detailActivityStarter = new Intent()
+
+                Intent intentDetailActivity = new Intent(new Intent(getContext(), DetailActivity.class));
 
 
-                Toast.makeText(getActivity(), "Item clicked is number " + grItemClicked + " and the contents of the item are "
+
+              //intentDetailActivity.putExtra("movie_details_key", movieData.get(gridItemClicked));
+
+                startActivity(intentDetailActivity);
+
+
+
+
+                Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked +" and the contents of the item are "
                         + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
             }
         });
@@ -185,7 +202,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * Makes URL to access API to get movie info
-     * <p/>
+     * <p>
      * movie shoud now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
@@ -247,16 +264,16 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * *made the networking stuff an AsyncTask for now to get it off main thread
-     * <p/>
+     * <p>
      * Should check for network connectivity before making network calls - Have not
      * implememnted this yet!!!!
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
      * Result, the type of the result of the background computation.
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * Param String will be the URL to call the moviedb
      */
     public class FetchMovieTask extends AsyncTask<URL, Void, String> {
@@ -347,12 +364,21 @@ public class MainActivityFragment extends Fragment {
 
             //load the movie titles into the movieAdapter
             try {
-                MovieDataProvider[] movieData = getMovieDataFromJson(result);
-
+                //MovieDataProvider[] movieData = getMovieDataFromJson(result);
+                movieData = getMovieDataFromJson(result); //originally declared at beginning of MainActivityFragment. Now being initialized
                 movieAdapter.clear(); //clear all the old movie data out
-                for (int i = 0; i < movieData.length; i++) { //add the movieData to the Adapter
+
+               //as array
+                /*for (int i = 0; i < movieData.length; i++) { //add the movieData to the Adapter
                     movieAdapter.add(movieData[i]); //load the movieData into adapter
+                }*/
+
+                // movie data as list
+                for (int i = 0; i < movieData.size(); i++) { //add the movieData to the Adapter
+                    movieAdapter.add(movieData.get(i)); //load the movieData into adapter
                 }
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -367,7 +393,7 @@ public class MainActivityFragment extends Fragment {
          * @return array of MovieDataProvider obects to hold the info for each movie
          * @throws JSONException
          */
-        private MovieDataProvider[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
+        private List<MovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {
             // These are the names of the JSON objects that need to be extracted.
             final String TMBD_RESULTS = getString(R.string.movie_json_key_results);
             final String TMDB_POSTER_PATH = getString(R.string.movie_json_key_poster_path);
@@ -402,7 +428,7 @@ public class MainActivityFragment extends Fragment {
 
             }
 
-            return movieDataProviderArrayFromJSON;
+            return Arrays.asList(movieDataProviderArrayFromJSON); //convert the movie data provider array into a list
         }
     }
 }
