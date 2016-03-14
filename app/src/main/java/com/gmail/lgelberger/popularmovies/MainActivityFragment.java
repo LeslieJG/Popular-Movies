@@ -64,56 +64,8 @@ public class MainActivityFragment extends Fragment {
         final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
 
 
-        // Create some dummy data for the Grid View
-        // Here's a sample movie list
-       /* String[] data = {
-                "MOvie 1",
-                "Movie 2",
-                "Movie 3",
-                "Movie 4",
-                "Movie 5",
-                "Movie 6",
-                "Movie 7",
-                "Movie 8",
-                "Movie 9",
-                "Movie 10",
-                "Movie 11"
-        };*/
-       // final List<String> movieData = new ArrayList<String>(Arrays.asList(data));
-        // Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
-
-        //let me do the same with pics
-       /* int[] dummyPics = {R.drawable.test_movie_poster_1,
-                R.drawable.test_movie_poster_2,
-                R.drawable.test_movie_poster_3,
-                R.drawable.test_movie_poster_4,
-                R.drawable.test_movie_poster_1,
-                R.drawable.test_movie_poster_2,
-                R.drawable.test_movie_poster_3,
-                R.drawable.test_movie_poster_4,
-                R.drawable.test_movie_poster_1,
-                R.drawable.test_movie_poster_2,
-                R.drawable.test_movie_poster_3};
-
-        List dummyPicList = new ArrayList(Arrays.asList(dummyPics));*/
-
-
         //infalte the fragment view
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-
-        /*ImageView myTestImageView = (ImageView) rootView.findViewById(R.id.test_imageview);
-        myTestImageView.setImageResource(R.drawable.test_movie_poster);
-        Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w185//gokfO8RVKhfn8jNMyUBaaMgLjP8.jpg").into(myTestImageView);
-*/
-
-
-        //create/ initialize an adapter that will populate each grid item
-       /* mMovieAdapterForGridTextOnly = new ArrayAdapter<String>(
-                getActivity(), // The current context (this activity)
-                R.layout.grid_item_movies_layout, // The name of the layout ID File.
-                R.id.grid_item_movies_textview, // The ID of the textview to populate.
-                movieData); //the ArrayList of data*/
 
 
         //try my custom adapter here
@@ -135,56 +87,19 @@ public class MainActivityFragment extends Fragment {
 
 
 
-                Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked + " and the contents of the item are "
+              /*  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked + " and the contents of the item are "
                         + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
+*/
 
-                //launch the detail activity with explicit intent
-
-                /////////////////IMPORTANT/////////////
-                /////////////// ADD movieDataProvider (correct position in array) to intent to detail fragment can interpret it
-                //  Intent detailActivityStarter = new Intent()
-
-
-
-
-
-
-
-                //  Intent intentDetailActivity = new Intent(getContext(), DetailActivity.class);
                 Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
-               // intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), movieData.get(gridItemClicked));
-
-
-
-
-
-
-
-               //let me just make a dummy MovieProvider object to pass to see if I can get it - THIS WORKS!!!!!!!
-              // MovieDataProvider myHokumTestIntentMovieData = new MovieDataProvider();
-              //  myHokumTestIntentMovieData.setMovieTitle("Fucking Intent Movie Title");
-
-
 
                 //now see why my gridListener is just passing the dummy data?????
                MovieDataProvider movieFromGridTester = new MovieDataProvider();
                 movieFromGridTester = movieData.get(gridItemClicked);
               //  Toast.makeText(getActivity(), "The Movie Selected Title is: " + movieFromGridTester.getMovieTitle(), Toast.LENGTH_LONG).show(); //for debugging
 
-
-
-
-                //intentDetailActivity.putExtra("movie", movieData.get(gridItemClicked));
-               //intentDetailActivity.putExtra("movie", movieFromGridTester);
                 intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), movieFromGridTester);
                 startActivity(intentDetailActivity);
-
-
-
-
-
-
-
 
 
             }
@@ -205,8 +120,8 @@ public class MainActivityFragment extends Fragment {
 
         //URL movieQueryURL = makeMovieQueryURL();
         URL movieQueryURL = makeMovieQueryURL(movieSortOrder);
-        Log.v(LOG_TAG, "The movie URL is " + movieQueryURL);
-        Toast.makeText(getActivity(), "The movie URL is " + movieQueryURL, Toast.LENGTH_LONG).show();
+       /* Log.v(LOG_TAG, "The movie URL is " + movieQueryURL);
+        Toast.makeText(getActivity(), "The movie URL is " + movieQueryURL, Toast.LENGTH_LONG).show();*/
 
 //**********************END WORKING HERE ********************************
 // it works but doesn't refresh when settings have been changed.
@@ -457,9 +372,9 @@ public class MainActivityFragment extends Fragment {
 
                 //new stuff here
                 movieDataProviderArrayFromJSON[i].setOriginalTitle(movieDetails.getString(TMDB_ORIGINAL_TITLE));
-                movieDataProviderArrayFromJSON[i].setOverview(TMDB_OVERVIEW);
-                movieDataProviderArrayFromJSON[i].setVoteAverage(TMDB_VOTE_AVERAGE);
-                movieDataProviderArrayFromJSON[i].setReleaseDate(TMDB_RELEASE_DATE);
+                movieDataProviderArrayFromJSON[i].setOverview(movieDetails.getString(TMDB_OVERVIEW));
+                movieDataProviderArrayFromJSON[i].setVoteAverage(movieDetails.getString(TMDB_VOTE_AVERAGE));
+                movieDataProviderArrayFromJSON[i].setReleaseDate(movieDetails.getString(TMDB_RELEASE_DATE));
 
             }
 

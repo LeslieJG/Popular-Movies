@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-
+<!--
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="pref_sync"
         android:summary="summary"
         android:title="My check box" />
+
+        -->
 
     <!-- "%s" just makes the android:summary the default entry (or the current entry)
      android:summary="%s" - this works well for my phone - listener not needed to change summary
@@ -19,11 +21,13 @@
         android:summary="%s"
         android:title="@string/movie_sort_order_title" />
 
+
+    <!--
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="test_key"
         android:summary="what really happened"
         android:title="test" />
-
+-->
 
 </PreferenceScreen>
