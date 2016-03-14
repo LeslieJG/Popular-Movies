@@ -42,9 +42,9 @@ public class MainActivityFragment extends Fragment {
     MovieAdapter movieAdapter;//declare custom MovieAdapter
 
     //perhaps make this an arraylist or just list
-   // MovieDataProvider[] movieData; //will contain array of all the movie data needed - writen in AsyncTask onPostExecute() - for now;
+    // MovieDataProvider[] movieData; //will contain array of all the movie data needed - writen in AsyncTask onPostExecute() - for now;
 
-    List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>();
+    List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //IMPOPRTANT - Is this thread safe???
 
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
@@ -66,7 +66,7 @@ public class MainActivityFragment extends Fragment {
 
         // Create some dummy data for the Grid View
         // Here's a sample movie list
-        String[] data = {
+       /* String[] data = {
                 "MOvie 1",
                 "Movie 2",
                 "Movie 3",
@@ -78,12 +78,12 @@ public class MainActivityFragment extends Fragment {
                 "Movie 9",
                 "Movie 10",
                 "Movie 11"
-        };
-        final List<String> movieData = new ArrayList<String>(Arrays.asList(data));
+        };*/
+       // final List<String> movieData = new ArrayList<String>(Arrays.asList(data));
         // Toast.makeText(getActivity(), "MainActivity Fragment has dummy data", Toast.LENGTH_LONG).show();  //for debugging
 
         //let me do the same with pics
-        int[] dummyPics = {R.drawable.test_movie_poster_1,
+       /* int[] dummyPics = {R.drawable.test_movie_poster_1,
                 R.drawable.test_movie_poster_2,
                 R.drawable.test_movie_poster_3,
                 R.drawable.test_movie_poster_4,
@@ -95,7 +95,7 @@ public class MainActivityFragment extends Fragment {
                 R.drawable.test_movie_poster_2,
                 R.drawable.test_movie_poster_3};
 
-        List dummyPicList = new ArrayList(Arrays.asList(dummyPics));
+        List dummyPicList = new ArrayList(Arrays.asList(dummyPics));*/
 
 
         //infalte the fragment view
@@ -133,25 +133,60 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
 
 
+
+
+                Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked + " and the contents of the item are "
+                        + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
+
                 //launch the detail activity with explicit intent
 
-    /////////////////IMPORTANT/////////////
+                /////////////////IMPORTANT/////////////
                 /////////////// ADD movieDataProvider (correct position in array) to intent to detail fragment can interpret it
                 //  Intent detailActivityStarter = new Intent()
 
-                Intent intentDetailActivity = new Intent(new Intent(getContext(), DetailActivity.class));
 
 
 
-              //intentDetailActivity.putExtra("movie_details_key", movieData.get(gridItemClicked));
 
+
+
+                //  Intent intentDetailActivity = new Intent(getContext(), DetailActivity.class);
+                Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
+               // intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), movieData.get(gridItemClicked));
+
+
+
+
+
+
+
+               //let me just make a dummy MovieProvider object to pass to see if I can get it - THIS WORKS!!!!!!!
+              // MovieDataProvider myHokumTestIntentMovieData = new MovieDataProvider();
+              //  myHokumTestIntentMovieData.setMovieTitle("Fucking Intent Movie Title");
+
+
+
+                //now see why my gridListener is just passing the dummy data?????
+               MovieDataProvider movieFromGridTester = new MovieDataProvider();
+                movieFromGridTester = movieData.get(gridItemClicked);
+              //  Toast.makeText(getActivity(), "The Movie Selected Title is: " + movieFromGridTester.getMovieTitle(), Toast.LENGTH_LONG).show(); //for debugging
+
+
+
+
+                //intentDetailActivity.putExtra("movie", movieData.get(gridItemClicked));
+               //intentDetailActivity.putExtra("movie", movieFromGridTester);
+                intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), movieFromGridTester);
                 startActivity(intentDetailActivity);
 
 
 
 
-                Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked +" and the contents of the item are "
-                        + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
+
+
+
+
+
             }
         });
 
@@ -202,7 +237,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * Makes URL to access API to get movie info
-     * <p>
+     * <p/>
      * movie shoud now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
@@ -264,16 +299,16 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * *made the networking stuff an AsyncTask for now to get it off main thread
-     * <p>
+     * <p/>
      * Should check for network connectivity before making network calls - Have not
      * implememnted this yet!!!!
-     * <p>
-     * <p>
+     * <p/>
+     * <p/>
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
      * Result, the type of the result of the background computation.
-     * <p>
-     * <p>
+     * <p/>
+     * <p/>
      * Param String will be the URL to call the moviedb
      */
     public class FetchMovieTask extends AsyncTask<URL, Void, String> {
@@ -368,7 +403,7 @@ public class MainActivityFragment extends Fragment {
                 movieData = getMovieDataFromJson(result); //originally declared at beginning of MainActivityFragment. Now being initialized
                 movieAdapter.clear(); //clear all the old movie data out
 
-               //as array
+                //as array
                 /*for (int i = 0; i < movieData.length; i++) { //add the movieData to the Adapter
                     movieAdapter.add(movieData[i]); //load the movieData into adapter
                 }*/

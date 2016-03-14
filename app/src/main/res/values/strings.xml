@@ -38,8 +38,8 @@
     <string name="movie_sort_order_title" translatable="false">Movie Sort Order</string>
     <string name="movie_sort_order_default_value" translatable="false">@string/movie_query_popular</string>
 
-
-
+    <!-- Movie intent ket to pass information to detail Activity-->
+    <string name="movie_details_intent_key" translatable="false">movie_details_intent_key</string>
 
 
 </resources>
