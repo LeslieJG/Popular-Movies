@@ -74,25 +74,6 @@
                 android:layout_toRightOf="@id/release_date_label"
                 android:text="Release Date content" />
 
-<!--
-            <TextView
-                android:id="@+id/original_title_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/release_date_label"
-                android:layout_below="@+id/release_date_label"
-                android:text="ORIGINAL TITLE:   " />
-
-
-            <TextView
-                android:id="@+id/textview_original_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/original_title_label"
-                android:layout_toRightOf="@id/original_title_label"
-                android:text="Original Title - kjshdfkjshdfiushdfgkjsdhfkjshdgkjshdgksjhdgkjshdgsjhdgkjsdhgkjshdgkjshdg" />
-
--->
         </RelativeLayout>
     </LinearLayout>
 

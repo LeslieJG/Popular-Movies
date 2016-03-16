@@ -64,6 +64,13 @@ public class MovieAdapter extends ArrayAdapter {
         movieList.addAll(collection);// added this line to deal with an addAll command
     }
 
+//to solve some extra adding problems
+    @Override
+    public void clear() {
+        super.clear();
+        movieList.clear(); //just ensuring that I'm really clearing the data
+    }
+
     //override getCount to return the number of elements in my custom list
     @Override
     public int getCount() {

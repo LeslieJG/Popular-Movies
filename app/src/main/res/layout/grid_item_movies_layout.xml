@@ -6,13 +6,7 @@ using this to show how to layout each view in gridiview-->
     android:layout_height="match_parent">
 
 
-    <ImageView
-        android:id="@+id/grid_item_poster"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:src="@drawable/test_movie_poster" />
-
+    <!-- This textview is overriden by the picture, if the picture loads-->
     <TextView
         android:id="@+id/grid_item_movies_textview"
         android:layout_width="match_parent"
@@ -20,6 +14,16 @@ using this to show how to layout each view in gridiview-->
         android:gravity="center"
         android:orientation="vertical"
         android:padding="24dp"
-        android:text="Movie name" />
+        android:text="Movie name"
+        />
+
+    <ImageView
+        android:id="@+id/grid_item_poster"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/test_movie_poster" />
+
+
 
 </RelativeLayout>

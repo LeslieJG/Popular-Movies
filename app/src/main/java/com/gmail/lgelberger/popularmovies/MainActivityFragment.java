@@ -46,8 +46,12 @@ public class MainActivityFragment extends Fragment {
 
     List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //IMPOPRTANT - Is this thread safe???
 
-
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
+
+    //make a new preferences listener
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
+
+
 
 
     /**
@@ -61,12 +65,9 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         //try actually creating stuff in the fragment before the fragment returns the inflated view
-        final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
-
 
         //infalte the fragment view
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
 
         //try my custom adapter here
         movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //this one works well without picaso
@@ -86,44 +87,76 @@ public class MainActivityFragment extends Fragment {
 
 
 
-
               /*  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked + " and the contents of the item are "
                         + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
 */
+                Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked , Toast.LENGTH_SHORT).show(); //for debugging
 
                 Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
 
                 //now see why my gridListener is just passing the dummy data?????
-               MovieDataProvider movieFromGridTester = new MovieDataProvider();
+                MovieDataProvider movieFromGridTester = new MovieDataProvider();
                 movieFromGridTester = movieData.get(gridItemClicked);
-              //  Toast.makeText(getActivity(), "The Movie Selected Title is: " + movieFromGridTester.getMovieTitle(), Toast.LENGTH_LONG).show(); //for debugging
+                //  Toast.makeText(getActivity(), "The Movie Selected Title is: " + movieFromGridTester.getMovieTitle(), Toast.LENGTH_LONG).show(); //for debugging
 
                 intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), movieFromGridTester);
                 startActivity(intentDetailActivity);
-
-
             }
         });
 
 
-        //*******************WORKING HERE ******************
+        //make a listener for sort order changed
+
+
+
+
+
+
+        //updateMovieGridImages(); //update the entire Grid from internet
+
+        // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
+        return rootView;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Toast.makeText(getActivity(), "On Start", Toast.LENGTH_SHORT).show();
+
+
+        //check to see if preferences changed
+        //then update adapter
+        //then tell all views that adapter udated
+
+        updateMovieGridImages(); //update the entire Grid from internet
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+      //  Toast.makeText(getActivity(), "On Resume", Toast.LENGTH_SHORT).show();
+    }
+
+    /*
+                Used to connect to network and load images into the gridView
+                 */
+    private void updateMovieGridImages() {
+        final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
         //make the movie query url based on Shared preferences
+
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
-        /*Log.v(LOG_TAG, "In Main activity fragment, The movie sort order is " + movieSortOrder);
-
-        if (movieSortOrder == null){
-            Log.v(LOG_TAG, "IMPORTANT, sort order is NULL!!!!!!");
-        }*/
-
+        Toast.makeText(getActivity(), "Movie Sort Order is " + movieSortOrder, Toast.LENGTH_SHORT).show();
 
         //URL movieQueryURL = makeMovieQueryURL();
         URL movieQueryURL = makeMovieQueryURL(movieSortOrder);
        /* Log.v(LOG_TAG, "The movie URL is " + movieQueryURL);
         Toast.makeText(getActivity(), "The movie URL is " + movieQueryURL, Toast.LENGTH_LONG).show();*/
 
-//**********************END WORKING HERE ********************************
+
 // it works but doesn't refresh when settings have been changed.
         //get it to refresh for setting change
 
@@ -145,9 +178,6 @@ public class MainActivityFragment extends Fragment {
             FetchMovieTask movieTask = new FetchMovieTask();
             movieTask.execute(movieQueryURL);
         }
-
-        // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
-        return rootView;
     }
 
     /**
@@ -314,14 +344,8 @@ public class MainActivityFragment extends Fragment {
 
             //load the movie titles into the movieAdapter
             try {
-                //MovieDataProvider[] movieData = getMovieDataFromJson(result);
                 movieData = getMovieDataFromJson(result); //originally declared at beginning of MainActivityFragment. Now being initialized
                 movieAdapter.clear(); //clear all the old movie data out
-
-                //as array
-                /*for (int i = 0; i < movieData.length; i++) { //add the movieData to the Adapter
-                    movieAdapter.add(movieData[i]); //load the movieData into adapter
-                }*/
 
                 // movie data as list
                 for (int i = 0; i < movieData.size(); i++) { //add the movieData to the Adapter
@@ -329,9 +353,16 @@ public class MainActivityFragment extends Fragment {
                 }
 
 
+                /////////////////TRYING THIS HERE TO UPDATE VIEW IF PREFERENCES CHANGED//////////////////
+                //update the views if needed
+               // movieAdapter.notifyDataSetChanged(); //hopefully this helps update the views whenever the adapter view is started
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            Toast.makeText(getActivity(), "Have loaded up the movie adapter in asynctask", Toast.LENGTH_SHORT).show();
         }
 
 
