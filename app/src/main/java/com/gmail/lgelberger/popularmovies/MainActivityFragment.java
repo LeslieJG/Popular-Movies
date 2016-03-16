@@ -48,6 +48,9 @@ public class MainActivityFragment extends Fragment {
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
+
+    SharedPreferences sharedPref; //declaring shared pref here
+
     //make a new preferences listener
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
@@ -63,6 +66,33 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        //initializing sharedPref here
+        sharedPref   = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+
+
+        //making a OnSharedPreferencesChanged LIstener
+        prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                // Implementation
+
+               // Toast.makeText(getActivity(), "IN Shared Preferences Onshared Preference Change Listener and key is " + key
+               //         + " But the key I'm trying to listen for is " + getString(R.string.movie_sort_order_key), Toast.LENGTH_SHORT).show(); //for debugging
+
+
+
+                if (key== getString(R.string.movie_sort_order_key)){
+                    Toast.makeText(getActivity(), "The sort order preference was changed" , Toast.LENGTH_SHORT).show(); //for debugging
+                    //but really want to call update grid movies method here
+
+                    updateMovieGridImages(); //update the entire Grid from internet
+                }
+
+            }
+        };
+
+        sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
+
 
         //try actually creating stuff in the fragment before the fragment returns the inflated view
 
@@ -90,7 +120,7 @@ public class MainActivityFragment extends Fragment {
               /*  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked + " and the contents of the item are "
                         + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
 */
-                Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked , Toast.LENGTH_SHORT).show(); //for debugging
+              //  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked , Toast.LENGTH_SHORT).show(); //for debugging
 
                 Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
 
@@ -112,7 +142,7 @@ public class MainActivityFragment extends Fragment {
 
 
 
-        //updateMovieGridImages(); //update the entire Grid from internet
+        updateMovieGridImages(); //update the entire Grid from internet
 
         // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
         return rootView;
@@ -123,14 +153,14 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        Toast.makeText(getActivity(), "On Start", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getActivity(), "On Start", Toast.LENGTH_SHORT).show();
 
 
         //check to see if preferences changed
         //then update adapter
         //then tell all views that adapter udated
 
-        updateMovieGridImages(); //update the entire Grid from internet
+       // updateMovieGridImages(); //update the entire Grid from internet
     }
 
     @Override
@@ -146,10 +176,12 @@ public class MainActivityFragment extends Fragment {
         final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
         //make the movie query url based on Shared preferences
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+
+        //the line below is put as field variable for class
+        //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
-        Toast.makeText(getActivity(), "Movie Sort Order is " + movieSortOrder, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Movie Sort Order is " + movieSortOrder, Toast.LENGTH_SHORT).show();
 
         //URL movieQueryURL = makeMovieQueryURL();
         URL movieQueryURL = makeMovieQueryURL(movieSortOrder);
@@ -362,7 +394,7 @@ public class MainActivityFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            Toast.makeText(getActivity(), "Have loaded up the movie adapter in asynctask", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(getActivity(), "Have loaded up the movie adapter in asynctask", Toast.LENGTH_SHORT).show();
         }
 
 
