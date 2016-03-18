@@ -36,7 +36,11 @@
     <!-- Movie Sort Order Preferences [CHAR LIMIT=NONE]-->
     <string name="movie_sort_order_key" translatable="false">movie_sort_order_key</string>
     <string name="movie_sort_order_title" translatable="false">Movie Sort Order</string>
-    <string name="movie_sort_order_default_value" translatable="false">@string/movie_query_popular</string>
+
+
+    <!-- the below string is not making it into a newly installed App url for movie query-->
+    <string name="movie_sort_order_default_value" translatable="false">popular</string>
+    <!--  Took out this value       @string/movie_query_popular      Put this back when done debugging-->
 
     <!-- Movie intent ket to pass information to detail Activity-->
     <string name="movie_details_intent_key" translatable="false">movie_details_intent_key</string>

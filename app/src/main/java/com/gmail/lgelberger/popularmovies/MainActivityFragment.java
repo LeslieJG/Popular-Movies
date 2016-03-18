@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,21 +41,14 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
     ArrayAdapter<String> mMovieAdapterForGridTextOnly; //need this as global variable within class so all subclasses can access it
     MovieAdapter movieAdapter;//declare custom MovieAdapter
-
-    //perhaps make this an arraylist or just list
-    // MovieDataProvider[] movieData; //will contain array of all the movie data needed - writen in AsyncTask onPostExecute() - for now;
-
-    List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //IMPOPRTANT - Is this thread safe???
+    //List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //to store all the movie data
+    List<MovieDataProvider> movieData = Collections.synchronizedList(new ArrayList<MovieDataProvider>());  //to store all the movie data
+    //to make it threadsafe
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
-
     SharedPreferences sharedPref; //declaring shared pref here
-
-    //make a new preferences listener
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
-
-
 
 
     /**
@@ -66,42 +60,10 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //infalte the fragment view
 
-        //initializing sharedPref here
-        sharedPref   = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-
-
-        //making a OnSharedPreferencesChanged LIstener
-        prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                // Implementation
-
-               // Toast.makeText(getActivity(), "IN Shared Preferences Onshared Preference Change Listener and key is " + key
-               //         + " But the key I'm trying to listen for is " + getString(R.string.movie_sort_order_key), Toast.LENGTH_SHORT).show(); //for debugging
-
-
-
-                if (key== getString(R.string.movie_sort_order_key)){
-                    Toast.makeText(getActivity(), "The sort order preference was changed" , Toast.LENGTH_SHORT).show(); //for debugging
-                    //but really want to call update grid movies method here
-
-                    updateMovieGridImages(); //update the entire Grid from internet
-                }
-
-            }
-        };
-
-        sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
-
-
-        //try actually creating stuff in the fragment before the fragment returns the inflated view
-
-        //infalte the fragment view
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        //try my custom adapter here
-        movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //this one works well without picaso
-
+        movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter
         // now bind the adapter to the actual gridView so it knows which view it is populating
         // Get a reference to the gridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
@@ -114,97 +76,52 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
+                //  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked , Toast.LENGTH_SHORT).show(); //for debugging
 
-
-
-              /*  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked + " and the contents of the item are "
-                        + movieAdapter.getItem((int) gridItemClicked), Toast.LENGTH_LONG).show();  //this works and gets the item number
-*/
-              //  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked , Toast.LENGTH_SHORT).show(); //for debugging
+                MovieDataProvider selectedMovieFromGrid = new MovieDataProvider();
+                selectedMovieFromGrid = movieData.get(gridItemClicked);
+                //  Toast.makeText(getActivity(), "The Movie Selected Title is: " + selectedMovieFromGrid.getMovieTitle(), Toast.LENGTH_LONG).show(); //for debugging
 
                 Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
-
-                //now see why my gridListener is just passing the dummy data?????
-                MovieDataProvider movieFromGridTester = new MovieDataProvider();
-                movieFromGridTester = movieData.get(gridItemClicked);
-                //  Toast.makeText(getActivity(), "The Movie Selected Title is: " + movieFromGridTester.getMovieTitle(), Toast.LENGTH_LONG).show(); //for debugging
-
-                intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), movieFromGridTester);
+                intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
                 startActivity(intentDetailActivity);
             }
         });
 
 
-        //make a listener for sort order changed
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
+        prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged LIstener
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                if (key == getString(R.string.movie_sort_order_key)) {
+                    updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
+                }
+            }
+        };
+        sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
 
+        updateMovieGridImages(); //update the entire Grid from internet - when Fragment created
 
-
-
-
-
-        updateMovieGridImages(); //update the entire Grid from internet
-
-        // return inflater.inflate(R.layout.fragment_main, container, false); - old original default code --> delete
         return rootView;
     }
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-       // Toast.makeText(getActivity(), "On Start", Toast.LENGTH_SHORT).show();
-
-
-        //check to see if preferences changed
-        //then update adapter
-        //then tell all views that adapter udated
-
-       // updateMovieGridImages(); //update the entire Grid from internet
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-      //  Toast.makeText(getActivity(), "On Resume", Toast.LENGTH_SHORT).show();
-    }
-
-    /*
-                Used to connect to network and load images into the gridView
-                 */
+    /**
+     * sed to connect to network and load images into the gridView
+     */
     private void updateMovieGridImages() {
         final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
-        //make the movie query url based on Shared preferences
-
-
-        //the line below is put as field variable for class
-        //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
-        //Toast.makeText(getActivity(), "Movie Sort Order is " + movieSortOrder, Toast.LENGTH_SHORT).show();
-
-        //URL movieQueryURL = makeMovieQueryURL();
         URL movieQueryURL = makeMovieQueryURL(movieSortOrder);
-       /* Log.v(LOG_TAG, "The movie URL is " + movieQueryURL);
-        Toast.makeText(getActivity(), "The movie URL is " + movieQueryURL, Toast.LENGTH_LONG).show();*/
-
-
-// it works but doesn't refresh when settings have been changed.
-        //get it to refresh for setting change
-
 
         //check for internet connectivity first
-        //check to see if device is connected to network
         //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
-        ConnectivityManager cm =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         if (!isConnected) {
-            Toast.makeText(getActivity(), "No Internet Connection. Connect to internet and try again", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
             //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
         } else { // if there is internet, get the movie date
             FetchMovieTask movieTask = new FetchMovieTask();
@@ -214,7 +131,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * Makes URL to access API to get movie info
-     * <p/>
+     * <p>
      * movie shoud now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
@@ -223,19 +140,11 @@ public class MainActivityFragment extends Fragment {
     private URL makeMovieQueryURL(String sortOrder) {
         URL url = null; //url to be built
 
-
-       /* Uri builtUri = Uri.parse(getString(R.string.movie_query_url_base)).buildUpon()
-                .appendPath(getString(R.string.movie_query_movie))
-                .appendPath(getString(R.string.movie_query_popular))
-                .appendQueryParameter(getString(R.string.movie_query_key_api_key), getString(R.string.api_key))
-                .build();*/
-
         Uri builtUri = Uri.parse(getString(R.string.movie_query_url_base)).buildUpon()
                 .appendPath(getString(R.string.movie_query_movie))
                 .appendPath(sortOrder)
                 .appendQueryParameter(getString(R.string.movie_query_key_api_key), getString(R.string.api_key))
                 .build();
-
 
         try {
             url = new URL(builtUri.toString());
@@ -247,7 +156,7 @@ public class MainActivityFragment extends Fragment {
 
 
     /**
-     * Makes URL to access API to get movie info
+     * Makes URL to access API to get movie poster
      *
      * @return URL for themoviedb.org
      */
@@ -276,17 +185,19 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * *made the networking stuff an AsyncTask for now to get it off main thread
-     * <p/>
+     * <p>
      * Should check for network connectivity before making network calls - Have not
      * implememnted this yet!!!!
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
      * Result, the type of the result of the background computation.
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * Param String will be the URL to call the moviedb
+     * <p>
+     * This class modelled after the "Sunshine" AsyncTask
      */
     public class FetchMovieTask extends AsyncTask<URL, Void, String> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
@@ -365,6 +276,7 @@ public class MainActivityFragment extends Fragment {
             return null;
         }
 
+
         /**
          * This is where the JSON result from the movie query is processed and put into the movieAdapter for display
          *
@@ -376,25 +288,18 @@ public class MainActivityFragment extends Fragment {
 
             //load the movie titles into the movieAdapter
             try {
-                movieData = getMovieDataFromJson(result); //originally declared at beginning of MainActivityFragment. Now being initialized
+                movieData.clear();
+                movieData.addAll(getMovieDataFromJson(result));
+
                 movieAdapter.clear(); //clear all the old movie data out
 
-                // movie data as list
-                for (int i = 0; i < movieData.size(); i++) { //add the movieData to the Adapter
-                    movieAdapter.add(movieData.get(i)); //load the movieData into adapter
+                for (MovieDataProvider individualMovie : movieData) { //add the movieData to the Adapter
+                    movieAdapter.add(individualMovie); //load the movieData into adapter
                 }
-
-
-                /////////////////TRYING THIS HERE TO UPDATE VIEW IF PREFERENCES CHANGED//////////////////
-                //update the views if needed
-               // movieAdapter.notifyDataSetChanged(); //hopefully this helps update the views whenever the adapter view is started
-
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-           // Toast.makeText(getActivity(), "Have loaded up the movie adapter in asynctask", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -422,23 +327,21 @@ public class MainActivityFragment extends Fragment {
 
             MovieDataProvider[] movieDataProviderArrayFromJSON = new MovieDataProvider[movieArray.length()]; //array of Movie Data Providers
 
-            //load the info needed into movieDataProviderArray
-            for (int i = 0; i < movieArray.length(); i++) {
-                JSONObject movieDetails = movieArray.getJSONObject(i);// Get the JSON object representing the movie
+            int movieArrayLength = movieArray.length();
+
+
+            for (int i = 0; i < movieArrayLength; i++) { //load the info needed into movieDataProviderArray
+                JSONObject movieDetails = movieArray.getJSONObject(i);// Get the JSON object representing *one* movie
 
                 URL moviePosterURL = makePosterURL(movieDetails.getString(TMDB_POSTER_PATH)); //get movie URL
 
-                //TRYING not to use arrays
                 movieDataProviderArrayFromJSON[i] = new MovieDataProvider();
                 movieDataProviderArrayFromJSON[i].setMovieTitle(movieDetails.getString(TMDB_TITLE));
                 movieDataProviderArrayFromJSON[i].setMoviePosterUrl(String.valueOf(moviePosterURL));
-
-                //new stuff here
                 movieDataProviderArrayFromJSON[i].setOriginalTitle(movieDetails.getString(TMDB_ORIGINAL_TITLE));
                 movieDataProviderArrayFromJSON[i].setOverview(movieDetails.getString(TMDB_OVERVIEW));
                 movieDataProviderArrayFromJSON[i].setVoteAverage(movieDetails.getString(TMDB_VOTE_AVERAGE));
                 movieDataProviderArrayFromJSON[i].setReleaseDate(movieDetails.getString(TMDB_RELEASE_DATE));
-
             }
 
             return Arrays.asList(movieDataProviderArrayFromJSON); //convert the movie data provider array into a list

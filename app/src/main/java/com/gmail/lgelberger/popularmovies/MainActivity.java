@@ -17,7 +17,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        //need to put this here to load the default preferences for app.
+        //3 arguments   (context, xml file for settings, reload defaults more than once)
+        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
 
 
         /* Don't think I need snackbar - delete later if needed LJG
@@ -30,14 +33,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-
-
-        //need to put this here to load the default preferences for app.
-        //3 arguments   (context, xml file for settings, reload defaults more than once)
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-
-    }
+           }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

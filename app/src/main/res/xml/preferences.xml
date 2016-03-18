@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-<!--
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="pref_sync"
-        android:summary="summary"
-        android:title="My check box" />
+    <!--
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_sync"
+            android:summary="summary"
+            android:title="My check box" />
 
-        -->
+            -->
 
     <!-- "%s" just makes the android:summary the default entry (or the current entry)
      android:summary="%s" - this works well for my phone - listener not needed to change summary
      -->
+
+
     <ListPreference
-        android:defaultValue="@string/movie_sort_order_default_value"
-        android:entries="@array/sort_order_entries"
-        android:entryValues="@array/sort_order_values"
-        android:key="@string/movie_sort_order_key"
-        android:summary="%s"
-        android:title="@string/movie_sort_order_title" />
+  android:defaultValue="@string/movie_sort_order_default_value"
+
+
+    android:entries="@array/sort_order_entries"
+    android:entryValues="@array/sort_order_values"
+    android:key="@string/movie_sort_order_key"
+    android:summary="%s"
+    android:title="@string/movie_sort_order_title" />
 
 
     <!--
