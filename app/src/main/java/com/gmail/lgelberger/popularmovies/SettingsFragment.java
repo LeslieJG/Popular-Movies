@@ -9,20 +9,20 @@ import android.preference.PreferenceFragment;
 
 /**
  * Created by Leslie on 2016-03-10.
- * <p>
+ * <p/>
  * Modelled off http://developer.android.com/guide/topics/ui/settings.html#Fragment
- * <p>
+ * <p/>
  * Note: A PreferenceFragment doesn't have a its own Context object.
  * If you need a Context object, you can call getActivity().
  * However, be careful to call getActivity() only when the fragment
  * is attached to an activity.
  * When the fragment is not yet attached, or was detached during the
  * end of its lifecycle, getActivity() will return null.
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * adding  implements OnSharedPreferenceChangeListener to listen for preference changes
  * need to implement the onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) method
- * <p>
+ * <p/>
  * For proper lifecycle management in the activity, we recommend that you register
  * and unregister your SharedPreferences.OnSharedPreferenceChangeListener
  * during the onResume() and onPause() callbacks, respectively:
@@ -47,7 +47,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
      * needed for implements OnSharedPreferenceChangeListener
      * as described in http://developer.android.com/guide/topics/ui/settings.html#ReadingPrefs
      * This is needed to make a sharedPreferencesListener
-     * <p>
+     * <p/>
      * will change the preferrence summary if changed
      *
      * @param sharedPreferences
