@@ -54,6 +54,9 @@
     <string name="detail_view_release_date_content_label">Release Date content</string>
     <string name="detail_view_overview_label">Overview</string>
 
+    <!-- Grid View resources [CHAR LIMIT=30]-->
+    <string name="grid_items_movies_layout_movie_name_under_poster">Movie name</string>
+
 
 </resources>
 

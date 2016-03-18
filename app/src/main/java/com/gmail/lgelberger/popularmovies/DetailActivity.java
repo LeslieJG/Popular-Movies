@@ -27,7 +27,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });*/
 
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -50,7 +49,6 @@ public class DetailActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-
             startActivity(new Intent(this, SettingsActivity.class)); //add this line to launch settings
 
             return true;
@@ -58,7 +56,4 @@ public class DetailActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
 }

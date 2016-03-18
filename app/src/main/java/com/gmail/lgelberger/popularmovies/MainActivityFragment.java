@@ -41,21 +41,13 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
     ArrayAdapter<String> mMovieAdapterForGridTextOnly; //need this as global variable within class so all subclasses can access it
     MovieAdapter movieAdapter;//declare custom MovieAdapter
-    //List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //to store all the movie data
-    List<MovieDataProvider> movieData = Collections.synchronizedList(new ArrayList<MovieDataProvider>());  //to store all the movie data
-    //to make it threadsafe
+    List<MovieDataProvider> movieData = Collections.synchronizedList(new ArrayList<MovieDataProvider>());  //threadsafe - to store all the movie data
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
-
-    /**
-     * constructor
-     */
-    public MainActivityFragment() {
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

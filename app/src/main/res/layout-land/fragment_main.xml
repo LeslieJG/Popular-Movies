@@ -10,10 +10,6 @@
     tools:context="com.gmail.lgelberger.popularmovies.MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
-
-
-
-
     <GridView
         android:id="@+id/gridview_movies"
         android:layout_width="match_parent"
@@ -21,7 +17,6 @@
         android:layout_weight="1"
         android:numColumns="4"
         android:layout_gravity="center"
-
         android:verticalSpacing="8dp"
         android:horizontalSpacing="8dp"
         />

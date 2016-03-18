@@ -20,8 +20,6 @@ public class DetailActivityFragment extends Fragment {
     public DetailActivityFragment() {
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -31,7 +29,6 @@ public class DetailActivityFragment extends Fragment {
 
 
     // From http://stackoverflow.com/questions/15392261/android-pass-dataextras-to-a-fragment
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -46,11 +43,8 @@ public class DetailActivityFragment extends Fragment {
         Picasso.with(detailContext).load(movieURL).into((ImageView) posterThumbnailView);
 
         ((TextView) getActivity().findViewById(R.id.textview_title)).setText(movieDetails.getMovieTitle());
-       // ((TextView) getActivity().findViewById(R.id.textview_original_title)).setText(movieDetails.getOriginalTitle());
         ((TextView) getActivity().findViewById(R.id.textview_plot_synopsis)).setText(movieDetails.getOverview());
         ((TextView) getActivity().findViewById(R.id.textview_user_rating)).setText(movieDetails.getVoteAverage());
         ((TextView) getActivity().findViewById(R.id.textview_release_date)).setText(movieDetails.getReleaseDate());
-
-
     }
 }

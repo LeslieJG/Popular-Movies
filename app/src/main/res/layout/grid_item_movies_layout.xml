@@ -14,7 +14,7 @@ using this to show how to layout each view in gridiview-->
         android:gravity="center"
         android:orientation="vertical"
         android:padding="24dp"
-        android:text="Movie name"
+        android:text="@string/grid_items_movies_layout_movie_name_under_poster"
         />
 
     <ImageView
@@ -23,7 +23,5 @@ using this to show how to layout each view in gridiview-->
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:src="@drawable/test_movie_poster" />
-
-
 
 </RelativeLayout>
