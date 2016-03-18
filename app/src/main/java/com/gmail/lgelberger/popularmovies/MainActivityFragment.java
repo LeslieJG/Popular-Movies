@@ -390,18 +390,23 @@ public class MainActivityFragment extends Fragment {
 
 
             // if (key == getString(R.string.movie_sort_order_key)) { //to avoid calling an activity that fragmnet is not attached to ?
-            if (key.equals("movie_sort_order_key")) {
-                //if (key == context.getResources().getString(R.string.movie_sort_order_key)){
+
+            if (isAdded()) { //isAdded() just makes sure that fragment is attached to an Actvity - this is a miracle!!!!
+                if (key.equals("movie_sort_order_key")) {
+                    //if (key == context.getResources().getString(R.string.movie_sort_order_key)){
 
 
-                //if (key == getActivity().getBaseContext().getString(R.string.movie_sort_order_key)) {
+                    //if (key == getActivity().getBaseContext().getString(R.string.movie_sort_order_key)) {
 
-                //  Toast.makeText(getActivity(), "Just before updating grid", Toast.LENGTH_SHORT).show();
-                Log.v(LOG_TAG, "Just before updating grid in onSharedPreferenceChanged Listener");
-                updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
-                //  Toast.makeText(getActivity(), "Just after updating grid", Toast.LENGTH_SHORT).show();
-                Log.v(LOG_TAG, "Just after updating grid in onSharedPreferenceChanged Listener");
+                    //  Toast.makeText(getActivity(), "Just before updating grid", Toast.LENGTH_SHORT).show();
+                    Log.v(LOG_TAG, "Just before updating grid in onSharedPreferenceChanged Listener");
+                    updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
+                    //  Toast.makeText(getActivity(), "Just after updating grid", Toast.LENGTH_SHORT).show();
+                    Log.v(LOG_TAG, "Just after updating grid in onSharedPreferenceChanged Listener");
+                }
             }
+
+
         }
     }
 
