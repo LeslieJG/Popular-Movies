@@ -92,7 +92,9 @@ public class MainActivityFragment extends Fragment {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
         prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged LIstener
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if (key == getString(R.string.movie_sort_order_key)) {
+
+                //  if (key == getString(R.string.movie_sort_order_key)) {
+                if (key.equals("movie_sort_order_key")) {
                     updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
                 }
             }
@@ -131,7 +133,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * Makes URL to access API to get movie info
-     * <p>
+     * <p/>
      * movie shoud now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
@@ -185,18 +187,18 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * *made the networking stuff an AsyncTask for now to get it off main thread
-     * <p>
+     * <p/>
      * Should check for network connectivity before making network calls - Have not
      * implememnted this yet!!!!
-     * <p>
-     * <p>
+     * <p/>
+     * <p/>
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
      * Result, the type of the result of the background computation.
-     * <p>
-     * <p>
+     * <p/>
+     * <p/>
      * Param String will be the URL to call the moviedb
-     * <p>
+     * <p/>
      * This class modelled after the "Sunshine" AsyncTask
      */
     public class FetchMovieTask extends AsyncTask<URL, Void, String> {
