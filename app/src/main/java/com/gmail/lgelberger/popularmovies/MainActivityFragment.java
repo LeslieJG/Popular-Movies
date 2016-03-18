@@ -61,18 +61,15 @@ public class MainActivityFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
 
         //set adapter to gridview
-        //gridView.setAdapter(mMovieAdapterForGridTextOnly); //just for textview
         gridView.setAdapter(movieAdapter); //my custom adapter
 
         //adding click listener for grid
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
-                //  Toast.makeText(getActivity(), "Item clicked is number " + gridItemClicked , Toast.LENGTH_SHORT).show(); //for debugging
 
                 MovieDataProvider selectedMovieFromGrid = new MovieDataProvider();
                 selectedMovieFromGrid = movieData.get(gridItemClicked);
-                //  Toast.makeText(getActivity(), "The Movie Selected Title is: " + selectedMovieFromGrid.getMovieTitle(), Toast.LENGTH_LONG).show(); //for debugging
 
                 Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
                 intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
@@ -80,10 +77,7 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
-
-
         prefListener = new MyPreferenceChangeListener();
        /* prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged LIstener
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -103,6 +97,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * My Own OnSharedPreferenceChangeListener
+     * Put on it's own for easier debgugging
      */
     private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
@@ -116,9 +111,8 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-
     /**
-     * sed to connect to network and load images into the gridView
+     *  to connect to network and load images into the gridView
      */
     private void updateMovieGridImages() {
         final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
@@ -197,10 +191,7 @@ public class MainActivityFragment extends Fragment {
 
     /**
      * *made the networking stuff an AsyncTask for now to get it off main thread
-     * <p/>
-     * Should check for network connectivity before making network calls - Have not
-     * implememnted this yet!!!!
-     * <p/>
+     *
      * <p/>
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
@@ -369,9 +360,6 @@ public class MainActivityFragment extends Fragment {
             return Arrays.asList(movieDataProviderArrayFromJSON); //convert the movie data provider array into a list
         }
     }
-
-
-
 
 
 }

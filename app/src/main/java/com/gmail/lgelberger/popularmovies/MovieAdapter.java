@@ -21,15 +21,13 @@ import java.util.List;
  * https://plus.google.com/s/ListView%20with%20Custom%20Adapter%20Prabeesh%20R%20K/top
  * <p>
  * <p>
- * The pattern id as folloew
+ * The pattern id as follows
  * if the convertView (which is just a strange parameter name for views that may be recycled)
  * does not exist, create it.
  * Then use the appropriate data (determined by the current position
  * to configure the view, which is then returned.
  * <p>
- * Have to override a bunch of methods
- * add
- * add all
+ *
  */
 public class MovieAdapter extends ArrayAdapter {
     List movieList = new ArrayList(); //the list of all the movieData that we will be putting into gridView
@@ -64,7 +62,7 @@ public class MovieAdapter extends ArrayAdapter {
         movieList.addAll(collection);// added this line to deal with an addAll command
     }
 
-//to solve some extra adding problems
+//to clear my movieList
     @Override
     public void clear() {
         super.clear();
@@ -127,7 +125,7 @@ public class MovieAdapter extends ArrayAdapter {
             handler.moviePoster = (ImageView) gridItem.findViewById(R.id.grid_item_poster);
             handler.movieTitle = (TextView) gridItem.findViewById(R.id.grid_item_movies_textview);
 
-            //now attatch each view component into grid item
+            //now attach each view component into grid item
             gridItem.setTag(handler);
         } else {
             // if gridItem exisits already, no need to make a new one
@@ -152,7 +150,5 @@ public class MovieAdapter extends ArrayAdapter {
         return gridItem; //gridItem is the convertView that is passed in, now that it is
         //set with the correct information -return it
         //return super.getView(position, convertView, parent); //default return method - overriden
-
-
     }
 }

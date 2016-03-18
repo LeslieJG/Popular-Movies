@@ -9,16 +9,12 @@ import android.os.Parcelable;
  * Modelled after https://plus.google.com/s/ListView%20with%20Custom%20Adapter%20Prabeesh%20R%20K/top
  * <p>
  * Will provide each grid item of data as an object
- * Just contains the moviePoster id (as int)
- * and the text for the movie Title
+ * As well as all the detailed movie data for the detail view
  * <p>
  * as you get the information from a JSON file or url call, instantiate this class for each item
  * This can be "added" to the movieAdapter. I.e. these are the objects in the movieApater internal ArrayList
  * <p>
  * <p>
- * 2016-03-07 :JG added movie_poster URL
- * Will have to delete movie_poster resource eventually
- *
  *
  * Implementing Parcelable so I can pass this object in an intent
  */
@@ -89,7 +85,6 @@ release date
     public String getMoviePosterUrl() {
         return moviePosterUrl;
     }
-
     public void setMoviePosterUrl(String moviePosterUrl) {
         this.moviePosterUrl = moviePosterUrl;
     }
@@ -97,7 +92,6 @@ release date
     public int getMoviePosterResource() {
         return moviePosterResource;
     }
-
     public void setMoviePosterResource(int moviePosterResource) {
         this.moviePosterResource = moviePosterResource;
     }
@@ -105,7 +99,6 @@ release date
     public String getMovieTitle() {
         return movieTitle;
     }
-
     public void setMovieTitle(String movieTitle) {
         this.movieTitle = movieTitle;
     }
@@ -113,7 +106,6 @@ release date
     public String getOverview() {
         return overview;
     }
-
     public void setOverview(String overview) {
         this.overview = overview;
     }
@@ -121,7 +113,6 @@ release date
     public String getVoteAverage() {
         return voteAverage;
     }
-
     public void setVoteAverage(String voteAverage) {
         this.voteAverage = voteAverage;
     }
@@ -129,16 +120,13 @@ release date
     public String getOriginalTitle() {
         return originalTitle;
     }
-
     public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
     }
 
-
     public String getReleaseDate() {
         return releaseDate;
     }
-
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
@@ -221,6 +209,4 @@ release date
                     return new MovieDataProvider[size];
                 }
             };
-
-
 }
