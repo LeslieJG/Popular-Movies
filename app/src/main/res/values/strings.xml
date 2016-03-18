@@ -46,6 +46,15 @@
     <string name="movie_details_intent_key" translatable="false">movie_details_intent_key</string>
 
 
+    <!-- Detail View resources [CHAR LIMIT=30]-->
+    <string name="detail_view_movie_title_label">Title</string>
+    <string name="detail_view_user_rating_label">User Rating:</string>
+    <string name="detail_view_user_rating_content_label">User Rating Content</string>
+    <string name="detail_view_release_date_label">Release Date:</string>
+    <string name="detail_view_release_date_content_label">Release Date content</string>
+    <string name="detail_view_overview_label">Overview</string>
+
+
 </resources>
 
 
