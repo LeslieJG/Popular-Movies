@@ -90,7 +90,10 @@ public class MainActivityFragment extends Fragment {
 
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
-        prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged LIstener
+
+
+       prefListener = new MyPreferenceChangeListener();
+       /* prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged LIstener
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 
                 //  if (key == getString(R.string.movie_sort_order_key)) {
@@ -98,7 +101,7 @@ public class MainActivityFragment extends Fragment {
                     updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
                 }
             }
-        };
+        };*/
         sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
 
         updateMovieGridImages(); //update the entire Grid from internet - when Fragment created
@@ -195,6 +198,16 @@ public class MainActivityFragment extends Fragment {
      * Params, the type of the parameters sent to the task upon execution.
      * Progress, the type of the progress units published during the background computation.
      * Result, the type of the result of the background computation.
+     *
+     *
+     * ALSO - make sure that AsyncTask is cancel AsyncTask instance properly in onDestroy
+     * so that if the fragment is rebuilding, you destroy AsyncTask and rebuild it once
+     * Fragment has rebuilt so that resources can be accessed e.g. R.string.id
+     * as per
+     * http://stackoverflow.com/questions/10919240/fragment-myfragment-not-attached-to-activity
+     *
+     *
+     *
      * <p/>
      * <p/>
      * Param String will be the URL to call the moviedb
@@ -349,4 +362,59 @@ public class MainActivityFragment extends Fragment {
             return Arrays.asList(movieDataProviderArrayFromJSON); //convert the movie data provider array into a list
         }
     }
+
+
+
+
+
+    // Handle preferences changes
+    private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+       // Context context;
+
+       // MyPreferenceChangeListener(Context context) {
+       //     context = this.context;
+       // }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            // ApplySettings();
+
+
+            //in a contstructor
+            //then access he string from Context.    In a background thread's constructor, retrieve the global context
+            //  using getApplicationContext().   Then you can use that to look up
+            //   resources, it works, I do it all over.
+
+
+            //Context.getResources().getString(R.string.movie_sort_order_key)
+
+
+            // if (key == getString(R.string.movie_sort_order_key)) { //to avoid calling an activity that fragmnet is not attached to ?
+            if (key.equals("movie_sort_order_key")) {
+                //if (key == context.getResources().getString(R.string.movie_sort_order_key)){
+
+
+                //if (key == getActivity().getBaseContext().getString(R.string.movie_sort_order_key)) {
+
+                //  Toast.makeText(getActivity(), "Just before updating grid", Toast.LENGTH_SHORT).show();
+                Log.v(LOG_TAG, "Just before updating grid in onSharedPreferenceChanged Listener");
+                updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
+                //  Toast.makeText(getActivity(), "Just after updating grid", Toast.LENGTH_SHORT).show();
+                Log.v(LOG_TAG, "Just after updating grid in onSharedPreferenceChanged Listener");
+            }
+        }
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
