@@ -1,10 +1,13 @@
 <resources>
+    <!-- API Key for theMovieDB.ORG    Replace with your own API key for running [CHAR LIMIT=NONE] -->
+    <string name="api_key" translatable="false">PUT YOUR API KEY HERE!!!!!!</string>
+
+
     <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">Movie Details</string>
 
-    <!-- API Key for theMovieDB.ORG    Replace with your own API key for running [CHAR LIMIT=NONE] -->
-    <string name="api_key" translatable="false">547bc9d14e2d25a3e3429d2f7c8292db</string>
+
 
     <!-- values for building movie query url  -->
     <string name="movie_query_url_base" translatable="false">http://api.themoviedb.org/3</string>
