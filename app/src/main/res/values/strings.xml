@@ -1,6 +1,6 @@
 <resources>
     <!-- API Key for theMovieDB.ORG    Replace with your own API key for running [CHAR LIMIT=NONE] -->
-    <string name="api_key" translatable="false">547bc9d14e2d25a3e3429d2f7c8292db</string>
+    <string name="api_key" translatable="false">@string/api_key_git_ignore</string>
 
 
     <string name="app_name">Popular Movies</string>
