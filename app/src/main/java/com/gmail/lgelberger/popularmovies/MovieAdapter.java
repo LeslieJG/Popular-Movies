@@ -143,7 +143,18 @@ public class MovieAdapter extends ArrayAdapter {
 
         //now set data resources
         // handler.moviePoster.setImageResource(dataProvider.getMoviePosterResource());
-        Picasso.with(context).load(moviePosterURLString).into(handler.moviePoster);
+
+
+        Picasso.with(context).load(moviePosterURLString).into(handler.moviePoster); //in case of no picture, gridview already has a default text to display
+                                                        //no need to display error or placeholder pictures
+
+        /* This version of Picasso call with error handling in it if needed
+        Picasso.with(context)
+                .load(moviePosterURLString)
+                .placeholder(R.drawable.placeholder) //put a placeholder in place of image while it is loading
+                .error(R.drawable.placeholder_error) //put a picture if there is an error retrieving file
+                .into(handler.moviePoster);
+*/
         handler.movieTitle.setText(dataProvider.getMovieTitle());
 
         // return the view

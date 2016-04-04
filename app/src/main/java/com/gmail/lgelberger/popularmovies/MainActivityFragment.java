@@ -49,6 +49,50 @@ public class MainActivityFragment extends Fragment {
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
 
+
+    /*
+    Girdview
+How to auto-fit properly - also add the following to the xml file for gridview
+To learn more, you can also try to set it equals to auto_fit. By doing so, your app can have the ability to judge the number of columns it should show based on the screen size (or different orientation). Try it! :)
+and width to wrap content
+
+http://stackoverflow.com/questions/6912922/android-how-does-gridview-auto-fit-find-the-number-of-columns/7874011#7874011
+
+The solution is to measure your column size before setting the GridView's column width. Here is a quick way to measure Views offscreen:
+
+
+(where cell is the specific grid cell in the gridview to measure
+
+public int measureCellWidth( Context context, View cell )
+{
+
+    // We need a fake parent
+    FrameLayout buffer = new FrameLayout( context );
+    android.widget.AbsListView.LayoutParams layoutParams = new  android.widget.AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    buffer.addView( cell, layoutParams);
+
+    cell.forceLayout();
+    cell.measure(1000, 1000);
+
+    int width = cell.getMeasuredWidth();
+
+    buffer.removeAllViews();
+
+    return width;
+}
+And then you just set the GridView's column width:
+
+gridView.setColumnWidth( width );
+
+
+You can use setColumnWidth() right after you use setAdapter() on your GridView. –
+     */
+
+
+
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
