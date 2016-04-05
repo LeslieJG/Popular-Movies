@@ -33,7 +33,9 @@ public class MovieAdapter extends ArrayAdapter {
     List movieList = new ArrayList(); //the list of all the movieData that we will be putting into gridView
     Context context; //needed for picasso
 
-    //Constructor - this is the one Prabeesh recommends - but you will need to add the list separately (as opposed to when it is constructed)
+    //Constructor - this is the one Prabeesh recommends - but you will need to add the list separately
+    // (as opposed to when it is constructed)
+    //int resource is the grid item layout (for each individual item)
     public MovieAdapter(Context context, int resource) {
         super(context, resource);
 

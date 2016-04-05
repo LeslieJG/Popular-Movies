@@ -19,7 +19,9 @@ import android.os.Parcelable;
  * Implementing Parcelable so I can pass this object in an intent
  */
 public class MovieDataProvider implements Parcelable {
-    private int moviePosterResource; //for test display should be able to delete this and the getter setter methods
+   // private int moviePosterResource; //for test display should be able to delete this and the getter setter methods
+    //really just used to place a default picture in if needed. But I can use Picasso placeholder picture options for this
+
     private String movieTitle;
     private String moviePosterUrl;
 
@@ -53,10 +55,10 @@ release date
      * @param moviePosterResource
      * @param movieTitle
      */
-    public MovieDataProvider(int moviePosterResource, String movieTitle) {
+   /* public MovieDataProvider(int moviePosterResource, String movieTitle) {//commented out as I'm not using moviePosterResource
         this.moviePosterResource = moviePosterResource;
         this.movieTitle = movieTitle;
-    }
+    }*/
 
     /**
      * constructor
@@ -65,11 +67,11 @@ release date
      * @param movieTitle
      * @param moviePosterUrl      url of movie
      */
-    public MovieDataProvider(int moviePosterResource, String movieTitle, String moviePosterUrl) {
+  /*  public MovieDataProvider(int moviePosterResource, String movieTitle, String moviePosterUrl) {/commented out as I'm not using moviePosterResource
         this.setMoviePosterResource(moviePosterResource);
         this.setMovieTitle(movieTitle);
         this.setMoviePosterUrl(moviePosterUrl);
-    }
+    }*/
 
     /**
      * constructor - the ONE I"M USING RIGHT NOW
@@ -89,12 +91,12 @@ release date
         this.moviePosterUrl = moviePosterUrl;
     }
 
-    public int getMoviePosterResource() {
+  /*  public int getMoviePosterResource() {/commented out as I'm not using moviePosterResource
         return moviePosterResource;
     }
-    public void setMoviePosterResource(int moviePosterResource) {
+    public void setMoviePosterResource(int moviePosterResource) {/commented out as I'm not using moviePosterResource
         this.moviePosterResource = moviePosterResource;
-    }
+    }*/
 
     public String getMovieTitle() {
         return movieTitle;
@@ -157,7 +159,7 @@ release date
         // We just need to write each field into the
         // parcel. When we read from parcel, they
         // will come back in the same order FIFO
-        dest.writeInt(moviePosterResource);
+      //  dest.writeInt(moviePosterResource);/commented out as I'm not using moviePosterResource
         dest.writeString(movieTitle);
         dest.writeString(moviePosterUrl);
         dest.writeString(originalTitle);
@@ -177,7 +179,7 @@ release date
         // We just need to read back each
         // field in the order that it was
         // written to the parcel
-        moviePosterResource = in.readInt();
+      //  moviePosterResource = in.readInt();/commented out as I'm not using moviePosterResource
         movieTitle = in.readString();
         moviePosterUrl = in.readString();
         originalTitle = in.readString();
