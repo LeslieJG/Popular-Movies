@@ -33,7 +33,7 @@ public class TestUtilities extends AndroidTestCase {
 
 
     /*
-    Validate current record grabs the set of value pairs from the content valuesthat we inserted.
+    Validate current record grabs the set of value pairs from the content values that we inserted.
     It then iterates through them,using cursor.getColumnIndex to get the index of each column[br]in the record set by name.
     We need the column index to get data from the cursor.
     Note the projections[br]are always return in order.
