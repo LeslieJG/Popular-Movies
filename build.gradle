@@ -8,7 +8,7 @@ buildscript {
 
        // classpath 'com.android.tools.build:gradle:1.5.0'
         //to allow for instant run I changed the line above to the line below
-        classpath 'com.android.tools.build:gradle:2.0.0-rc3'
+        classpath 'com.android.tools.build:gradle:2.1.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

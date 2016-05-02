@@ -56,13 +56,6 @@ public class TestDb extends AndroidTestCase {
      */
     public void testDeleteDatabase(){
 
-
-
-
-
-
-
-
     }
 
 
@@ -175,16 +168,6 @@ public class TestDb extends AndroidTestCase {
         // First insert the location, and then use the locationRowId to insert
         // the movie. Make sure to cover as many failure cases as you can.
 
-        // Instead of rewriting all of the code we've already written in testLocationTable
-        // we can move this code to insertLocation and then call insertLocation from both
-        // tests. Why move it? We need the code to return the ID of the inserted location
-        // and our testLocationTable can only return void because it's a test.
-
-        //LJG added this line after database had too many lines in table (failed test)
-        //THIS SHOULDN"T BE NECESSARY!!!! It should be done before each test!!!
-        mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME); //delete the old database
-        //this didn't help
-
         //long locationRowId = insertMovie(); //this would be the first row inserted. Notneeded will do it later on anyway
 
         // Make sure we have a valid row ID.
@@ -250,7 +233,6 @@ public class TestDb extends AndroidTestCase {
         // errors will be thrown here when you try to get a writable database.
 
        // Context appContext = this.getContext(); //this was my line. The course used mContext, but I never see it declared or instantiated
-
         //ZZZ  LJG   appContext "should" be the same as mContext in Android helper. It would be good to assert that.
 
 
