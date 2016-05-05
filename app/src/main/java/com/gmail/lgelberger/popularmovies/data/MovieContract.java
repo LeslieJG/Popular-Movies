@@ -20,6 +20,24 @@ public class MovieContract {
    /* For my own info - the URIs needed for my content provider
     i.e. the searches I will be doing in my app (what will be needed to show?)
 
+    ZZZ I will need to:
+    -Write to the database (add the a row of movie data whenever the user selects a movie to be
+    one of their "favourites"
+
+    -Read a list of movie posters and names (I will read the whole list)
+    -Read the details of just ONE movie to make a detailed view once the user has clicked on
+    a movie poster and the app displays the movie details
+
+
+    ZZZ LJG  WHAT IF I JUST make my URIs simple to start
+    content://com.gmail.lgelberger.popularmovies/movie - to access the entire table
+
+    content://com.gmail.lgelberger.popularmovies/movie/4 - to access a single row
+
+    and perhaps some uri's to add rows or modify rows?
+
+
+////////////////////////////////////////////////////////////////
     To Read from DB
     MOVIE_WITH_POSTER (DIR) = 101  //to read the movie posters for the grid display
     content://com.gmail.lgelberger.popularmovies/movie/[Movie List Query]
@@ -31,7 +49,7 @@ public class MovieContract {
     To Write from DB
     MOVIE (DIR) = 100 //to write a new movie to data base
     content://com.gmail.lgelberger.popularmovies/movie
-
+////////////////////////////////////////////////////////////
     */
 
 
@@ -150,7 +168,9 @@ public class MovieContract {
         //functions to help build content provider queries
         //helpful to have so that other parts of app don't have to know how to do this. It
         // can be self contained
-        public static Uri buildMovieUri(long id) {
+        //The below method just adds an ID to the end of the URL
+        //this is used to just get ONE row of data (instead of querying the whole damn table)
+                public static Uri buildMovieUriWithAppendedID(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
@@ -179,10 +199,28 @@ public class MovieContract {
         content://com.gmail.lgelberger.popularmovies/movie*/
 
 
+        ///////////////////////////////////////////////////////////////////////
+        //All of the below crap is to make content provider query URIs
+        //designed to make life easier to query the Content Provider
+        //skip this for now for initial implementation
+        //do it after the basic content provider is made
+
+
+
+
         //I don't think I need this one. I just built it to follow along in Sunshine
         public static Uri buildMovieAppendPathURI(String SomeMovieListInfo) {
             return CONTENT_URI.buildUpon().appendPath(SomeMovieListInfo).build();
         }
+
+/*
+
+        public static Uri buildMovieUriWithID(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+*/
+
+
 
 
         // To Write from DB
@@ -199,17 +237,19 @@ public class MovieContract {
        /* public static Uri buildMoviePoster(String movieQueryKey, String movieQueryValue) {
             return CONTENT_URI.buildUpon().appendQueryParameter(movieQueryKey, movieQueryValue).build();
         }*/
-        public static Uri buildMoviePoster(String movieQueryValue) {
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_MOVIE_POSTER, movieQueryValue).build();
-        }
+
+       // public static Uri buildMoviePoster(String movieQueryValue) {
+       //     return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_MOVIE_POSTER, movieQueryValue).build();
+       // }
 
 
         //  MOVIE_WITH_DETAILS (ITEM) = 102  //to show details of movie
         // content://com.gmail.lgelberger.popularmovies/movie/[Movie ID Query]
         //build MovieDetails (movie Id passed in)   - should make a query with just that movie returned
-        public static Uri buildMovieDetails(String movieQueryValue) {
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_API_MOVIE_ID, movieQueryValue).build();
-        }
+
+       // public static Uri buildMovieDetails(String movieQueryValue) {
+        //    return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_API_MOVIE_ID, movieQueryValue).build();
+       // }
 
 
 
