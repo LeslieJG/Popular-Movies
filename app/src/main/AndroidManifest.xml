@@ -44,6 +44,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gmail.lgelberger.popularmovies.MainActivity" />
         </activity>
+
+        <!-- My Movie Content Provider  - I need to register it here-->
+        <provider
+            android:authorities="com.gmail.lgelberger.popularmovies"
+            android:name=".data.MovieProvider" />
+
     </application>
 
 </manifest>
