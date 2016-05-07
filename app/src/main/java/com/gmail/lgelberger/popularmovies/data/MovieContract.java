@@ -171,6 +171,7 @@ public class MovieContract {
         //The below method just adds an ID to the end of the URL
         //this is used to just get ONE row of data (instead of querying the whole damn table)
                 public static Uri buildMovieUriWithAppendedID(long id) {
+
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
