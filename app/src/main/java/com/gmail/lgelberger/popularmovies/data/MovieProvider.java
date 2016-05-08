@@ -20,6 +20,8 @@ public class MovieProvider extends ContentProvider{
 
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
+
+    //The database used by this content provider
     private MovieDbHelper mOpenHelper;
 
 
@@ -77,7 +79,8 @@ public class MovieProvider extends ContentProvider{
 
     @Override
     public boolean onCreate() {
-        return false;
+        mOpenHelper = new MovieDbHelper(getContext());
+        return true;
     }
 
     @Nullable
