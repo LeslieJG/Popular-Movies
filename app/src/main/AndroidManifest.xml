@@ -48,7 +48,7 @@
         <!-- My Movie Content Provider  - I need to register it here-->
         <provider
             android:authorities="com.gmail.lgelberger.popularmovies"
-            android:name=".data.MovieProvider" />
+            android:name=".data.MovieContentProvider" />
 
     </application>
 

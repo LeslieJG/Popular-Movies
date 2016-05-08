@@ -142,7 +142,7 @@ LJG This should be handy for me to use - try using it to validate data base
     }
 
     /*
-        Students: The functions we provide inside of TestProvider use this utility class to test
+        Students: The functions we provide inside of TestMovieContentProvider use this utility class to test
         the ContentObserver callbacks using the PollingCheck class that we grabbed from the Android
         CTS tests.
 

@@ -6,7 +6,7 @@ import android.test.AndroidTestCase;
 
 /**
  * Created by Leslie on 2016-05-08.
- * To Test UriMatcher in MovieProvider (the Content Provider for Movies)
+ * To Test UriMatcher in MovieContentProvider (the Content Provider for Movies)
  */
 public class TestUriMatcher extends AndroidTestCase {
 
@@ -23,13 +23,13 @@ public class TestUriMatcher extends AndroidTestCase {
      */
 
     public void testUriMatcher() {
-        UriMatcher testMatcher = MovieProvider.buildUriMatcher();
+        UriMatcher testMatcher = MovieContentProvider.buildUriMatcher();
 
 
         assertEquals("Error: The MOVIE URI was matched incorrectly.",
-                testMatcher.match(TEST_MOVIE_DIR), MovieProvider.MOVIE);
+                testMatcher.match(TEST_MOVIE_DIR), MovieContentProvider.MOVIE);
         assertEquals("Error: The MOVIE WITH ID URI was matched incorrectly.",
-                testMatcher.match(TEST_MOVIE_WITH_ID_DIR), MovieProvider.MOVIE_DETAIL);
+                testMatcher.match(TEST_MOVIE_WITH_ID_DIR), MovieContentProvider.MOVIE_DETAIL);
 
     }
 
