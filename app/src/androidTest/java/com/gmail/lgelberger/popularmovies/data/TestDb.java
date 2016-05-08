@@ -55,7 +55,7 @@ public class TestDb extends AndroidTestCase {
     copy create DB stuff into here and then try deleting it and confirm that the DB is deleted
      */
     public void testDeleteDatabase(){
-
+        //This is not done in Sunshine - I'm just including it here if needed
     }
 
 
@@ -146,15 +146,8 @@ public class TestDb extends AndroidTestCase {
     }
 
 
-    /*
-        Students:  Here is where you will build code to test that we can insert and query the
-        location database.  We've done a lot of work for you.  You'll want to look in TestUtilities
-        where you can uncomment out the "createNorthPoleLocationValues" function.  You can
-        also make use of the ValidateCurrentRecord function from within TestUtilities.
-    */
-   /* public void testLocationTable() {
-        insertLocation();
-    }*/
+
+
 
 
     /*
