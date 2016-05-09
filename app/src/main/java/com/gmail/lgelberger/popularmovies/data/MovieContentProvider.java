@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 
 /**
  * Created by Leslie on 2016-05-03.
- * <p>
+ * <p/>
  * Starting to make a content provider to deal with my locally stored movies (favourites) in Popular Movies Part 2
  */
 public class MovieContentProvider extends ContentProvider {
@@ -72,10 +72,93 @@ public class MovieContentProvider extends ContentProvider {
         return true; //indicate that onCreate has been run
     }
 
+
+    /*
+
+    For us,
+    query will be the most complex of the required content provider methods.
+    We've given you the bones, of the query operation.
+
+    As you can see, we use our SURI nature object,
+    once again to switch on the type of URI.
+
+    Note that each response from this function, will return a cursor that
+    corresponds to the incoming query as defined by the URI.
+
+    This is the only function where we will have to fill out a different
+    response for every type of URI in the content provider,
+    as several of them are used in queries only.
+
+
+    We'll see more on this later, when we cover inserting and
+    updating the database.
+
+    Uncomment the test basic weather query function within test provider and
+    run this code when you're finished, to make sure all of this is working well.
+
+    NEED TO TEST THIS!!!!!
+
+     */
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        // return null;
+
+
+        Cursor retCursor; //the cursor with the database information to be returned
+
+        // Here's the switch statement that, given a URI, will determine what kind of request it is,
+        // and query the database accordingly.
+        switch (sUriMatcher.match(uri)) {
+
+            //
+
+            //  content://com.gmail.lgelberger.popularmovies/movie
+            // "movie"
+            case MOVIE: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME, //table name to query
+                        projection, // leaving "columns" null just returns all the columns.
+                        selection,// columns for "where" clause
+                        selectionArgs, // values for "where" clause
+                        null,       // columns to group by
+                        null,      // columns to filter by row groups
+                        sortOrder //sort order
+                );
+                break;
+            }
+
+            // content://com.gmail.lgelberger.popularmovies/movie/#
+            // "movie/#"
+            case MOVIE_DETAIL: {
+                // select * from movie where _id = 3
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME, //table name to query
+                        projection, // leaving "columns" null just returns all the columns.
+                        MovieContract.MovieEntry._ID + "=?",                     //selection,// columns for "where" clause - where  (Just need to look for _ID column)
+                        new String[]{MovieContract.MovieEntry.getIdFromUri(uri)},                 //selectionArgs, // values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
+                        //// --- This needs to be an array not a single value
+                        //also it may need to be a LONG to work....let's try testing it
+                        null,       // columns to group by
+                        null,      // columns to filter by row groups
+                        sortOrder); //sort order
+                break;
+            }
+
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+
+        /* This causes the cursor to register a content observer, to watch for
+        changes that happen to that URI and any of its descendants. This allows the content provider, to easily tell the UI when the cursor
+        changes, on operations like a database insert or update. */
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        return retCursor;
+
+
     }
 
 

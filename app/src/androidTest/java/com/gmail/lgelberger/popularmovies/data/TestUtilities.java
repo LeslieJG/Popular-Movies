@@ -106,6 +106,33 @@ LJG This should be handy for me to use - try using it to validate data base
         return movieValues;
     }
 
+
+
+    /*
+        Students: Use this to create some default movieValues for your database tests.
+        LJG Using these to put a second movie in if needed
+     */
+    static ContentValues createMovieValuesAotherSet() {
+        ContentValues movieValuesTheSequel = new ContentValues();
+
+
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The second test Movie");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "789");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://BiteMeAgain.com");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "Movie Poster Image The second");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "The test Movie  The Sequel- Original Title");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "Summary - the movie sucked! AGAIN!");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, "2/102");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "2016-05-06");
+
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "Review Again");
+        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "Video Again");
+
+        return movieValuesTheSequel;
+    }
+
+
+
     /*
         Students: You can uncomment this helper function once you have finished creating the
         LocationEntry part of the WeatherContract.
@@ -126,7 +153,7 @@ LJG This should be handy for me to use - try using it to validate data base
         Students: You can uncomment this function once you have finished creating the
         LocationEntry part of the WeatherContract as well as the WeatherDbHelper.
      */
-    static long insertMovienValues(Context context) {
+    static long insertMovieValues(Context context) {
         // insert our test records into the database
         MovieDbHelper dbHelper = new MovieDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -140,6 +167,32 @@ LJG This should be handy for me to use - try using it to validate data base
 
         return locationRowId;
     }
+
+
+
+    /*
+       Inserting 2 sets of movie values
+       Used to help with testing the Movie Content Provider detail Query
+    */
+    static long insertMovieValuesTwoSets(Context context) {
+        // insert our test records into the database
+        MovieDbHelper dbHelper = new MovieDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues testValues = TestUtilities.createMovieValues();
+        ContentValues testValuesTheSequel = TestUtilities.createMovieValuesAotherSet();
+
+        long locationRowId;
+        db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValues);
+        locationRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValuesTheSequel);
+
+        // Verify we got a row back.
+        assertTrue("Error: Failure to insert Movie Values", locationRowId != -1);
+
+        return locationRowId;
+    }
+
+
 
     /*
         Students: The functions we provide inside of TestMovieContentProvider use this utility class to test

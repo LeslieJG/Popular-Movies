@@ -161,6 +161,7 @@ public class MovieContract {
         // Create Content Uri that represents base location for this table
         //This way the content uri can be built for each table in a content provider
         //This just makes the base content uri, and adds the movie path to it.
+       //  content://com.gmail.lgelberger.popularmovies/movie
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build();
 
@@ -170,6 +171,7 @@ public class MovieContract {
         // can be self contained
         //The below method just adds an ID to the end of the URL
         //this is used to just get ONE row of data (instead of querying the whole damn table)
+        //  content://com.gmail.lgelberger.popularmovies/movie/ #
                 public static Uri buildMovieUriWithAppendedID(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
@@ -256,6 +258,18 @@ public class MovieContract {
 
         //Decoder fucntions
         //to write when I know what the fuck I'm doing
+
+        //used to find the final id tag appended to end of uri
+        //example  // content://com.gmail.lgelberger.popularmovies/movie/999
+        //this method should return "999"
+        //NOTE: I am returning a string - perhaps I will need to return an integer? As the _id is really an integer
+        //we will see what I will need
+        public static String getIdFromUri(Uri uri) {
+            //return uri.getPathSegments().get(1);
+
+            return uri.getLastPathSegment(); //return whatever is at the end of Uri
+        }
+
 
        /* public static String getLocationSettingFromUri(Uri uri) {
             return uri.getPathSegments().get(1);

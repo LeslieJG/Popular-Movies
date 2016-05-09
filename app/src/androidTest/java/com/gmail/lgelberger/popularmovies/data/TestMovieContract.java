@@ -21,5 +21,19 @@ public class TestMovieContract extends AndroidTestCase {
                 movieUri.toString(),
                 "content://com.gmail.lgelberger.popularmovies/movie/" + TEST_MOVIE_ID);
     }
+
+    //test the decoder function too!
+
+    public void testGetIdFromUri () {
+
+
+        Uri movieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(TEST_MOVIE_ID);
+
+        assertEquals("Error: GetIfFromUri not returning proper ID value",
+                MovieContract.MovieEntry.getIdFromUri(movieUri),
+            Long.toString(TEST_MOVIE_ID));
+    }
+
+
 }
 
