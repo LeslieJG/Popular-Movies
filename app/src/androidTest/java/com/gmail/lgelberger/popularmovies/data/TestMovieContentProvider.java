@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.test.AndroidTestCase;
 
@@ -129,12 +130,13 @@ public class TestMovieContentProvider extends AndroidTestCase {
     //Skip this test for now
     //it always returns an empty cursor and I can't figure out why
     //go back and recode this later on once I have the Content Provider delete methods working properly
+    //THis really should be tested!
     /*
       This test uses the database directly to insert and then uses the ContentProvider to
       read out the data.  Uncomment this test to see if the basic weather query functionality
       given in the ContentProvider is working correctly.
    */
-   /* public void testBasicDetailMovieQuery() {  //make sure I test both types of Queries
+    public void testBasicDetailMovieQuery() {  //make sure I test both types of Queries
         // insert our test records into the database
         MovieDbHelper dbHelper = new MovieDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -142,11 +144,34 @@ public class TestMovieContentProvider extends AndroidTestCase {
         ContentValues testValues = TestUtilities.createMovieValuesAotherSet(); // I will be using this in the test to see if
         //I really get back the second set of values
 
-         db.delete(MovieContract.MovieEntry.TABLE_NAME, null, null); //make sure this deletes the database!!!!!
+      //   db.delete(MovieContract.MovieEntry.TABLE_NAME, null, null); //make sure this deletes the database!!!!!
         // deleteTheDatabase();
+
+
+        //create a new database
+    //    db = new MovieDbHelper(
+    //            this.mContext).getWritableDatabase();
+        //test the delete
+
+
+
+        //let's see how many entires we have?
+        Cursor  cursor = db.rawQuery("select * from table",null);
+
+        assertTrue("Number of Columns is not zero, database not deleted", cursor.getCount() == 0);
+      //  cursor.getCount();
+
 
         //long locationRowId = TestUtilities.insertMovieValues(mContext);
        long locationRowId = TestUtilities.insertMovieValuesTwoSets(mContext);
+
+        //temp asserting that movie values inserted
+        assertTrue("Error: Failure to insert Movie Values", locationRowId != -1);
+
+        assertEquals("locationRowId equals 2", 2, locationRowId);
+
+
+
 
         // Fantastic.  Now that we have a Mpvie
 
@@ -183,7 +208,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
     }
 
-*/
+
 
     // Since we want each test to start with a clean slate - copied from TestDb.java
     //usefull for helping me test out the database

@@ -135,7 +135,7 @@ public class MovieContentProvider extends ContentProvider {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.TABLE_NAME, //table name to query
                         projection, // leaving "columns" null just returns all the columns.
-                        MovieContract.MovieEntry._ID + "=?",                     //selection,// columns for "where" clause - where  (Just need to look for _ID column)
+                        MovieContract.MovieEntry._ID + " = ? ",                     //selection,// columns for "where" clause - where  (Just need to look for _ID column)
                         new String[]{MovieContract.MovieEntry.getIdFromUri(uri)},                 //selectionArgs, // values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
                         //// --- This needs to be an array not a single value
                         //also it may need to be a LONG to work....let's try testing it
