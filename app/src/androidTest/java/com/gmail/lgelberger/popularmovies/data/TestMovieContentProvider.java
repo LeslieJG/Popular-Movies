@@ -211,12 +211,6 @@ public class TestMovieContentProvider extends AndroidTestCase {
 */
 
 
-    // Since we want each test to start with a clean slate - copied from TestDb.java
-    //usefull for helping me test out the database
-    //LJG ZZZ I'm not sure that this works!!!!???
-    void deleteTheDatabase() {
-        mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME);
-    }  //N.B. mContext is provided by AndroidTestCase. Use at will
 
 
 
@@ -330,6 +324,95 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
 
     }
+
+
+
+
+
+
+    // Since we want each test to start with a clean slate - copied from TestDb.java
+    //usefull for helping me test out the database
+    //LJG ZZZ I'm not sure that this works!!!!??? - perhaps just replace this with deleteallrecordsfrom provider?
+   /* void deleteTheDatabase() {
+        mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME);
+    }  //N.B. mContext is provided by AndroidTestCase. Use at will
+*/
+
+
+
+    //from sunshine
+/*
+       This helper function deletes all records from both database tables using the ContentProvider.
+       It also queries the ContentProvider to make sure that the database has been successfully
+       deleted, so it cannot be used until the Query and Delete functions have been written
+       in the ContentProvider.
+
+       Students: Replace the calls to deleteAllRecordsFromDB with this one after you have written
+       the delete functionality in the ContentProvider.
+     */
+    public void deleteAllRecordsFromProvider() {
+        mContext.getContentResolver().delete(
+                MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null
+        );
+       /* mContext.getContentResolver().delete(
+                LocationEntry.CONTENT_URI,
+                null,
+                null
+        );*/
+
+        Cursor cursor = mContext.getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        assertEquals("Error: Records not deleted from Movie table during delete", 0, cursor.getCount());
+        cursor.close();
+
+
+    }
+
+    /*
+        Student: Refactor this function to use the deleteAllRecordsFromProvider functionality once
+        you have implemented delete functionality there.
+     */
+    public void deleteAllRecords() {
+        deleteAllRecordsFromProvider();
+    }
+
+
+    // Make sure we can still delete after adding/updating stuff
+    //
+    // Student: Uncomment this test after you have completed writing the delete functionality
+    // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
+    // query functionality must also be complete before this test can be used.
+    public void testDeleteRecords() {
+        testInsertReadProvider(); //guarantees there are rows in database
+
+        // Register a content observer for our location delete.
+        TestUtilities.TestContentObserver movieObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieContract.MovieEntry.CONTENT_URI, true, movieObserver);
+
+        // Register a content observer for our weather delete.
+       /* TestUtilities.TestContentObserver weatherObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(WeatherEntry.CONTENT_URI, true, weatherObserver);*/
+
+        deleteAllRecordsFromProvider();
+
+        // Students: If either of these fail, you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
+        // delete.  (only if the insertReadProvider is succeeding)
+        movieObserver.waitForNotificationOrFail();
+       // weatherObserver.waitForNotificationOrFail();
+
+        mContext.getContentResolver().unregisterContentObserver(movieObserver);
+     //   mContext.getContentResolver().unregisterContentObserver(weatherObserver);
+    }
+
+
 
 
 

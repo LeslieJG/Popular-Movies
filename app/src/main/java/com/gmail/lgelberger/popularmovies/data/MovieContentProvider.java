@@ -204,14 +204,55 @@ public class MovieContentProvider extends ContentProvider {
 
 
 
-
+//returns the rows modified instead of Uri
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted;
+
+        // this makes delete all rows return the number of rows deleted
+        if ( null == selection ) selection = "1";
+
+        switch (match) {
+            case MOVIE:
+                rowsDeleted = db.delete(
+                        MovieContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            /*case LOCATION:
+                rowsDeleted = db.delete(
+                        WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
+                break;*/
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        // Because a null deletes all rows
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
+
+
+
+
+
+
+    //returns the rows modified instead of Uri
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+
+
+
+
+
+
+
+        getContext().getContentResolver().notifyChange(uri, null); //this line notifies changes to all children Uri's as well
+
         return 0;
     }
 
@@ -255,6 +296,13 @@ public class MovieContentProvider extends ContentProvider {
                 //this needs more research. Implement after the rest of the Content Provider is up and running
         }
     }
+
+
+
+
+
+
+
 
 
 }
