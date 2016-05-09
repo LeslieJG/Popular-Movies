@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
@@ -128,6 +129,8 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
 
+            //LJG ZZZ Note, Movie_detail query still needs to be properly tested!!!!!
+
             // content://com.gmail.lgelberger.popularmovies/movie/#
             // "movie/#"
             case MOVIE_DETAIL: {
@@ -162,11 +165,45 @@ public class MovieContentProvider extends ContentProvider {
     }
 
 
+    /*
+    Inserts a row into database
+
+    For inserts we simply want to make sure that the correct data ends up in the correct table
+    No need to deal with the non-base Uri's.
+    Only the base Uri is needed
+     */
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        Uri returnUri;
+
+        switch (match) {
+            case MOVIE: {
+
+                long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(_id);//  WeatherContract.WeatherEntry.buildWeatherUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null); //this line notifies changes to all children Uri's as well
+        return returnUri;
+
     }
+
+
+
+
+
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
