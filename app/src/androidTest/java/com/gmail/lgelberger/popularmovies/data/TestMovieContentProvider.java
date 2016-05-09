@@ -230,8 +230,8 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
         // Register a content observer for our insert.  This time, directly with the content resolver
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-        mContext.getContentResolver().registerContentObserver(LocationEntry.CONTENT_URI, true, tco);
-        Uri locationUri = mContext.getContentResolver().insert(LocationEntry.CONTENT_URI, testValues);
+        mContext.getContentResolver().registerContentObserver(MovieContract.MovieEntry.CONTENT_URI, true, tco);
+        Uri locationUri = mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, testValues);
 
         // Did our content observer get called?  Students:  If this fails, your insert location
         // isn't calling getContext().getContentResolver().notifyChange(uri, null);
@@ -248,7 +248,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
         // A cursor is your primary interface to the query results.
         Cursor cursor = mContext.getContentResolver().query(
-                LocationEntry.CONTENT_URI,
+                MovieContract.MovieEntry.CONTENT_URI,
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
@@ -258,6 +258,9 @@ public class TestMovieContentProvider extends AndroidTestCase {
         TestUtilities.validateCursor("testInsertReadProvider. Error validating LocationEntry.",
                 cursor, testValues);
 
+
+
+        /*
         // Fantastic.  Now that we have a location, add some weather!
         ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId);
         // The TestContentObserver is a one-shot class
@@ -323,7 +326,9 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 null
         );
         TestUtilities.validateCursor("testInsertReadProvider.  Error validating joined Weather and Location data for a specific date.",
-                weatherCursor, weatherValues);
+                weatherCursor, weatherValues);*/
+
+
     }
 
 

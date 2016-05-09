@@ -10,10 +10,12 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 
-//import com.example.android.sunshine.app.utils.PollingCheck;
+import com.gmail.lgelberger.popularmovies.utils.PollingCheck;
 
 import java.util.Map;
 import java.util.Set;
+
+//import com.example.android.sunshine.app.utils.PollingCheck;
 
 /*
     From Sunshine:
@@ -159,8 +161,15 @@ LJG This should be handy for me to use - try using it to validate data base
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues testValues = TestUtilities.createMovieValues();
 
+
+
+
+
         long locationRowId;
         locationRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValues);
+
+
+
 
         // Verify we got a row back.
         assertTrue("Error: Failure to insert Movie Values", locationRowId != -1);
@@ -231,7 +240,7 @@ LJG This should be handy for me to use - try using it to validate data base
         }
 
         //uncomment when polling check needed LJG ZZZ
-       /* public void waitForNotificationOrFail() {
+        public void waitForNotificationOrFail() {
             // Note: The PollingCheck class is taken from the Android CTS (Compatibility Test Suite).
             // It's useful to look at the Android CTS source for ideas on how to test your Android
             // applications.  The reason that PollingCheck works is that, by default, the JUnit
@@ -243,7 +252,7 @@ LJG This should be handy for me to use - try using it to validate data base
                 }
             }.run();
             mHT.quit();
-        }*/
+        }
     }
 
     static TestContentObserver getTestContentObserver() {
