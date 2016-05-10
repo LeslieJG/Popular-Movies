@@ -324,24 +324,27 @@ public class MovieContentProvider extends ContentProvider {
 
 
 
-
-  /*  @Override
+    /*
+    Allow for bulk inserting of rows into database
+    It is faster and less wear and tear on flash memory
+     */
+    @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case WEATHER:
+            case MOVIE:
                 db.beginTransaction();
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        normalizeDate(value);
-                        long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
+                        //normalizeDate(value);
+                        long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
                         }
                     }
-                    db.setTransactionSuccessful();
+                    db.setTransactionSuccessful();  //if this is not done, the inserts won't be saved in database
                 } finally {
                     db.endTransaction();
                 }
@@ -350,7 +353,7 @@ public class MovieContentProvider extends ContentProvider {
             default:
                 return super.bulkInsert(uri, values);
         }
-    }*/
+    }
 
     //THis is specifically for testing content providers
     // This should be called at the end of content provider tests to properly shut down the

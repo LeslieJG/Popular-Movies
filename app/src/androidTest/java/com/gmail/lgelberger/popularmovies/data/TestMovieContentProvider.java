@@ -93,37 +93,6 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /*
                 This test checks to make sure that the content provider is registered correctly in AndroidManifest.xml
                 Modified from Sunshine App
@@ -521,6 +490,121 @@ public class TestMovieContentProvider extends AndroidTestCase {
         cursor.close();
     }
 
+
+    /*
+    For making 10 values to test Bulk Insert
+     */
+    static private final int BULK_INSERT_RECORDS_TO_INSERT = 10;
+    //static ContentValues[] createBulkInsertMovieValues(long locationRowId) {
+    static ContentValues[] createBulkInsertMovieValues() {    //don't need a location id - this is not Sunshine!
+       // long currentTestDate = TestUtilities.TEST_DATE;
+      //  long millisecondsInADay = 1000*60*60*24;
+        ContentValues[] returnContentValues = new ContentValues[BULK_INSERT_RECORDS_TO_INSERT]; //create an array of Movie Entries
+
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++ ) {
+            ContentValues movieValues = new ContentValues();
+
+        //    movieValues.put(MovieContract.MovieEntry
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "Movie Title " + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://biteme.com/" + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "This should be a picture, not text_" + i);
+            //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "Movie Original Title " + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "This movie sucked, times " + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, i + " out of 10");
+            movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "Release date the year " + i + " A.D");
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "Movie Review: It was " + i + "thumbs up");
+            //The reviews may end up being a URL - this may also need to change
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "Here is video number " + i);
+            //the Video may also change format
+
+            returnContentValues[i] = movieValues;
+        }
+        return returnContentValues;
+    }
+
+
+    // Student: Uncomment this test after you have completed writing the BulkInsert functionality
+    // in your provider.  Note that this test will work with the built-in (default) provider
+    // implementation, which just inserts records one-at-a-time, so really do implement the
+    // BulkInsert ContentProvider function.
+    public void testBulkInsert() {
+
+
+       //////////////////////////////////////////////////////////////////////////////////////////////
+       //LJG delete this section? Not needed?
+        // first, let's create a location value
+       /* ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+        Uri locationUri = mContext.getContentResolver().insert(LocationEntry.CONTENT_URI, testValues);
+        long locationRowId = ContentUris.parseId(locationUri);
+
+        // Verify we got a row back.
+        assertTrue(locationRowId != -1);
+
+        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
+        // the round trip.
+
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = mContext.getContentResolver().query(
+                LocationEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+
+        TestUtilities.validateCursor("testBulkInsert. Error validating LocationEntry.",
+                cursor, testValues);*/
+
+        ////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+        // Now we can bulkInsert some Movies
+        ContentValues[] bulkInsertContentValues = createBulkInsertMovieValues();
+
+        // Register a content observer for our bulk insert.
+        TestUtilities.TestContentObserver movieObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieContract.MovieEntry.CONTENT_URI, true, movieObserver);
+
+        int insertCount = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, bulkInsertContentValues);
+
+        // Students:  If this fails, it means that you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in your BulkInsert
+        // ContentProvider method.
+        movieObserver.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(movieObserver);
+
+        assertEquals(insertCount, BULK_INSERT_RECORDS_TO_INSERT);
+
+        // A cursor is your primary interface to the query results.
+         Cursor cursor = mContext.getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " ASC"  // sort order == by _ID ASCENDING
+                //I may have to have a difernt sort order for test to work?  LJG ZZZ
+        );
+
+        // we should have as many records in the database as we've inserted
+        assertEquals(cursor.getCount(), BULK_INSERT_RECORDS_TO_INSERT);
+
+        // and let's make sure they match the ones we created
+        cursor.moveToFirst();
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext() ) {
+            TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating WeatherEntry " + i,
+                    cursor, bulkInsertContentValues[i]);
+        }
+        cursor.close();
+    }
 
 
 }
