@@ -94,7 +94,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 // forecasting, it's reasonable to assume the user will want information
                 // for a certain date and all dates *following*, so the forecast data
                 // should be sorted accordingly.
-                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //don't think I need AUTOINCREMENT ? It just limits the number of movies stored in database - but that limit is huge 10^19
                 MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
                 MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL + " TEXT NOT NULL, " +
