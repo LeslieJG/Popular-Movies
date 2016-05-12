@@ -89,10 +89,6 @@ public class TestMovieContentProvider extends AndroidTestCase {
         deleteAllRecordsFromProvider();
     }
 
-
-
-
-
     /*
                 This test checks to make sure that the content provider is registered correctly in AndroidManifest.xml
                 Modified from Sunshine App

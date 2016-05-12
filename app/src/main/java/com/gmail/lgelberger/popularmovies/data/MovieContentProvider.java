@@ -135,14 +135,11 @@ public class MovieContentProvider extends ContentProvider {
             // content://com.gmail.lgelberger.popularmovies/movie/#
             // "movie/#"
             case MOVIE_DETAIL: {
-                // select * from movie where _id = 3
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.TABLE_NAME, //table name to query
                         projection, // leaving "columns" null just returns all the columns.
-                        MovieContract.MovieEntry._ID + " = ? ",                     //selection,// columns for "where" clause - where  (Just need to look for _ID column)
-                        new String[]{MovieContract.MovieEntry.getIdFromUri(uri)},                 //selectionArgs, // values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
-                        //// --- This needs to be an array not a single value
-                        //also it may need to be a LONG to work....let's try testing it
+                        MovieContract.MovieEntry._ID + " = ? ",  //selection -  columns for "where" clause - where  (Just need to look for _ID column)
+                        new String[]{MovieContract.MovieEntry.getIdFromUri(uri)}, //selectionArgs - values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
                         null,       // columns to group by
                         null,      // columns to filter by row groups
                         sortOrder); //sort order
@@ -185,7 +182,7 @@ public class MovieContentProvider extends ContentProvider {
             case MOVIE: {
 
                 long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(_id);//  WeatherContract.WeatherEntry.buildWeatherUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -202,10 +199,7 @@ public class MovieContentProvider extends ContentProvider {
     }
 
 
-
-
-
-//returns the rows modified instead of Uri
+    //returns the rows modified instead of Uri
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
@@ -214,7 +208,7 @@ public class MovieContentProvider extends ContentProvider {
         int rowsDeleted;
 
         // this makes delete all rows return the number of rows deleted
-        if ( null == selection ) selection = "1";
+        if (null == selection) selection = "1";
 
         switch (match) {
             case MOVIE:
@@ -236,11 +230,6 @@ public class MovieContentProvider extends ContentProvider {
     }
 
 
-
-
-
-
-
     //returns the rows modified instead of Uri
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
@@ -251,7 +240,7 @@ public class MovieContentProvider extends ContentProvider {
 
         switch (match) {
             case MOVIE:
-               // normalizeDate(values);
+                // normalizeDate(values);
                 rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
@@ -310,18 +299,6 @@ public class MovieContentProvider extends ContentProvider {
                 //this needs more research. Implement after the rest of the Content Provider is up and running
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /*

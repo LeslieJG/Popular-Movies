@@ -25,22 +25,21 @@ import android.test.AndroidTestCase;
 import java.util.HashSet;
 
 /**
- * LJG Copied into PopularMovies from Sunshine on 7 April 2016
- * Will be using this to test my PopularMovies database.
+ * Modelled After Udacity Sunshine app on 7 April 2016
+ * For testing PopularMovies database.
  * The db will be used for storing favourite movies
- *
- * Perhaps I should just make a test database Name for my testing
+ * <p>
+ * Perhaps I should just make a test database Name for my testing - to not affect current working database?
  */
 public class TestDb extends AndroidTestCase {
 
     public static final String LOG_TAG = TestDb.class.getSimpleName();
 
-    // Since we want each test to start with a clean slate
+    /*
+        Helper function to delete database
+     */
     void deleteTheDatabase() {
         mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME);
-
-
-
     }  //N.B. mContext is provided by AndroidTestCase. Use at will
 
     /*
@@ -54,51 +53,39 @@ public class TestDb extends AndroidTestCase {
     /*
     copy create DB stuff into here and then try deleting it and confirm that the DB is deleted
      */
-    public void testDeleteDatabase(){
+    public void testDeleteDatabase() {
         //This is not done in Sunshine - I'm just including it here if needed
     }
 
 
     /*
-        Students: Uncomment this test once you've written the code to create the Location
-        table.  Note that you will have to have chosen the same column names that I did in
-        my solution for this test to compile, so if you haven't yet done that, this is
-        a good time to change your column names to match mine.
-
-        Note that this only tests that the Location table has the correct columns, since we
-        give you the code for the weather table.  This test does not look at the
+        Note that this only tests that the  table has the correct columns
      */
     public void testCreateDb() throws Throwable {
         // build a HashSet of all of the table names we wish to look for
         // Note that there will be another table in the DB that stores the
         // Android metadata (db version information)
         final HashSet<String> tableNameHashSet = new HashSet<String>();
-        tableNameHashSet.add(MovieContract.MovieEntry.TABLE_NAME);
-       // tableNameHashSet.add(WeatherContract.WeatherEntry.TABLE_NAME); //old from sunshine - delete
+        tableNameHashSet.add(MovieContract.MovieEntry.TABLE_NAME); //add other table names if more than one table
 
-        mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME); //delete the old database
-        // - does this delete my working database once I have a working app?
+        deleteTheDatabase(); //mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME); //delete the old database
+
+        // - LJG ZZZ  does this delete my working database once I have a working app?
         SQLiteDatabase db = new MovieDbHelper(
                 this.mContext).getWritableDatabase();
         assertEquals(true, db.isOpen());
 
         // have we created the tables we want?
-        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
 
         assertTrue("Error: This means that the database has not been created correctly",
-                c.moveToFirst());
+                cursor.moveToFirst());
 
 
-
-
-
-
-
-        // verify that the tables have been created - LJG How to deal with this with only 1 table???
-        //the do while loop should take care of this. It should look at ALL the tables (even if there is only 1 table to look at)
+        // verify that the tables have been created
         do {
-            tableNameHashSet.remove(c.getString(0));
-        } while (c.moveToNext());
+            tableNameHashSet.remove(cursor.getString(0)); //all tables taken care of with just this statement - do NOT add anything here
+        } while (cursor.moveToNext());
 
         // if this fails, it means that your database doesn't contain both the location entry
         // and weather entry tables
@@ -106,16 +93,12 @@ public class TestDb extends AndroidTestCase {
                 tableNameHashSet.isEmpty());
 
 
-
-
-
-
         // now, do our tables contain the correct columns?
-        c = db.rawQuery("PRAGMA table_info(" + MovieContract.MovieEntry.TABLE_NAME + ")",
+        cursor = db.rawQuery("PRAGMA table_info(" + MovieContract.MovieEntry.TABLE_NAME + ")",
                 null);
 
         assertTrue("Error: This means that we were unable to query the database for table information.",
-                c.moveToFirst());
+                cursor.moveToFirst());
 
         // Build a HashSet of all of the column names we want to look for
         final HashSet<String> movieColumnHashSet = new HashSet<String>();
@@ -132,11 +115,11 @@ public class TestDb extends AndroidTestCase {
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO);
 
 
-        int columnNameIndex = c.getColumnIndex("name");
+        int columnNameIndex = cursor.getColumnIndex("name");
         do {
-            String columnName = c.getString(columnNameIndex);
+            String columnName = cursor.getString(columnNameIndex);
             movieColumnHashSet.remove(columnName);
-        } while (c.moveToNext());
+        } while (cursor.moveToNext());
 
         // if this fails, it means that your database doesn't contain all of the required location
         // entry columns
@@ -146,42 +129,28 @@ public class TestDb extends AndroidTestCase {
     }
 
 
-
-
-
-
     /*
             Students:  Here is where you will build code to test that we can insert and query the
-            database.  We've done a lot of work for you.  You'll want to look in TestUtilities
-            where you can use the "createWeatherValues" function.  You can
+            database.  You'll want to look in TestUtilities
+            where you can use the "createMovieValues" function.  You can
             also make use of the validateCurrentRecord function from within TestUtilities.
          */
     //LJG FIgure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
     public void testMovieTable() {
-        // First insert the location, and then use the locationRowId to insert
-        // the movie. Make sure to cover as many failure cases as you can.
-
-        //long locationRowId = insertMovie(); //this would be the first row inserted. Notneeded will do it later on anyway
-
-        // Make sure we have a valid row ID.
-      //  assertFalse("Error: Movie Not Inserted Correctly", locationRowId == -1L); //caused an extra row to be inserted
-
         // First step: Get reference to writable database
         // If there's an error in those massive SQL table creation Strings,
         // errors will be thrown here when you try to get a writable database.
         MovieDbHelper dbHelper = new MovieDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        // Second Step (Weather): Create movie values
+        // Second Step : Create movie values
         ContentValues movieValues = TestUtilities.createMovieValues();
 
-        // Third Step (Weather): Insert ContentValues into database and get a row ID back
+        // Third Step : Insert ContentValues into database and get a row ID back
         long movieRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, movieValues);
-       // assertTrue(movieRowId != -1);
 
         // Make sure we have a valid row ID.
         assertFalse("Error: Movie Not Inserted Correctly", movieRowId == -1L);
-
 
         // Fourth Step: Query the database and receive a Cursor back
         // A cursor is your primary interface to the query results.
@@ -213,41 +182,17 @@ public class TestDb extends AndroidTestCase {
 
 
     /*
-        Students: This is a helper method for the testWeatherTable quiz. You can move your
-        code from testLocationTable to here so that you can call this code from both
-        testWeatherTable and testLocationTable.
-
-        LJG This is really just ALL the code ffrom testLocationTable. Moved here so that testWeatherTable can also use it and get a valid rowID back
-        which can't happen between tests (i.e. I can't make testLocationTable return anything other than void because it is an independant test
-     */
+        Helper Method to insert a movie into the database
+             */
     public long insertMovie() {
-        // First step: Get reference to writable database
-        // If there's an error in those massive SQL table creation Strings,
-        // errors will be thrown here when you try to get a writable database.
-
-       // Context appContext = this.getContext(); //this was my line. The course used mContext, but I never see it declared or instantiated
-        //ZZZ  LJG   appContext "should" be the same as mContext in Android helper. It would be good to assert that.
-
-
-
+        //mContext provided by test framework
+        //Get reference to writable database
         //MovieDbHelper dbHelper = new MovieDbHelper(appContext); //course uses  WeatherDbHelper dbHelper = new WeatherDbHelper(mContext); //not sure where mContext is declared or instantiated
         MovieDbHelper dbHelper = new MovieDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Create ContentValues of what you want to insert
-        // (you can use the createNorthPoleLocationValues if you wish)
-
-
-
         ContentValues testValues = TestUtilities.createMovieValues();
-
-        //making my own values
-        /*ContentValues testValues = new ContentValues();
-        testValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, "99705");
-        testValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
-        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
-        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, -147.353);*/
-        //ContentValues testValues = TestUtilities.createNorthPoleLocationValues(); //the official way from the course
 
         // Insert ContentValues into database and get a row ID back
         long movieRowId;
@@ -260,7 +205,6 @@ public class TestDb extends AndroidTestCase {
 
         // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
         // the round trip.
-
 
         // Fourth Step: Query the database and receive a Cursor back
         // A cursor is your primary interface to the query results.
@@ -278,50 +222,29 @@ public class TestDb extends AndroidTestCase {
 
         // Move the cursor to a valid database row and check to see if we got any records back
         // from the query
-        assertTrue("Error: No Records returned from location query", dbCursor.moveToFirst());
+        assertTrue("Error: No Records returned from movie query", dbCursor.moveToFirst());
 
-
-       /* String dbLocationSetting = dbCursor.getString(dbCursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING));
-        String dbCityName = dbCursor.getString(dbCursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_CITY_NAME));
-        Float dbCoordLat = dbCursor.getFloat(dbCursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_COORD_LAT));
-        //String dbCoordLat = dbCursor.getString(dbCursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_COORD_LAT));
-        Float dbCoordLong = dbCursor.getFloat(dbCursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_COORD_LONG));*/
-
-        // String firstName = c.getString(c.getColumnIndex("FirstName"));
-        // int age = c.getInt(c.getColumnIndex("Age"));
-
+        // LJG can get the data from cursor manually - for example
+        // String dbMovieName = dbCursor.getString(dbCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE));
 
         // Fifth Step: Validate data in resulting Cursor with the original ContentValues
-        // (you can use the validateCurrentRecord function in TestUtilities to validate the
-        // query if you like)
+        // - here using validateCurrentRecord function in TestUtilities
         TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed", //this is a nice method to re-use in other projects to validate a table
                 dbCursor, testValues);
 
-
-        // Validate data in resulting Cursor with the original ContentValues
-        // (you can use the validateCurrentRecord function in TestUtilities to validate the
-        // query if you like) LJG I used this at first
-
-       /* assertEquals("Location setting was " + dbLocationSetting + " and not the expected 99705", "99705", dbLocationSetting);
-        assertEquals("City Name was " + dbCityName + " and not the expected North Pole", "North Pole", dbCityName);
-        assertEquals("Coord Lat was " + dbCoordLat + " and not the expected 64.7488", 64.7488f, dbCoordLat, 0.0f);
-        assertEquals("Coord Long was " + dbCoordLong + " and not the expected -147.353", -147.353f, dbCoordLong, 0.0f); //for testing floats must also provide a delta of how far apart they can be and still pass
-*/
-
+        //can validate manually if needed to
+        //assertEquals("Movie Title was" + dbMovieName + " and not the expected ", "Insert Expected String here" , dbLocationSetting);
 
         // Move the cursor to demonstrate that there is only one record in the database
         assertFalse("Error: More than one record returned from location query",
                 dbCursor.moveToNext());
 
-
         // Finally, close the cursor and database
         //LJG also, delete test row perhaps???
         dbCursor.close();
         db.close();
-        //end of original testLocationTable()
 
 
         return movieRowId;
-        // return -1L;
     }
 }
