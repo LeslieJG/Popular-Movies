@@ -27,8 +27,8 @@ public class MovieContentProvider extends ContentProvider {
     private MovieDbHelper mOpenHelper;
 
     // Movie URI's to be matched to these constants
-    static final int MOVIE = 100;
-    static final int MOVIE_DETAIL = 101;
+    static final int MOVIE = 100;  //content://com.gmail.lgelberger.popularmovies/movie
+    static final int MOVIE_DETAIL = 101;//com.gmail.lgelberger.popularmovies/movie/3423
     /////////////////////////////////////////////////////////
 
 
