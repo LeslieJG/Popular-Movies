@@ -7,7 +7,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 
 /**
  * Created by Leslie on 2016-05-03.
@@ -17,8 +16,7 @@ import android.support.annotation.Nullable;
 public class MovieContentProvider extends ContentProvider {
 
 
-    ///////////////////////////////////////////////////////////////
-    // URI Matcher Stuff
+    ////////////URI Matcher Stuff///////////////////////////////////////////////////
 
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -29,24 +27,19 @@ public class MovieContentProvider extends ContentProvider {
     // Movie URI's to be matched to these constants
     static final int MOVIE = 100;  //content://com.gmail.lgelberger.popularmovies/movie
     static final int MOVIE_DETAIL = 101;//com.gmail.lgelberger.popularmovies/movie/3423
-    /////////////////////////////////////////////////////////
 
 
-    //Android Provides URI Matcher to assist in matching URIs to queries(?)
-/*
-        Students: Here is where you need to create the UriMatcher. This UriMatcher will
-        match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
-        and LOCATION integer constants defined above.  You can test this by uncommenting the
-        testUriMatcher test within TestUriMatcher.
+    /**
+     * UriMatcher will match each URI to the MOVIE nad MOVIE_DETAIL integer constants defined above.
+     * You can test this by uncommenting the testUriMatcher test within TestUriMatcher.
+     *
+     * @return UriMatcher
      */
     static UriMatcher buildUriMatcher() {
-        // I know what you're thinking.  Why create a UriMatcher when you can use regular
-        // expressions instead?  Because you're not crazy, that's why.
-
         // All paths added to the UriMatcher have a corresponding code to return when a match is
         // found.  The code passed into the constructor represents the code to return for the root
         // URI.  It's common to use NO_MATCH as the code for this case.
-        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH); //set the initial matcher to NO_MATCH in case we can't find a match
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
@@ -55,14 +48,6 @@ public class MovieContentProvider extends ContentProvider {
 
         //for matching a query for just the details of ONE movie
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", MOVIE_DETAIL);
-
-        //below are examples from Sunshine app
-        // matcher.addURI(authority, WeatherContract.PATH_WEATHER, WEATHER);
-        //  matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
-        // matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);
-
-        // matcher.addURI(authority, WeatherContract.PATH_LOCATION, LOCATION);
-
 
         return matcher;
     }
@@ -76,9 +61,7 @@ public class MovieContentProvider extends ContentProvider {
 
 
     /*
-
-    For us,
-    query will be the most complex of the required content provider methods.
+    Query will be the most complex of the required content provider methods.
     We've given you the bones, of the query operation.
 
     As you can see, we use our SURI nature object,
@@ -91,29 +74,29 @@ public class MovieContentProvider extends ContentProvider {
     response for every type of URI in the content provider,
     as several of them are used in queries only.
 
-
     We'll see more on this later, when we cover inserting and
     updating the database.
 
     Uncomment the test basic weather query function within test provider and
     run this code when you're finished, to make sure all of this is working well.
 
-    NEED TO TEST THIS!!!!!
+    * @param uri :Query Uri (should match one of the URI's in UriMatcher()
+     * @param projection :Which Columns in Table to Query
+     * @param selection :Columns for "where" clause
+     * @param selectionArgs : Values for "where" clause
+     * @param sortOrder : Sort order of returned column data
+     * @return :Cursor with table data from query
 
      */
-    @Nullable
+   // @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        // return null;
-
 
         Cursor retCursor; //the cursor with the database information to be returned
 
         // Here's the switch statement that, given a URI, will determine what kind of request it is,
         // and query the database accordingly.
         switch (sUriMatcher.match(uri)) {
-
-            //
 
             //  content://com.gmail.lgelberger.popularmovies/movie
             // "movie"
@@ -130,8 +113,6 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
 
-            //LJG ZZZ Note, Movie_detail query still needs to be properly tested!!!!!
-
             // content://com.gmail.lgelberger.popularmovies/movie/#
             // "movie/#"
             case MOVIE_DETAIL: {
@@ -146,20 +127,16 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
 
-
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-
         /* This causes the cursor to register a content observer, to watch for
-        changes that happen to that URI and any of its descendants. This allows the content provider, to easily tell the UI when the cursor
-        changes, on operations like a database insert or update. */
+        changes that happen to that URI and any of its descendants. This allows the content provider,
+        to easily tell the UI when the cursor changes, on operations like a database insert or update. */
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return retCursor;
-
-
     }
 
 
@@ -170,7 +147,7 @@ public class MovieContentProvider extends ContentProvider {
     No need to deal with the non-base Uri's.
     Only the base Uri is needed
      */
-    @Nullable
+   // @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
@@ -215,10 +192,6 @@ public class MovieContentProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         MovieContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            /*case LOCATION:
-                rowsDeleted = db.delete(
-                        WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
-                break;*/
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -240,14 +213,10 @@ public class MovieContentProvider extends ContentProvider {
 
         switch (match) {
             case MOVIE:
-                // normalizeDate(values);
                 rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
-            /*case LOCATION:
-                rowsUpdated = db.update(WeatherContract.LocationEntry.TABLE_NAME, values, selection,
-                        selectionArgs);
-                break;*/
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -255,23 +224,19 @@ public class MovieContentProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null); //this line notifies changes to all children Uri's as well
         }
         return rowsUpdated;
-
-
     }
 
 
     /*
-     getType is a good way to review the content URI's that will be handled
+    getType is a good way to review the content URI's that will be handled
 
-    The Key information that this conveys is whether
-
-    We partially filled out the getType function for you.
     We use the urimatcher we built earlier to match the given uri
     against the expressions we've compiled in.
-    For each match, we return the types that we've defined in the weather contract.
+
+    For each match, we return the types that we've defined in the movie contract.
     Remember that the key information that this conveys, is weather the content uri
-    will be returning a database cursor containing a single record type item, or
-    multiple records type directory.
+    will be returning a database cursor containing a single record type item (CONTENT_ITEM_TYPE), or
+    multiple records type directory. (CONTENT_TYPE)
 
     Content providers can also be used to return other kinds of data
     than just database cursors.
@@ -279,14 +244,13 @@ public class MovieContentProvider extends ContentProvider {
     a content uri, we would have this function return the standard mime type,
     image/jpeg.
      */
-    @Nullable
+  //  @Nullable
     @Override
     public String getType(Uri uri) {
-        // Use the Uri Matcher to determine what kind of URI this is.
-        final int match = sUriMatcher.match(uri);
+
+        final int match = sUriMatcher.match(uri); // Use the Uri Matcher to determine what kind of URI this is.
 
         switch (match) {
-
             case MOVIE:
                 return MovieContract.MovieEntry.CONTENT_TYPE; //MOVIE Uri returns multiple records type directory - for grid display info
             case MOVIE_DETAIL:
