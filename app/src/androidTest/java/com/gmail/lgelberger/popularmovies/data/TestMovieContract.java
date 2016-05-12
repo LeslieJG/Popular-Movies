@@ -8,11 +8,9 @@ import android.test.AndroidTestCase;
  */
 public class TestMovieContract extends AndroidTestCase {
 
-
     private static final long TEST_MOVIE_ID = 123456L;  // Some random id number for now
 
     public void testBuildMovieUriWithAppendedID () {
-
         Uri movieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(TEST_MOVIE_ID);
 
         assertEquals("Error: Movie ID not properly appended to the end of the Uri",
@@ -23,17 +21,12 @@ public class TestMovieContract extends AndroidTestCase {
     }
 
     //test the decoder function too!
-
     public void testGetIdFromUri () {
-
-
         Uri movieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(TEST_MOVIE_ID);
 
         assertEquals("Error: GetIfFromUri not returning proper ID value",
                 MovieContract.MovieEntry.getIdFromUri(movieUri),
             Long.toString(TEST_MOVIE_ID));
     }
-
-
 }
 

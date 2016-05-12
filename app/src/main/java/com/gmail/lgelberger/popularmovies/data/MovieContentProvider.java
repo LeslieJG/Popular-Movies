@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 /**
  * Created by Leslie on 2016-05-03.
@@ -88,7 +89,7 @@ public class MovieContentProvider extends ContentProvider {
      * @return :Cursor with table data from query
 
      */
-   // @Nullable
+    @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
@@ -147,7 +148,7 @@ public class MovieContentProvider extends ContentProvider {
     No need to deal with the non-base Uri's.
     Only the base Uri is needed
      */
-   // @Nullable
+    @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
@@ -244,7 +245,7 @@ public class MovieContentProvider extends ContentProvider {
     a content uri, we would have this function return the standard mime type,
     image/jpeg.
      */
-  //  @Nullable
+    @Nullable
     @Override
     public String getType(Uri uri) {
 
