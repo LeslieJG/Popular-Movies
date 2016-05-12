@@ -15,18 +15,22 @@ import com.gmail.lgelberger.popularmovies.utils.PollingCheck;
 import java.util.Map;
 import java.util.Set;
 
-//import com.example.android.sunshine.app.utils.PollingCheck;
 
 /*
-    From Sunshine:
-    Students: These are functions and some test data to make it easier to test your database and
-    Content Provider.  Note that you'll want your WeatherContract class to exactly match the one
-    in our solution to use these as-given.
+    Modelled After Udacty Sunshine Test Utilities Function
+    These are functions and some test data to make it easier to test the database and
+    Content Provider.
  */
 public class TestUtilities extends AndroidTestCase {
-   // static final String TEST_LOCATION = "99705";
-   // static final long TEST_DATE = 1419033600L;  // December 20th, 2014
 
+
+    /**
+     * Used to test whether a cursor contains exactly the same values and the ContentValues passed in
+     *
+     * @param error          :Message to return if cursor doesn't match values of Content Values
+     * @param valueCursor    :The Cursor to be tested
+     * @param expectedValues :The Content Valuess that the cursor should contain for the test to pass
+     */
     static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
         assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
         validateCurrentRecord(error, valueCursor, expectedValues);
@@ -35,14 +39,11 @@ public class TestUtilities extends AndroidTestCase {
 
 
     /*
-    Validate current record grabs the set of value pairs from the content values that we inserted.
-    It then iterates through them,using cursor.getColumnIndex to get the index of each column[br]in the record set by name.
+    Validate current record grabs the set of value pairs from the content values that were inserted.
+    It then iterates through them,using cursor.getColumnIndex to get the index of each column in the record set by name.
     We need the column index to get data from the cursor.
-    Note the projections[br]are always return in order.
+    Note the projections are always return in order.
     So if we specify a projection,we can safely use the indexes from our projection array without having to look them up like this.
-
-
-LJG This should be handy for me to use - try using it to validate data base
      */
     static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
         Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
@@ -57,42 +58,14 @@ LJG This should be handy for me to use - try using it to validate data base
         }
     }
 
-    /*
-        Students: Use this to create some default movieValues for your database tests.
+
+    /**
+     * Use  to create some default movieValues for the database and content Provider tests tests.
+     *
+     * @return Content Values containing the contents of one movie
      */
     static ContentValues createMovieValues() {
         ContentValues movieValues = new ContentValues();
-        //weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
-        //weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, TEST_DATE);
-       // weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
-       // weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
-       // weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
-      //  weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, 75);
-      //  weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, 65);
-      //  weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
-      //  weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5);
-       // weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
-
-
-        /*
-                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
-                MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
-                                                                        //figure out how to store the damn poster image itself
-                MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE  + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_RELEASE_DATE  + " TEXT NOT NULL, " +
-
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW + " TEXT , " +  //I'm allowing this to be null if needed until I can
-                //figure out how to store the movie reviews  (perhaps just a URL?)
-
-                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO + " TEXT  " +  //I'm allowing this to be null if needed until I can
-                //figure out how to store the movie videos (perhaps just a URL?)
-                 */
-
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The test Movie");
         movieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "123456");
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://BiteMe.com");
@@ -108,52 +81,11 @@ LJG This should be handy for me to use - try using it to validate data base
         return movieValues;
     }
 
-
-
-    /*
-        Students: Use this to create some default movieValues for your database tests.
-        LJG Using these to put a second movie in if needed
-     */
-    static ContentValues createMovieValuesAotherSet() {
-        ContentValues movieValuesTheSequel = new ContentValues();
-
-
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The second test Movie");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "789");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://BiteMeAgain.com");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "Movie Poster Image The second");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "The test Movie  The Sequel- Original Title");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "Summary - the movie sucked! AGAIN!");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, "2/102");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "2016-05-06");
-
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "Review Again");
-        movieValuesTheSequel.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "Video Again");
-
-        return movieValuesTheSequel;
-    }
-
-
-
-    /*
-        Students: You can uncomment this helper function once you have finished creating the
-        LocationEntry part of the WeatherContract.
-     */
-    /*static ContentValues createNorthPoleLocationValues() {
-        // Create a new map of values, where column names are the keys
-        ContentValues testValues = new ContentValues();
-        testValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
-        testValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "North Pole");
-        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, 64.7488);
-        testValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, -147.353);
-
-        return testValues;
-    }*/
-
-
-    /*
-        Students: You can uncomment this function once you have finished creating the
-        LocationEntry part of the WeatherContract as well as the WeatherDbHelper.
+    /**
+     * Inserts a movie into the database
+     *
+     * @param context
+     * @return : Row Id of Movie inserted into database
      */
     static long insertMovieValues(Context context) {
         // insert our test records into the database
@@ -161,57 +93,23 @@ LJG This should be handy for me to use - try using it to validate data base
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues testValues = TestUtilities.createMovieValues();
 
-
-
-
-
-        long locationRowId;
-        locationRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValues);
-
-
-
+        long movieRowId;
+        movieRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValues);
 
         // Verify we got a row back.
-        assertTrue("Error: Failure to insert Movie Values", locationRowId != -1);
+        assertTrue("Error: Failure to insert Movie Values", movieRowId != -1);
 
-        return locationRowId;
+        return movieRowId;
     }
 
 
-
     /*
-       Inserting 2 sets of movie values
-       Used to help with testing the Movie Content Provider detail Query
-    */
-    static long insertMovieValuesTwoSets(Context context) {
-        // insert our test records into the database
-        MovieDbHelper dbHelper = new MovieDbHelper(context);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        ContentValues testValues = TestUtilities.createMovieValues();
-        ContentValues testValuesTheSequel = TestUtilities.createMovieValuesAotherSet();
-
-        long locationRowId;
-        db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValues);
-        locationRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValuesTheSequel);
-
-        // Verify we got a row back.
-        assertTrue("Error: Failure to insert Movie Values", locationRowId != -1);
-
-        return locationRowId;
-    }
-
-
-
-    /*
-        Students: The functions we provide inside of TestMovieContentProvider use this utility class to test
-        the ContentObserver callbacks using the PollingCheck class that we grabbed from the Android
+        The functions inside of TestMovieContentProvider use this utility class to test
+        the ContentObserver callbacks using the PollingCheck class that was grabbed from the Android
         CTS tests.
 
         Note that this only tests that the onChange function is called; it does not test that the
         correct Uri is returned.
-
-        LJG ZZZ I will have to uncomment and import the PollingCheck Class when needed
      */
     static class TestContentObserver extends ContentObserver {
         final HandlerThread mHT;
