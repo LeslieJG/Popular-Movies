@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -81,7 +82,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
     /*
     This test checks to make sure that the content provider is registered correctly in AndroidManifest.xml
-    odified from Sunshine App */
+    modified from Sunshine App */
     public void testProviderRegistry() {
         PackageManager pm = mContext.getPackageManager();
 
@@ -145,7 +146,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
         ContentValues testValues = TestUtilities.createMovieValues();
         long locationRowId = TestUtilities.insertMovieValues(mContext); //movie inserted into database
-         db.close(); // to stop writing to it
+        db.close(); // to stop writing to it
 
         // Test the basic content provider query
         Cursor movieCursor = mContext.getContentResolver().query(
@@ -161,7 +162,6 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
         // Has the NotificationUri been set correctly? --- we can only test this easily against API
         // level 19 or greater because getNotificationUri was added in API level 19.
-
         if (Build.VERSION.SDK_INT >= 19) {
             assertEquals("Error: Movie Query did not properly set NotificationUri",
                     movieCursor.getNotificationUri(), MovieContract.MovieEntry.CONTENT_URI);
@@ -185,24 +185,11 @@ public class TestMovieContentProvider extends AndroidTestCase {
         //create a lot of table values
         ContentValues[] testValuesArray = createBulkInsertMovieValues(); //this should be a table of 10 values
 
-        // Register a content observer for our bulk insert.
-        //   TestUtilities.TestContentObserver movieObserver = TestUtilities.getTestContentObserver();
-        //    mContext.getContentResolver().registerContentObserver(MovieContract.MovieEntry.CONTENT_URI, true, movieObserver);
-
         // do the bulk insert
-        int insertCount = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, testValuesArray);
-
-
-        // Students:  If this fails, it means that you most-likely are not calling the
-        // getContext().getContentResolver().notifyChange(uri, null); in your BulkInsert
-        // ContentProvider method.
-
-        //  movieObserver.waitForNotificationOrFail();
-        //   mContext.getContentResolver().unregisterContentObserver(movieObserver);
-
+        int bulkInsertCount = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, testValuesArray);
 
         //quick confirmation that we actually inserted the correct number
-        assertEquals(insertCount, NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
+        assertEquals(bulkInsertCount, NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
 
         //this test is just making sure that the bulk insert worked
         //getting cursor of entire table
@@ -215,7 +202,8 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 //I may have to have a difernt sort order for test to work?  LJG ZZZ
         );
 
-        // we should have as many records in the database as we've inserted
+        // we should have as many records in the database as we've inserted - already tested in bulk insert -
+        // I'm just being extra cautious here
         assertEquals(entireTableCursor.getCount(), NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
 
         // and let's make sure they match the ones we created
@@ -225,80 +213,15 @@ public class TestMovieContentProvider extends AndroidTestCase {
                     entireTableCursor, testValuesArray[i]);
         }
 
-        //preparing to get Movie number "7" back
-        final int RECORD_I_WANT = 7;
-
-        //move cursor to
-        entireTableCursor.moveToFirst();
-        entireTableCursor.move(RECORD_I_WANT); //move cursor to row that I will compare it with
-
-        //now see if I can match the correct contentValue with the correct cursor row
-        TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating RECORD_THAT_I_WANT from basicQuery ",
-                entireTableCursor, testValuesArray[RECORD_I_WANT]);
-
-        //I'm not closing the entireTableCursor, becuase it will be used in a later test
-
-
-        // see if I can get a single row cursor from a basic Query - doing it manually (without using Movie_detail URI
-        ////THis is incorrect way - find right way and implement it in Movie ContentProvider
-        //  String selection = MovieContract.MovieEntry._ID + " = ?";
-        // String selectionArgs[] = {"7"};
-        String selection = MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " = ?";
-        String selectionArgs[] = {"Movie Title " + RECORD_I_WANT}; //RECORD_I_WANT is "7"
-
-        //creating a cursor with just one movie in it using Basic MOVIE uri, but making the query exactly the same
-        //as the MOVIE_DETAIL uri
-        Cursor singleMovieTitleFromBasicQueryCursor = mContext.getContentResolver().query(
-                MovieContract.MovieEntry.CONTENT_URI,
-                null, // leaving "columns" null just returns all the columns.
-                selection, //MovieContract.MovieEntry._ID, // cols for "where" clause    //perhaps add  + " = ?" after this
-                selectionArgs,  //new String[]{"7"}, // values for "where" clause
-                null  // sort order
-                //I may have to have a difernt sort order for test to work?  LJG ZZZ
-        );
-
-
-        //see if this cursor has any data in it
-
-        assertTrue(" The singleMovieTitleFromBasicQueryCursor is empty - a single row was NOT returned",
-                singleMovieTitleFromBasicQueryCursor.moveToFirst());
-        //this one works!!!!
-
-        //make sure it matches the movie Title we want
-        TestUtilities.validateCurrentRecord("singleMovieTitleFromBasicQueryCursor.  Error validating RECORD_THAT_I_WANT from singleMovieTitleFromBasicQueryCursor ",
-                singleMovieTitleFromBasicQueryCursor, testValuesArray[RECORD_I_WANT]);
-
-        singleMovieTitleFromBasicQueryCursor.close(); //close the cursor
-
 
         ////////////////////////////////////////////////////
         // OK the point of movieDetail is to be able to get a single record back given just the _id
         //let's try to get the _id of a movie and see what it is!!!!
 
-        //create a new movie // first built a new contentValue
-        ContentValues movieSingleMovieValues = new ContentValues();
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The Insert 1 Movie Title");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "123456789");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://newSinlgeMove.com");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "MovieInsert1Picture - should be pic not text");
-        //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "The Insert 1 Movie ORIGINAL Title");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "The Insert 1 Movie Plot Synopsis");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, "The Insert 1 Movie Vote Average");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "The Insert 1 Movie Release Date");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "The Insert 1 Movie Movie Review");
-        //The reviews may end up being a URL - this may also need to change
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "The Insert 1 Movie Video");
-        //the Video may also change format
+        //create one more movie
+        ContentValues movieSingleMovieValues = createMovieSingleMovieValue();
 
-        //just confirm that the EntireTableCursor still exists
-        //may be OK to delete this line at some point
-        assertEquals("The Entire Table cursor has more than " + NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT + " entries in it!!!! - It shouldn't",
-                NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT,
-                entireTableCursor.getCount());
-
-        //insert movie
-        //then get the URI back from a single insert
+        //insert movie then get the URI back from a single insert
         Uri movieInsertUri = mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, movieSingleMovieValues);
 
         //WOw, using the below statement I just found out that the _id in the database is NOT sequential - good to know!
@@ -319,40 +242,18 @@ public class TestMovieContentProvider extends AndroidTestCase {
         assertEquals(entireTableCursor.getCount(), NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT + 1);
 
 
-        //and try to use THAT EXACT id from Uri for a general query
+        //Make a DetailQuery using the _ID returned by single movie insert
         String idFromUri = MovieContract.MovieEntry.getIdFromUri(movieInsertUri); //id returned is a String not a LONG (just fyi)
-        selection = MovieContract.MovieEntry._ID + " = ?"; //select _ID
-        selectionArgs[0] = idFromUri; // the specific _ID I want is the one I just inserted
-        Cursor oneMovieGeneralQuery = mContext.getContentResolver().query(
-                MovieContract.MovieEntry.CONTENT_URI,
-                null, // leaving "columns" null just returns all the columns.
-                selection, //MovieContract.MovieEntry._ID, // cols for "where" clause    //perhaps add  + " = ?" after this
-                selectionArgs,  //new String[]{"7"}, // values for "where" clause
-                null  // sort order
-                //I may have to have a difernt sort order for test to work?  LJG ZZZ
-        );
-
-        //confirm valid row
-        assertTrue(" The oneMovieGeneralQuery is empty - a single row was NOT returned",
-                oneMovieGeneralQuery.moveToFirst());
-        //confirm that it is the same as what I inserted in
-        TestUtilities.validateCurrentRecord("oneMovieGeneralQuery.  Error validating record from from oneMovieGeneralQuery ",
-                oneMovieGeneralQuery, movieSingleMovieValues);
-
-        //assert the Content Type is correct for detail query - but get type is already tested!!
-
-        //then use it again for a detail query
-        Long idFromUriAsLong = Long.parseLong(idFromUri);
+        Long idFromUriAsLong = Long.parseLong(idFromUri); //Detail movie query needs a number appended on the Content Uri
         Uri movieDetailUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(idFromUriAsLong);
         //test to make sure that movieDetailUri is of type MOVIE_DETAIL
         String movieDetailUritype = mContext.getContentResolver().getType(movieDetailUri);
         // vnd.android.cursor.dir/com.gmail.lgelberger.popularmovies/movie/1357
         assertEquals("Error: the MovieEntry CONTENT_URI should return MovieEntry.CONTENT_ITEM_TYPE",
-                MovieContract.MovieEntry.CONTENT_ITEM_TYPE, movieDetailUritype); // confirm this Uri is of type MOVUE_DETAIL
+                MovieContract.MovieEntry.CONTENT_ITEM_TYPE, movieDetailUritype); // confirm this Uri is of type MOVIE_DETAIL
 
 
-        //selection = MovieContract.MovieEntry._ID + " = ?"; //select _ID
-        //selectionArgs[0] = idFromUri; // the specific _ID I want is the one I just inserted
+        //Create a Detail Movie Query
         //note for Movie Detail I *JUST* have to give it a Uri with the _id appeneded on the end
         Cursor movieDetailQuery = mContext.getContentResolver().query(
                 movieDetailUri,
@@ -372,11 +273,41 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
 
 
+        //LJG is this needed???
+        // Has the NotificationUri been set correctly? --- we can only test this easily against API
+        // level 19 or greater because getNotificationUri was added in API level 19.
+        if (Build.VERSION.SDK_INT >= 19) {
+            //  assertEquals("Error: MovieDetailQuery did not properly set NotificationUri",
+           ///         movieDetailQuery.getNotificationUri(), MovieContract.MovieEntry.CONTENT_URI);
+            assertEquals("Error: MovieDetailQuery did not properly set NotificationUri",
+                    movieDetailQuery.getNotificationUri(), movieInsertUri); //confirm notification sent to DetailQueryURI (they are the same type)
+        }
 
-        //close entireTableCursor
         entireTableCursor.close();
+        movieDetailQuery.close();
     }
 
+    @NonNull
+    private ContentValues createMovieSingleMovieValue() {
+        //extract to method
+
+        //create a new movie // first built a new contentValue
+        ContentValues movieSingleMovieValues = new ContentValues();
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The Insert 1 Movie Title");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "123456789");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://newSinlgeMove.com");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "MovieInsert1Picture - should be pic not text");
+        //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "The Insert 1 Movie ORIGINAL Title");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "The Insert 1 Movie Plot Synopsis");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, "The Insert 1 Movie Vote Average");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "The Insert 1 Movie Release Date");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "The Insert 1 Movie Movie Review");
+        //The reviews may end up being a URL - this may also need to change
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "The Insert 1 Movie Video");
+        //the Video may also change format
+        return movieSingleMovieValues;
+    }
 
 
     // Make sure we can still delete after adding/updating stuff
