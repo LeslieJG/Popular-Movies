@@ -33,17 +33,15 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     public MovieDbHelper(Context context) {
 
-        /*
-        SQLiteOpenHelper Constructor
-        context Context - to use to open and create the database
+
+        ////// SQLiteOpenHelper Constructor //////
+       /* context Context - to use to open and create the database
         name String - name of database file, or null for in-memory database
         factory SQLiteDatabase.CursorFactory - to use for creating cursor objects, or null for default
         version int - number of the database (starting at 1)
                     if the database number being passed in is older onUpgrade(SQLiteDatabase, int, int)
                     will be used to upgrade the database; if the database is
-                    newer, onDowngrade(SQLiteDatabase, int, int) will be used to downgrade the database
-         */
-
+                    newer, onDowngrade(SQLiteDatabase, int, int) will be used to downgrade the database*/
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -54,39 +52,6 @@ public class MovieDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        //Trying to make the location table too.
-        // Create a table to hold locations.  A location consists of the string supplied in the
-        // location setting, the city name, and the latitude and longitude
-        /*final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + " (" +
-                LocationEntry._ID + " INTEGER PRIMARY KEY," +  //the unique indentifying id key
-                LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL, " + //Location setting has to be
-                // unique because the id of our location is used as a foreign key in our weather table
-                // and therefore must not change
-                LocationEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " + //the string city name
-                LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " + //the latitude as returned by open weather map
-                LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL " +
-                ");";*/
-
-
-
-        /* Table Name = movies
-
-    _ID - each row will have own id number
-    movieTitle
-    api_movie_id
-    moviePosterUrl
-    movie_poster (stored as image somehow)
-    originalTitle
-    overview
-    voteAverage
-    releaseDate
-
-    also need
-    Movie review
-    Movie Trailer Video
-    //currently these 2 are not in movie provider
- */
-
 
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
                 // Why AutoIncrement here, and not above?
@@ -112,33 +77,15 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 //figure out how to store the movie videos (perhaps just a URL?)
                 ");";
 
-
-
-        /* Example table - to delete later on
-        CREATE TABLE sqlite_master (
-  type text,
-  name text,
-  tbl_name text,
-  rootpage integer,
-  sql text
-);
-         */
-
-
-/* From original sunshine
-Useful stuff in case I need just one entry for each movie (to avoid having duplicate entries for same movie
-I'm leaving this out for now.
-                // To assure the application have just one weather entry per day
-                // per location, it's created a UNIQUE constraint with REPLACE strategy
-                " UNIQUE (" + WeatherEntry.COLUMN_DATE + ", " +
-                WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";*/
-
+        /* From original sunshine
+        Useful stuff in case I need just one entry for each movie (to avoid having duplicate entries for same movie
+        I'm leaving this out for now.
+                        // To assure the application have just one weather entry per day
+                        // per location, it's created a UNIQUE constraint with REPLACE strategy
+                        " UNIQUE (" + WeatherEntry.COLUMN_DATE + ", " +
+                        WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";*/
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
-
-        // sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
-
-
     }
 
 
@@ -155,6 +102,4 @@ I'm leaving this out for now.
         //  sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
-
-
 }

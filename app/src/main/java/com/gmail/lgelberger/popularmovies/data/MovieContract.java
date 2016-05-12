@@ -14,7 +14,7 @@ import android.provider.BaseColumns;
  */
 public class MovieContract {
 
-    //The following are for the Content provider - as modelled on the Udacity Sunshine app
+    ////////////////////The following are for the Content provider - as modelled on the Udacity Sunshine app //////////
 
     // The "Content authority" is a name for the entire content provider, similar to the
     // relationship between a domain name and its website.  A convenient string to use for the
@@ -29,10 +29,9 @@ public class MovieContract {
     // Note: These paths match the database tables
     public static final String PATH_MOVIE = "movie";
     public static final String PATH_SOME_OTHER_INFO = "other_info";
-    //////////////////////////////////////////////////////////////////////////////////////////
 
 
-    //The following are the inner classes that define the database tables
+   //////////The following are the inner classes that define the database tables ////////////
 
     /*
     Inner Class that defines the contents of the movie table
@@ -52,9 +51,7 @@ public class MovieContract {
         public static final String COLUMN_MOVIE_REVIEW = "movie_review"; //movie reviews - stored as ZZZ ?? perhaps URL?
         public static final String COLUMN_MOVIE_VIDEO = "movie_video"; //movie videos - stored as ZZZ ??? perhaps URL?
 
-        /////////////////////////////////////////////////////////////////////////////
-
-        // The following are needed for the Content Provider
+        /////////////////The following are needed for the Content Provider////////////////////////////////////////////////////////////
 
         // Create Content Uri that represents base location for this table
         //This way the content uri can be built for each table in a content provider
@@ -84,7 +81,7 @@ public class MovieContract {
 
 
         ///////////////////////////////////////////////////////////////////////
-        //All of the below crap is to make content provider query URIs
+        //All of the below is to make content provider query URIs
         //designed to make life easier to query the Content Provider
 
         //Decoder fucntions
