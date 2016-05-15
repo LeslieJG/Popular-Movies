@@ -30,7 +30,11 @@ import java.util.List;
  *
  */
 public class MovieAdapter extends ArrayAdapter {
-    List movieList = new ArrayList(); //the list of all the movieData that we will be putting into gridView
+   // List movieList = new ArrayList(); //the list of all the movieData that we will be putting into gridView
+    //LJG ZZZ should movie list be parameterized i.e. <MovieDataProvider>?
+   List<MovieDataProvider> movieList = new ArrayList<MovieDataProvider>(); //the list of all the movieData that we will be putting into gridView
+   //the this forces internal list to be of JUST type MovieDataProvider
+
     Context context; //needed for picasso
 
     //Constructor - this is the one Prabeesh recommends - but you will need to add the list separately
@@ -52,10 +56,17 @@ public class MovieAdapter extends ArrayAdapter {
 
     //override add to allow my custom list to be added to , and not just the default list
     @Override
-    public void add(Object object) {
+    /*public void add(Object object) { //gener
         super.add(object);
         movieList.add(object); //added this line to add to the movieList
+    }*/
+    public void add(Object object) {
+        super.add(object);
+        movieList.add((MovieDataProvider) object); //added this line to add to the movieList
     }
+
+
+
 
     //override addAll, to allow an entire arraylist to be added to my custom list
     @Override
@@ -89,6 +100,8 @@ public class MovieAdapter extends ArrayAdapter {
      * needed to populate a gridview item. This is new and NOT an override
      * create the view types that exist in the gridview layout that this adapter will
      * be populating
+     *
+     * LJG ZZZ perhaps make all the information here
      */
     static class DataHandler {
         ImageView moviePoster;

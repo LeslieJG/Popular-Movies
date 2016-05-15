@@ -6,42 +6,34 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-    ArrayAdapter<String> mMovieAdapterForGridTextOnly; //need this as global variable within class so all subclasses can access it
+   //never used - delete?
+    //ArrayAdapter<String> mMovieAdapterForGridTextOnly; //need this as global variable within class so all subclasses can access it
+
     MovieAdapter movieAdapter;//declare custom MovieAdapter
-    List<MovieDataProvider> movieData = Collections.synchronizedList(new ArrayList<MovieDataProvider>());  //threadsafe - to store all the movie data
+
+   //LJG ZZZ this is used internally by FetchMovieTask and gridView.setOnItemClickListener only!!! Perhaps refactor to not need it?
+   //never used - delete?
+ //   List<MovieDataProvider> movieData = Collections.synchronizedList(new ArrayList<MovieDataProvider>());  //threadsafe - to store all the movie data
+
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
@@ -113,7 +105,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
 
                 MovieDataProvider selectedMovieFromGrid = new MovieDataProvider();
-                selectedMovieFromGrid = movieData.get(gridItemClicked);
+
+              //  selectedMovieFromGrid = movieData.get(gridItemClicked); //LJG ZZZ this may have to be retrieved from database, and NOT the local list?
+                        //LJG ZZZ it may have to be retrieved from MovieAdapter instead (if I get movie adapter to store all movie data)
+                selectedMovieFromGrid = (MovieDataProvider) movieAdapter.getItem(gridItemClicked);
+
+
 
                 Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
                 intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
@@ -174,8 +171,11 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             Toast.makeText(getActivity(), "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
             //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
         } else { // if there is internet, get the movie date
-            FetchMovieTask movieTask = new FetchMovieTask();
-            movieTask.execute(movieQueryURL);
+           //LJG ZZZ tranfering to new separate class
+          // FetchMovieTask movieTask = new FetchMovieTask();
+         //   movieTask.execute(movieQueryURL);
+            FetchMovieTaskTheClass movieTask = new FetchMovieTaskTheClass(getActivity(), movieAdapter); //pass in context and movieAdapter
+           movieTask.execute(movieQueryURL);
         }
     }
 
@@ -210,7 +210,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
      *
      * @return URL for themoviedb.org
      */
-    private URL makePosterURL(String posterPath) {
+    /*private URL makePosterURL(String posterPath) {
         URL url = null; //url to be built
 
         // It’s constructed using 3 parts:
@@ -230,7 +230,8 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             e.printStackTrace();
         }
         return url;
-    }
+    }*/
+    //LJG ZZZ the above was used for FetchMovieTask only  !  moved to new FetchMovieTaskTheClass
 
 
     /**
@@ -256,7 +257,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
      * <p/>
      * This class modelled after the "Sunshine" AsyncTask
      */
-    public class FetchMovieTask extends AsyncTask<URL, Void, String> {
+   /* public class FetchMovieTask extends AsyncTask<URL, Void, String> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
 
         @Override
@@ -334,16 +335,19 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         }
 
 
-        /**
+        *//**
          * This is where the JSON result from the movie query is processed and put into the movieAdapter for display
          *
          * @param result is the JSON string from themoviedb.org
-         */
+         *//*
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
             //load the movie titles into the movieAdapter
+            //LJG ZZZ this does NOT needs a copy of movieData passed in as it clears it all first.
+            //when refactored into it's own class, it can make it's own copy of movieData if needed.
+            //but it DOES need a reference to the movieAdapter - this needs to be passed into constructor
             try {
                 movieData.clear();
                 movieData.addAll(getMovieDataFromJson(result));
@@ -360,14 +364,14 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         }
 
 
-        /**
+        *//**
          * Take the complete string representing the entire initial movie call to themoviedb.org
          * and pull out the data needed for the grid view
          *
          * @param movieJsonStr the JSON of all the movie data from themoviedb.org
          * @return array of MovieDataProvider obects to hold the info for each movie
          * @throws JSONException
-         */
+         *//*
         private List<MovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {
             // These are the names of the JSON objects that need to be extracted.
             final String TMBD_RESULTS = getString(R.string.movie_json_key_results);
@@ -404,7 +408,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             return Arrays.asList(movieDataProviderArrayFromJSON); //convert the movie data provider array into a list
         }
     }
-
+*/
 
 }
 

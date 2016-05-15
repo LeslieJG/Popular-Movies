@@ -15,6 +15,21 @@ import android.support.annotation.Nullable;
  * Starting to make a content provider to deal with my locally stored movies (favourites) in Popular Movies Part 2
  */
 public class MovieContentProvider extends ContentProvider {
+    /*
+    NB: Here is a good order to write the content provider. Before content provider is written, some parts of tests
+    may have to access database directly,  and not just the contentResolver
+
+    -make URI constants for matching
+    -Make inner class UriMatcher (Test UriMatcher)
+    -register content provider in Android.Manifest (testProviderRegistry)
+    -onCreate - instantiate database helper
+    -getType - using UriMatcher (Test getType)
+    -query (Test Basic and other Queries)
+    -Insert (testInsert)
+    -update (test update)
+    -delete (test delete)
+    -bulkInsert (test bulkInsert)
+     */
 
 
     ////////////URI Matcher Stuff///////////////////////////////////////////////////
