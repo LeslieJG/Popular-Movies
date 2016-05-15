@@ -22,18 +22,9 @@ import java.util.List;
 
 /**
  * Created by Leslie on 2016-05-16.
- * Currently Refactoring to have it be a separate class (instead of inside MainActivityFragment.java
- *
- * Will need to pass in context to allow for getString(R.string.movie_json_key_results) calls
- * These will be refactored to mContext.getString(R.string.movie_json_key_results)
- *
- * Also need to pass in the movieAdapter for gridview to allow for the views to be updated
- *
- *
- *
- * /////////////////below is what was in original comments  //////////////////////
+
  * *made the networking stuff an AsyncTask for now to get it off main thread
- *
+ * <p/>
  * <p/>
  * Params, the type of the parameters sent to the task upon execution.
  * Progress, the type of the progress units published during the background computation.
@@ -50,26 +41,32 @@ import java.util.List;
  * <p/>
  * <p/>
  * <p/>
- * Param String will be the URL to call the moviedb
+ * Param String will be the URL to call the moviedb on internet
  * <p/>
  * This class modelled after the "Sunshine" AsyncTask
  */
 public class FetchMovieTaskTheClass extends AsyncTask<URL, Void, String> {
     private final String LOG_TAG = FetchMovieTaskTheClass.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
 
-
     private MovieAdapter movieAdapter;
     private final Context mContext;
 
 
-
-    //constructor
-    //need to have both context (for .getString calls) and Gridadapter (movieAdapter) passed in
+    /**
+     *
+     * @param context application context for context.getString(R.id etc) - to access the apps String resources
+     * @param movieAdapter A reference to the apps GridAdpater to update data being displayed
+     */
     FetchMovieTaskTheClass(Context context, MovieAdapter movieAdapter) {
         this.mContext = context;
         this.movieAdapter = movieAdapter;
     }
 
+    /**
+     *
+     * @param params URL of movie Query to access internet
+     * @return  movieJsonStr: a String containing the JSON data of all movies from internet
+     */
     @Override
     protected String doInBackground(URL... params) {
         //check to see if URL is passed in
@@ -155,25 +152,17 @@ public class FetchMovieTaskTheClass extends AsyncTask<URL, Void, String> {
         super.onPostExecute(result);
 
         //load the movie titles into the movieAdapter
-        //LJG ZZZ this does NOT needs a copy of movieData passed in as it clears it all first.
-        //when refactored into it's own class, it can make it's own copy of movieData if needed.
-        //but it DOES need a reference to the movieAdapter - this needs to be passed into constructor
         try {
-
-            //getMovieDataFromJson(result) should return a List<MovieDataProvider> with all
-            // movie info that can be added directly to the movieAdapter
-
-            List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>();
-
-
-           // movieData.clear(); //LJG ZZZ not needed - from when it was inside MainActivityFragment
-            movieData.addAll(getMovieDataFromJson(result));
+            List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //make a new list of all the movie data
+            movieData.addAll(getMovieDataFromJson(result)); //add all the movie data from internet to list
 
             movieAdapter.clear(); //clear all the old movie data out
-
-            for (MovieDataProvider individualMovie : movieData) { //add the movieData to the Adapter
+            //older way - add one movie at a time to the adapter
+           /* for (MovieDataProvider individualMovie : movieData) { //add the movieData to the Adapter
                 movieAdapter.add(individualMovie); //load the movieData into adapter
-            }
+            }*/
+
+            movieAdapter.addAll(movieData); //add all movies at once
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -226,11 +215,8 @@ public class FetchMovieTaskTheClass extends AsyncTask<URL, Void, String> {
     }
 
 
-
     /**
-     * LJG ZZZ Copied over from MainActivityFragment
-     *
-     * Makes URL to access API to get movie poster
+     * Helper method Makes URL to access API to get movie poster
      *
      * @return URL for themoviedb.org
      */
@@ -255,13 +241,4 @@ public class FetchMovieTaskTheClass extends AsyncTask<URL, Void, String> {
         }
         return url;
     }
-
-
-
-
-
-
-
-
-
 }
