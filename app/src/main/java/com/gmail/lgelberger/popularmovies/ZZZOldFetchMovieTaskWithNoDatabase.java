@@ -22,8 +22,13 @@ import java.util.List;
 
 /**
  * Created by Leslie on 2016-05-16.
-
- * *made the networking stuff an AsyncTask for now to get it off main thread
+ *
+ * This is the OLD FetchMovieTask before using Loaders and Cursor Loader.
+ * I am keeping it as an example as to how to write an asyncTask with direct API calls and
+ * no Content Provider calls.
+ * It is a good first step in creating an AsyncTask
+ *
+ * made the networking stuff an AsyncTask for now to get it off main thread
  * <p/>
  * <p/>
  * Params, the type of the parameters sent to the task upon execution.
@@ -45,8 +50,8 @@ import java.util.List;
  * <p/>
  * This class modelled after the "Sunshine" AsyncTask
  */
-public class FetchMovieTaskTheClass extends AsyncTask<URL, Void, String> {
-    private final String LOG_TAG = FetchMovieTaskTheClass.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
+public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, String> {
+    private final String LOG_TAG = ZZZOldFetchMovieTaskWithNoDatabase.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
 
     private MovieAdapter movieAdapter;
     private final Context mContext;
@@ -57,7 +62,7 @@ public class FetchMovieTaskTheClass extends AsyncTask<URL, Void, String> {
      * @param context application context for context.getString(R.id etc) - to access the apps String resources
      * @param movieAdapter A reference to the apps GridAdpater to update data being displayed
      */
-    FetchMovieTaskTheClass(Context context, MovieAdapter movieAdapter) {
+    ZZZOldFetchMovieTaskWithNoDatabase(Context context, MovieAdapter movieAdapter) {
         this.mContext = context;
         this.movieAdapter = movieAdapter;
     }

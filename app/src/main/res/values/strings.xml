@@ -29,7 +29,7 @@
     <string name="movie_json_key_overview" translatable="false">overview</string>
     <string name="movie_json_key_vote_average" translatable="false">vote_average</string>
     <string name="movie_json_key_release_date" translatable="false">release_date</string>
-
+    <string name="movie_json_key_api_movie_id" translatable="false">id</string>
 
 
     <!-- Settings Strings-->

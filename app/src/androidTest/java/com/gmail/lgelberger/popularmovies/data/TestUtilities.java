@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 
 import com.gmail.lgelberger.popularmovies.utils.PollingCheck;
@@ -23,6 +24,8 @@ import java.util.Set;
  */
 public class TestUtilities extends AndroidTestCase {
 
+
+    static final int NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT = 10; // For making 10 values to test Bulk Insert
 
     /**
      * Used to test whether a cursor contains exactly the same values and the ContentValues passed in
@@ -64,7 +67,7 @@ public class TestUtilities extends AndroidTestCase {
      *
      * @return Content Values containing the contents of one movie
      */
-    static ContentValues createMovieValues() {
+    static ContentValues createMovieValuesForOneMovie() {
         ContentValues movieValues = new ContentValues();
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The test Movie");
         movieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "123456");
@@ -81,6 +84,63 @@ public class TestUtilities extends AndroidTestCase {
         return movieValues;
     }
 
+
+    @NonNull
+    static ContentValues createMovieValuesForAnotherMovie() {
+        //extract to method
+
+        //create a new movie // first built a new contentValue
+        ContentValues movieSingleMovieValues = new ContentValues();
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The Insert 1 Movie Title");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "123456789");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://newSinlgeMove.com");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "MovieInsert1Picture - should be pic not text");
+        //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "The Insert 1 Movie ORIGINAL Title");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "The Insert 1 Movie Plot Synopsis");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, "The Insert 1 Movie Vote Average");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "The Insert 1 Movie Release Date");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "The Insert 1 Movie Movie Review");
+        //The reviews may end up being a URL - this may also need to change
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "The Insert 1 Movie Video");
+        //the Video may also change format
+        return movieSingleMovieValues;
+    }
+
+
+    /*
+       Creates the bulk insert values for 10 movies
+        */
+    static ContentValues[] createBulkInsertMovieValues() {    //don't need a location id - this is not Sunshine!
+        ContentValues[] returnContentValues = new ContentValues[NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT]; //create an array of Movie Entries
+
+        for (int i = 0; i < NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT; i++) {
+            ContentValues movieValues = new ContentValues();
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "Movie Title " + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://biteme.com/" + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "This should be a picture, not text_" + i);
+            //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "Movie Original Title " + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "This movie sucked, times " + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, i + " out of 10");
+            movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "Release date the year " + i + " A.D");
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "Movie Review: It was " + i + "thumbs up");
+            //The reviews may end up being a URL - this may also need to change
+
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "Here is video number " + i);
+            //the Video may also change format
+
+            returnContentValues[i] = movieValues;
+        }
+        return returnContentValues;
+    }
+
+
+
     /**
      * Inserts a movie into the database
      *
@@ -91,7 +151,7 @@ public class TestUtilities extends AndroidTestCase {
         // insert our test records into the database
         MovieDbHelper dbHelper = new MovieDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues = TestUtilities.createMovieValues();
+        ContentValues testValues = TestUtilities.createMovieValuesForOneMovie();
 
         long movieRowId;
         movieRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, testValues);
@@ -101,6 +161,8 @@ public class TestUtilities extends AndroidTestCase {
 
         return movieRowId;
     }
+
+
 
 
     /*

@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -27,7 +26,6 @@ import android.util.Log;
 public class TestMovieContentProvider extends AndroidTestCase {
 
     public static final String LOG_TAG = TestMovieContentProvider.class.getSimpleName();
-    static private final int NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT = 10; // For making 10 values to test Bulk Insert
 
     // Since we want each test to start with a clean slate, run deleteAllRecords
     // in setUp (called by the test runner before each test).
@@ -144,7 +142,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
         MovieDbHelper dbHelper = new MovieDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        ContentValues testValues = TestUtilities.createMovieValues();
+        ContentValues testValues = TestUtilities.createMovieValuesForOneMovie();
         long locationRowId = TestUtilities.insertMovieValues(mContext); //movie inserted into database
         db.close(); // to stop writing to it
 
@@ -183,13 +181,13 @@ public class TestMovieContentProvider extends AndroidTestCase {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         //create a lot of table values
-        ContentValues[] testValuesArray = createBulkInsertMovieValues(); //this should be a table of 10 values
+        ContentValues[] testValuesArray = TestUtilities.createBulkInsertMovieValues(); //this should be a table of 10 values
 
         // do the bulk insert
         int bulkInsertCount = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, testValuesArray);
 
         //quick confirmation that we actually inserted the correct number
-        assertEquals(bulkInsertCount, NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
+        assertEquals(bulkInsertCount, TestUtilities.NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
 
         //this test is just making sure that the bulk insert worked
         //getting cursor of entire table
@@ -204,11 +202,11 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
         // we should have as many records in the database as we've inserted - already tested in bulk insert -
         // I'm just being extra cautious here
-        assertEquals(entireTableCursor.getCount(), NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
+        assertEquals(entireTableCursor.getCount(), TestUtilities.NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
 
         // and let's make sure they match the ones we created
         entireTableCursor.moveToFirst();
-        for (int i = 0; i < NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT; i++, entireTableCursor.moveToNext()) {
+        for (int i = 0; i < TestUtilities.NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT; i++, entireTableCursor.moveToNext()) {
             TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating MovieEntry " + i,
                     entireTableCursor, testValuesArray[i]);
         }
@@ -219,7 +217,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
         //let's try to get the _id of a movie and see what it is!!!!
 
         //create one more movie
-        ContentValues movieSingleMovieValues = createMovieSingleMovieValue();
+        ContentValues movieSingleMovieValues = TestUtilities.createMovieValuesForAnotherMovie();
 
         //insert movie then get the URI back from a single insert
         Uri movieInsertUri = mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, movieSingleMovieValues);
@@ -239,7 +237,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
         );
 
         // we should have as many records in the database as we've inserted
-        assertEquals(entireTableCursor.getCount(), NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT + 1);
+        assertEquals(entireTableCursor.getCount(), TestUtilities.NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT + 1);
 
 
         //Make a DetailQuery using the _ID returned by single movie insert
@@ -287,28 +285,6 @@ public class TestMovieContentProvider extends AndroidTestCase {
         movieDetailQuery.close();
     }
 
-    @NonNull
-    private ContentValues createMovieSingleMovieValue() {
-        //extract to method
-
-        //create a new movie // first built a new contentValue
-        ContentValues movieSingleMovieValues = new ContentValues();
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The Insert 1 Movie Title");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "123456789");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://newSinlgeMove.com");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "MovieInsert1Picture - should be pic not text");
-        //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "The Insert 1 Movie ORIGINAL Title");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "The Insert 1 Movie Plot Synopsis");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, "The Insert 1 Movie Vote Average");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "The Insert 1 Movie Release Date");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "The Insert 1 Movie Movie Review");
-        //The reviews may end up being a URL - this may also need to change
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "The Insert 1 Movie Video");
-        //the Video may also change format
-        return movieSingleMovieValues;
-    }
-
 
     // Make sure we can still delete after adding/updating stuff
     //
@@ -316,7 +292,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
     // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
     // query functionality must also be complete before this test can be used.
     public void testInsertReadProvider() {
-        ContentValues testValues = TestUtilities.createMovieValues();
+        ContentValues testValues = TestUtilities.createMovieValuesForOneMovie();
 
         // Register a content observer for our insert.  This time, directly with the content resolver
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
@@ -389,7 +365,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
          */
     public void testUpdate() {
         // Create a new map of values, where column names are the keys
-        ContentValues values = TestUtilities.createMovieValues();
+        ContentValues values = TestUtilities.createMovieValuesForOneMovie();
 
         Uri movieUri = mContext.getContentResolver().
                 insert(MovieContract.MovieEntry.CONTENT_URI, values); //insert a row of values
@@ -440,46 +416,13 @@ public class TestMovieContentProvider extends AndroidTestCase {
     }
 
 
-
-    /*
-    Creates the bulk insert values for 10 movies
-     */
-    static ContentValues[] createBulkInsertMovieValues() {    //don't need a location id - this is not Sunshine!
-        ContentValues[] returnContentValues = new ContentValues[NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT]; //create an array of Movie Entries
-
-        for (int i = 0; i < NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT; i++) {
-            ContentValues movieValues = new ContentValues();
-
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "Movie Title " + i);
-            movieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, i);
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://biteme.com/" + i);
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "This should be a picture, not text_" + i);
-            //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
-
-            movieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "Movie Original Title " + i);
-            movieValues.put(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS, "This movie sucked, times " + i);
-            movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, i + " out of 10");
-            movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "Release date the year " + i + " A.D");
-
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW, "Movie Review: It was " + i + "thumbs up");
-            //The reviews may end up being a URL - this may also need to change
-
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO, "Here is video number " + i);
-            //the Video may also change format
-
-            returnContentValues[i] = movieValues;
-        }
-        return returnContentValues;
-    }
-
-
     // Student: Uncomment this test after you have completed writing the BulkInsert functionality
     // in your provider.  Note that this test will work with the built-in (default) provider
     // implementation, which just inserts records one-at-a-time, so really do implement the
     // BulkInsert ContentProvider function.
     public void testBulkInsert() {
         // Now we can bulkInsert some Movies
-        ContentValues[] bulkInsertContentValues = createBulkInsertMovieValues();
+        ContentValues[] bulkInsertContentValues = TestUtilities.createBulkInsertMovieValues();
 
         // Register a content observer for our bulk insert.
         TestUtilities.TestContentObserver movieObserver = TestUtilities.getTestContentObserver();
@@ -493,7 +436,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
         movieObserver.waitForNotificationOrFail();
         mContext.getContentResolver().unregisterContentObserver(movieObserver);
 
-        assertEquals(insertCount, NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT); //make sure we inserted exactly the correct number of rows
+        assertEquals(insertCount, TestUtilities.NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT); //make sure we inserted exactly the correct number of rows
 
         // A cursor is your primary interface to the query results.
         Cursor cursor = mContext.getContentResolver().query(
@@ -506,11 +449,11 @@ public class TestMovieContentProvider extends AndroidTestCase {
         );
 
         // we should have as many records in the database as we've inserted
-        assertEquals(cursor.getCount(), NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
+        assertEquals(cursor.getCount(), TestUtilities.NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT);
 
         // and let's make sure they match the ones we created
         cursor.moveToFirst();
-        for (int i = 0; i < NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext()) {
+        for (int i = 0; i < TestUtilities.NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext()) {
             TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating WeatherEntry " + i,
                     cursor, bulkInsertContentValues[i]);
         }

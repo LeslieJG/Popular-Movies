@@ -132,7 +132,7 @@ public class TestDb extends AndroidTestCase {
     /*
             Students:  Here is where you will build code to test that we can insert and query the
             database.  You'll want to look in TestUtilities
-            where you can use the "createMovieValues" function.  You can
+            where you can use the "createMovieValuesForOneMovie" function.  You can
             also make use of the validateCurrentRecord function from within TestUtilities.
          */
     //LJG FIgure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
@@ -144,7 +144,7 @@ public class TestDb extends AndroidTestCase {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Second Step : Create movie values
-        ContentValues movieValues = TestUtilities.createMovieValues();
+        ContentValues movieValues = TestUtilities.createMovieValuesForOneMovie();
 
         // Third Step : Insert ContentValues into database and get a row ID back
         long movieRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, movieValues);
@@ -192,7 +192,7 @@ public class TestDb extends AndroidTestCase {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Create ContentValues of what you want to insert
-        ContentValues testValues = TestUtilities.createMovieValues();
+        ContentValues testValues = TestUtilities.createMovieValuesForOneMovie();
 
         // Insert ContentValues into database and get a row ID back
         long movieRowId;

@@ -75,7 +75,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //infalte the fragment view
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //inflate the fragment view
 
         movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter
         // now bind the adapter to the actual gridView so it knows which view it is populating
@@ -154,7 +154,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             //LJG ZZZ tranfering to new separate class
             // FetchMovieTask movieTask = new FetchMovieTask();
             //   movieTask.execute(movieQueryURL);
-            FetchMovieTaskTheClass movieTask = new FetchMovieTaskTheClass(getActivity(), movieAdapter); //pass in context and movieAdapter
+            FetchMovieTask movieTask = new FetchMovieTask(getActivity(), movieAdapter); //pass in context and movieAdapter
             movieTask.execute(movieQueryURL);
         }
     }
