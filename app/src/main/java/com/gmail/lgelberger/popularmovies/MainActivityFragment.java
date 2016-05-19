@@ -1,8 +1,8 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -12,9 +12,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
+
+import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,7 +24,9 @@ import java.net.URL;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-    MovieAdapter movieAdapter;//declare custom MovieAdapter
+  //  MovieAdapter movieAdapter;//declare custom MovieAdapter
+    MovieCursorAdapter movieAdapter; // declare my custom CursorAdapter
+
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
@@ -77,6 +80,30 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //inflate the fragment view
 
+
+        //setup the movieAdapter as a CursorAdapter
+
+        //get a cursor showing the entire movie database
+        String sortOrder = MovieContract.MovieEntry._ID + " ASC"; //sort movies in the order they were put into database
+        Cursor entireMovieDatabaseCursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                null, null, null, sortOrder);
+
+        //make a new MovieAdapter (cursor adapter)
+        movieAdapter = new MovieCursorAdapter(getActivity(), entireMovieDatabaseCursor, 0);
+
+        //like before
+// Get a reference to the gridView, and attach this adapter to it.
+        GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+
+        //set adapter to gridview
+        gridView.setAdapter(movieAdapter); //my custom adapter
+
+
+
+
+
+        //setup the movieAdapter when it was an ArrayAdapter
+        /*
         movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter
         // now bind the adapter to the actual gridView so it knows which view it is populating
         // Get a reference to the gridView, and attach this adapter to it.
@@ -97,6 +124,10 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 startActivity(intentDetailActivity);
             }
         });
+
+        */
+
+
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
         prefListener = new MyPreferenceChangeListener();
@@ -154,7 +185,11 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             //LJG ZZZ tranfering to new separate class
             // FetchMovieTask movieTask = new FetchMovieTask();
             //   movieTask.execute(movieQueryURL);
-            FetchMovieTask movieTask = new FetchMovieTask(getActivity(), movieAdapter); //pass in context and movieAdapter
+
+           //old method with movieAdapter passed in
+           // FetchMovieTask movieTask = new FetchMovieTask(getActivity(), movieAdapter); //pass in context and movieAdapter
+//newer version - no movie adapter will used cursor loader
+            FetchMovieTask movieTask = new FetchMovieTask(getActivity()); //pass in context
             movieTask.execute(movieQueryURL);
         }
     }

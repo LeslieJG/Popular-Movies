@@ -3,6 +3,9 @@ package com.gmail.lgelberger.popularmovies;
 import android.test.AndroidTestCase;
 
 /**
+ * Delete???????? hard to test AsyncTask!
+ *
+ *
  * Created by Leslie on 2016-05-19.
  */
 public class TestFetchMovieTask extends AndroidTestCase {

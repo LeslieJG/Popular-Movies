@@ -20,8 +20,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Leslie on 2016-05-16.
@@ -61,18 +59,30 @@ import java.util.List;
 public class FetchMovieTask extends AsyncTask<URL, Void, String> {
     private final String LOG_TAG = FetchMovieTask.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
 
-    private MovieAdapter movieAdapter;
+ //   private MovieAdapter movieAdapter;
     private final Context mContext;
 
 
     /**
+     * This constructor was used before using loaders. It will be deleted soon.
+     *
      * @param context      application context for context.getString(R.id etc) - to access the apps String resources
      * @param movieAdapter A reference to the apps GridAdpater to update data being displayed
      */
-    FetchMovieTask(Context context, MovieAdapter movieAdapter) {
+  /*  FetchMovieTask(Context context, MovieAdapter movieAdapter) {
         this.mContext = context;
         this.movieAdapter = movieAdapter;
+    }*/
+
+    /**
+     * We will use this one with CursorLoader versions
+     *
+     * @param context application context for context.getString(R.id etc) - to access the apps String resources
+     */
+    FetchMovieTask(Context context) {
+        this.mContext = context;
     }
+
 
     /**
      * Get's the movie data from Internet and returns a String containing JSON data of all
@@ -175,7 +185,7 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
 
         //load the movie titles into the movieAdapter
         try {
-            List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //make a new list of all the movie data - will probably end up deleting this
+           // List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //make a new list of all the movie data - will probably end up deleting this
          //   movieData.addAll(getMovieDataFromJson(result)); //add all the movie data from internet to list
 
 
@@ -225,13 +235,19 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
             //then bulk insert this stuff instead
 
 
-            movieAdapter.clear(); //clear all the old movie data out
+
+
+//////////////////NOt needed when using cursor adapter - to be deleted
+ //           movieAdapter.clear(); //clear all the old movie data out
             //older way - add one movie at a time to the adapter
            /* for (MovieDataProvider individualMovie : movieData) { //add the movieData to the Adapter
                 movieAdapter.add(individualMovie); //load the movieData into adapter
             }*/
 
-            movieAdapter.addAll(movieData); //add all movies at once
+  //          movieAdapter.addAll(movieData); //add all movies at once
+///////////////////////// end of deleted section
+
+
 
         } catch (JSONException e) {
             e.printStackTrace();
