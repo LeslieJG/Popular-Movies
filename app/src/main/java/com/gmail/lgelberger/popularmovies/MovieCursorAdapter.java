@@ -9,7 +9,6 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gmail.lgelberger.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -36,10 +35,6 @@ public class MovieCursorAdapter extends CursorAdapter{
     }
 
 
-
-
-
-
     /*
             Remember that these views are reused as needed.
      */
@@ -50,9 +45,6 @@ public class MovieCursorAdapter extends CursorAdapter{
         View view = LayoutInflater.from(context).inflate(R.layout.grid_item_movies_layout, parent, false);
 
         return view;
-
-
-
 
         //return null;
     }
@@ -74,21 +66,23 @@ public class MovieCursorAdapter extends CursorAdapter{
         //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
 
 
-//set up the views
+        //set up the views
         TextView movieTitle = (TextView) view.findViewById(R.id.grid_item_movies_textview);
         ImageView moviePosterView = (ImageView) view.findViewById(R.id.grid_item_poster);
 
-        //get data to put into text view
-        String movieTitleString = cursor.getString( cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE));
+        //get the data needed to put into views
+     //   String movieTitleString = cursor.getString( cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE)); //get data to put into text view
+     //   String moviePosterUrl = cursor.getString( cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL)); //get data to put into image view
 
-        //get data to put into image view
-        // ???
-        String moviePosterUrl = cursor.getString( cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL));
+        //get the data needed to put into views - using Cursor Projection Indedis )
+        String movieTitleString = cursor.getString( MainActivityFragment.COL_MOVIE_TITLE); //get data to put into text view
+        String moviePosterUrl = cursor.getString( MainActivityFragment.COL_MOVIE_POSTER_URL); //get data to put into image view
+
+
 
 
         //set the views to proper values
         movieTitle.setText(movieTitleString);
-
         Picasso.with(context).load(moviePosterUrl).into(moviePosterView);
 
 //dude's version

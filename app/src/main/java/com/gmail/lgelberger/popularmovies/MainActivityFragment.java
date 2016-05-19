@@ -8,7 +8,11 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +27,9 @@ import java.net.URL;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
-  //  MovieAdapter movieAdapter;//declare custom MovieAdapter
+public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    //  MovieAdapter movieAdapter;//declare custom MovieAdapter
     MovieCursorAdapter movieAdapter; // declare my custom CursorAdapter
-
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
@@ -34,6 +37,40 @@ public class MainActivityFragment extends Fragment {
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
 
+    //Step 1/3 of making Cursor Loader - Create Loader ID
+    private static final int MOVIE_LOADER = 0;
+
+    /////////////////////Database projection constants///////////////
+    //For making good use of database Projections
+    //specifiy the coloums we need
+    private static final String[] MOVIE_COLUMNS = {
+            MovieContract.MovieEntry._ID,
+            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+            MovieContract.MovieEntry.COLUMN_API_MOVIE_ID,
+            MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL,
+            MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+            MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE,
+            MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS,
+            MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
+            MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
+            MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW,
+            MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO
+    };
+
+    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these
+    // must change.
+    static final int COL_MOVIE_ID = 0;
+    static final int COL_MOVIE_TITLE = 1;
+    static final int COL_API_MOVIE_ID = 2;
+    static final int COL_MOVIE_POSTER_URL = 3;
+    static final int COL_MOVIE_POSTER_IMAGE = 4;
+    static final int COL_ORIGINAL_TITLE = 5;
+    static final int COL_PLOT_SYNOPSIS = 6;
+    static final int COL_VOTE_AVERAGE = 7;
+    static final int COL_RELEASE_DATE = 8;
+    static final int COL_MOVIE_REVIEW = 9;
+    static final int COL_MOVIE_VIDEO = 10;
+    /////////////////////////////////////////////////////////
 
     /*
     Girdview
@@ -99,9 +136,6 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         gridView.setAdapter(movieAdapter); //my custom adapter
 
 
-
-
-
         //setup the movieAdapter when it was an ArrayAdapter
         /*
         movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter
@@ -128,7 +162,6 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         */
 
 
-
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
         prefListener = new MyPreferenceChangeListener();
        /* prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged LIstener
@@ -145,6 +178,47 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         updateMovieGridImages(); //update the entire Grid from internet - when Fragment created
 
         return rootView;
+    }
+
+
+    //////////////////////////////Initialize Loader with Loader Manager /////////////////////////////////
+    //////////////////////////////Step 3/3 to create a Cursor Loader //////////////////////
+    // Must be in onCreate in Activity or onActivityCreated in Fragment
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(MOVIE_LOADER, null, this);  //Loader ID, optional Bundle, Object that implements the loader callbacks
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+    ////////////////////////////////////Loader Call back methods needed to implement CursorLoader //////////////////
+    /////////////////Step 2/3 to create a CursorLoader ////////////////////////////////////////////
+
+    //Returns a cursor Loader
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Sort order:  Ascending, by _ID - the order they were put into database.
+        String sortOrder = MovieContract.MovieEntry._ID + " ASC";
+
+        return new CursorLoader(getActivity(),
+                MovieContract.MovieEntry.CONTENT_URI, //get entire table back
+                null,
+                null,
+                null,
+                sortOrder);
+    }
+
+    //update UI once data is ready
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        movieAdapter.swapCursor(data);
+        //add any other UI updates here that are needed once data is ready
+    }
+
+    //Clean up when loader destroyed. Don't have Cursor Adapter pointing at any data
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        movieAdapter.swapCursor(null);
     }
 
     /**
@@ -186,8 +260,8 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             // FetchMovieTask movieTask = new FetchMovieTask();
             //   movieTask.execute(movieQueryURL);
 
-           //old method with movieAdapter passed in
-           // FetchMovieTask movieTask = new FetchMovieTask(getActivity(), movieAdapter); //pass in context and movieAdapter
+            //old method with movieAdapter passed in
+            // FetchMovieTask movieTask = new FetchMovieTask(getActivity(), movieAdapter); //pass in context and movieAdapter
 //newer version - no movie adapter will used cursor loader
             FetchMovieTask movieTask = new FetchMovieTask(getActivity()); //pass in context
             movieTask.execute(movieQueryURL);
