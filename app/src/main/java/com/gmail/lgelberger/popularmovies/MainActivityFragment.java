@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -16,6 +17,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -26,6 +28,14 @@ import java.net.URL;
 
 /**
  * A placeholder fragment containing a simple view.
+ *
+ * Going to implement a Cursor Loader to provide a cursor (from the database)
+ * The query URI will be provided by an intent from Main Activity Fragment
+ * The cursor loader will monitor changes in data
+ *
+ * Will not be using a CursorAdapter as it is only for List/grid views.
+ * I will just be displaying one db row worth of data.
+ *
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     //  MovieAdapter movieAdapter;//declare custom MovieAdapter
@@ -126,7 +136,8 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 null, null, null, sortOrder);
 
         //make a new MovieAdapter (cursor adapter)
-        movieAdapter = new MovieCursorAdapter(getActivity(), entireMovieDatabaseCursor, 0);
+        movieAdapter = new MovieCursorAdapter(getActivity(), entireMovieDatabaseCursor, 0); //Cursor Adapter
+        //movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter (ArrayAdapter)
 
         //like before
 // Get a reference to the gridView, and attach this adapter to it.
@@ -136,17 +147,49 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         gridView.setAdapter(movieAdapter); //my custom adapter
 
 
-        //setup the movieAdapter when it was an ArrayAdapter
-        /*
-        movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter
-        // now bind the adapter to the actual gridView so it knows which view it is populating
-        // Get a reference to the gridView, and attach this adapter to it.
-        GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        //adding click listener for grid - now that it is a Cursor Adapter
+        //onclick listener puts the Detail-Movie URI into the intent
 
-        //set adapter to gridview
-        gridView.setAdapter(movieAdapter); //my custom adapter
+
 
         //adding click listener for grid
+        //passing an instance of MovieDataProvider with all the movie information on it
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long gridItemRowId) {
+                //From when it was an array adapter
+               // MovieDataProvider selectedMovieFromGrid = (MovieDataProvider) movieAdapter.getItem(gridItemClicked); //getting movie detail straight from the movieAdapter
+
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                // if it cannot seek to that position.
+                Cursor selectedMoviecursor = (Cursor) adapterView.getItemAtPosition(gridItemClicked);
+
+                if (selectedMoviecursor != null) {
+                    Intent intentDetailActivity = new Intent(getActivity(), DetailActivity.class); //new intent with Detail Activity as recipient
+                    Long detailMovieDatabaseID =selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
+                    Uri detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
+
+                    intentDetailActivity.setData(detailMovieUri);//setData puts a URI into the Intent - to be requeried by whomever recieved the intent
+                       //delete below if not needed
+                          /*  .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                    locationSetting, selectedMoviecursor.getLong(COL_WEATHER_DATE)
+                            ));*/
+
+                    startActivity(intentDetailActivity);
+                }
+
+                //old parts when intent passed the parceble instance of MovieDataProvider instead of just a URI to requery in detail activity
+               //Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
+               // intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
+               // startActivity(intentDetailActivity);
+            }
+        });
+
+
+         /*
+
+        //adding click listener for grid
+        //passing an instance of MovieDataProvider with all the movie information on it
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
@@ -160,6 +203,8 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         });
 
         */
+
+
 
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
@@ -202,7 +247,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
         return new CursorLoader(getActivity(),
                 MovieContract.MovieEntry.CONTENT_URI, //get entire table back
-                null,
+                MOVIE_COLUMNS, //the projection - very important to have this!
                 null,
                 null,
                 sortOrder);
