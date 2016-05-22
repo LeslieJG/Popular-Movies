@@ -6,6 +6,13 @@ import android.os.Parcelable;
 /**
  * Created by Leslie on 2016-03-03.
  * <p>
+ *     This is no longer needed, as all the information passed as intent is just
+ *     a URI to detail activitiy
+ *
+ *     THe Grid Adaper (MovieAdapter) has been changed to a Cursor Adapter
+ *     which get's a cursor from a Cursor Loader (get's cursor from content Provider)
+ *     Cursor Adapter is much simpler to implement
+ *
  * Modelled after https://plus.google.com/s/ListView%20with%20Custom%20Adapter%20Prabeesh%20R%20K/top
  * <p>
  * Will provide each grid item of data as an object
@@ -18,7 +25,7 @@ import android.os.Parcelable;
  *
  * Implementing Parcelable so I can pass this object in an intent
  */
-public class MovieDataProvider implements Parcelable {
+public class ZZZOLDMovieDataProvider implements Parcelable {
    // private int moviePosterResource; //for test display should be able to delete this and the getter setter methods
     //really just used to place a default picture in if needed. But I can use Picasso placeholder picture options for this
 
@@ -45,7 +52,7 @@ release date
     /**
      * empty constructor
      */
-    public MovieDataProvider() {
+    public ZZZOLDMovieDataProvider() {
 
     }
 
@@ -55,7 +62,7 @@ release date
      * @param moviePosterResource
      * @param movieTitle
      */
-   /* public MovieDataProvider(int moviePosterResource, String movieTitle) {//commented out as I'm not using moviePosterResource
+   /* public ZZZOLDMovieDataProvider(int moviePosterResource, String movieTitle) {//commented out as I'm not using moviePosterResource
         this.moviePosterResource = moviePosterResource;
         this.movieTitle = movieTitle;
     }*/
@@ -67,7 +74,7 @@ release date
      * @param movieTitle
      * @param moviePosterUrl      url of movie
      */
-  /*  public MovieDataProvider(int moviePosterResource, String movieTitle, String moviePosterUrl) {/commented out as I'm not using moviePosterResource
+  /*  public ZZZOLDMovieDataProvider(int moviePosterResource, String movieTitle, String moviePosterUrl) {/commented out as I'm not using moviePosterResource
         this.setMoviePosterResource(moviePosterResource);
         this.setMovieTitle(movieTitle);
         this.setMoviePosterUrl(moviePosterUrl);
@@ -79,7 +86,7 @@ release date
      * @param movieTitle
      * @param moviePosterUrl of poster
      */
-    public MovieDataProvider(String movieTitle, String moviePosterUrl) {
+    public ZZZOLDMovieDataProvider(String movieTitle, String moviePosterUrl) {
         this.setMovieTitle(movieTitle);
         this.setMoviePosterUrl(moviePosterUrl);
     }
@@ -144,7 +151,7 @@ release date
      *
      * @param in a parcel from which to read this object
      */
-    public MovieDataProvider(Parcel in) {
+    public ZZZOLDMovieDataProvider(Parcel in) {
         readFromParcel(in);
     }
 
@@ -203,12 +210,12 @@ release date
      */
     public static final Parcelable.Creator CREATOR =
             new Parcelable.Creator() {
-                public MovieDataProvider createFromParcel(Parcel in) {
-                    return new MovieDataProvider(in);
+                public ZZZOLDMovieDataProvider createFromParcel(Parcel in) {
+                    return new ZZZOLDMovieDataProvider(in);
                 }
 
-                public MovieDataProvider[] newArray(int size) {
-                    return new MovieDataProvider[size];
+                public ZZZOLDMovieDataProvider[] newArray(int size) {
+                    return new ZZZOLDMovieDataProvider[size];
                 }
             };
 }

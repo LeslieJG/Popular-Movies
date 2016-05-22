@@ -19,7 +19,7 @@ import java.util.List;
  * <p>
  *
  * This is a cutsom adapter to bind a picture and Movie title to a gridview.
- * It uses my custom MovieDataProvider class to hold the info of each individual movie
+ * It uses my custom ZZZOLDMovieDataProvider class to hold the info of each individual movie
  *
  * Modelled on the custom adapter at
  * https://plus.google.com/s/ListView%20with%20Custom%20Adapter%20Prabeesh%20R%20K/top
@@ -35,9 +35,9 @@ import java.util.List;
  */
 public class ZZZOldMovieAdapterExtendsArrayAdapterCustomGridViewNoDatabase extends ArrayAdapter {
    // List movieList = new ArrayList(); //the list of all the movieData that we will be putting into gridView
-    //LJG ZZZ should movie list be parameterized i.e. <MovieDataProvider>?
-   List<MovieDataProvider> movieList = new ArrayList<MovieDataProvider>(); //the list of all the movieData that we will be putting into gridView
-   //the this forces internal list to be of JUST type MovieDataProvider
+    //LJG ZZZ should movie list be parameterized i.e. <ZZZOLDMovieDataProvider>?
+   List<ZZZOLDMovieDataProvider> movieList = new ArrayList<ZZZOLDMovieDataProvider>(); //the list of all the movieData that we will be putting into gridView
+   //the this forces internal list to be of JUST type ZZZOLDMovieDataProvider
 
     Context context; //needed for picasso
 
@@ -66,7 +66,7 @@ public class ZZZOldMovieAdapterExtendsArrayAdapterCustomGridViewNoDatabase exten
     }*/
     public void add(Object object) {
         super.add(object);
-        movieList.add((MovieDataProvider) object); //added this line to add to the movieList
+        movieList.add((ZZZOLDMovieDataProvider) object); //added this line to add to the movieList
     }
 
 
@@ -154,9 +154,9 @@ public class ZZZOldMovieAdapterExtendsArrayAdapterCustomGridViewNoDatabase exten
 
         //Configure the View
 
-        //now we have to get each object from the MovieDataProvider (i.e. each movie will have it's own object)
+        //now we have to get each object from the ZZZOLDMovieDataProvider (i.e. each movie will have it's own object)
         //we need to get the data
-        MovieDataProvider dataProvider = (MovieDataProvider) this.getItem(position);
+        ZZZOLDMovieDataProvider dataProvider = (ZZZOLDMovieDataProvider) this.getItem(position);
 
         String moviePosterURLString = dataProvider.getMoviePosterUrl();
 

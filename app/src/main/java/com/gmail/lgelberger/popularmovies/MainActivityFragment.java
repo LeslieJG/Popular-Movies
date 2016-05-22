@@ -30,11 +30,8 @@ import java.net.URL;
  * A placeholder fragment containing a simple view.
  *
  * Going to implement a Cursor Loader to provide a cursor (from the database)
- * The query URI will be provided by an intent from Main Activity Fragment
- * The cursor loader will monitor changes in data
+ * Will  be using a CursorAdapter  for grid views.
  *
- * Will not be using a CursorAdapter as it is only for List/grid views.
- * I will just be displaying one db row worth of data.
  *
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -140,7 +137,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         //movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter (ArrayAdapter)
 
         //like before
-// Get a reference to the gridView, and attach this adapter to it.
+        // Get a reference to the gridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
 
         //set adapter to gridview
@@ -153,12 +150,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
 
         //adding click listener for grid
-        //passing an instance of MovieDataProvider with all the movie information on it
+        //passing an instance of ZZZOLDMovieDataProvider with all the movie information on it
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long gridItemRowId) {
                 //From when it was an array adapter
-               // MovieDataProvider selectedMovieFromGrid = (MovieDataProvider) movieAdapter.getItem(gridItemClicked); //getting movie detail straight from the movieAdapter
+               // ZZZOLDMovieDataProvider selectedMovieFromGrid = (ZZZOLDMovieDataProvider) movieAdapter.getItem(gridItemClicked); //getting movie detail straight from the movieAdapter
 
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
@@ -178,7 +175,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                     startActivity(intentDetailActivity);
                 }
 
-                //old parts when intent passed the parceble instance of MovieDataProvider instead of just a URI to requery in detail activity
+                //old parts when intent passed the parceble instance of ZZZOLDMovieDataProvider instead of just a URI to requery in detail activity
                //Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
                // intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
                // startActivity(intentDetailActivity);
@@ -189,12 +186,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
          /*
 
         //adding click listener for grid
-        //passing an instance of MovieDataProvider with all the movie information on it
+        //passing an instance of ZZZOLDMovieDataProvider with all the movie information on it
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
 
-                MovieDataProvider selectedMovieFromGrid = (MovieDataProvider) movieAdapter.getItem(gridItemClicked); //getting movie detail straight from the movieAdapter
+                ZZZOLDMovieDataProvider selectedMovieFromGrid = (ZZZOLDMovieDataProvider) movieAdapter.getItem(gridItemClicked); //getting movie detail straight from the movieAdapter
 
                 Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
                 intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
@@ -301,6 +298,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             Toast.makeText(getActivity(), "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
             //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
         } else { // if there is internet, get the movie date
+
             //LJG ZZZ tranfering to new separate class
             // FetchMovieTask movieTask = new FetchMovieTask();
             //   movieTask.execute(movieQueryURL);

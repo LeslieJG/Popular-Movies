@@ -53,7 +53,7 @@ import java.util.List;
 public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, String> {
     private final String LOG_TAG = ZZZOldFetchMovieTaskWithNoDatabase.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
 
-    private MovieAdapter movieAdapter;
+    private ZZZOldMovieAdapterExtendsArrayAdapterCustomGridViewNoDatabase movieAdapter;
     private final Context mContext;
 
 
@@ -62,7 +62,7 @@ public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, Str
      * @param context application context for context.getString(R.id etc) - to access the apps String resources
      * @param movieAdapter A reference to the apps GridAdpater to update data being displayed
      */
-    ZZZOldFetchMovieTaskWithNoDatabase(Context context, MovieAdapter movieAdapter) {
+    ZZZOldFetchMovieTaskWithNoDatabase(Context context, ZZZOldMovieAdapterExtendsArrayAdapterCustomGridViewNoDatabase movieAdapter) {
         this.mContext = context;
         this.movieAdapter = movieAdapter;
     }
@@ -158,12 +158,12 @@ public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, Str
 
         //load the movie titles into the movieAdapter
         try {
-            List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //make a new list of all the movie data
+            List<ZZZOLDMovieDataProvider> movieData = new ArrayList<ZZZOLDMovieDataProvider>(); //make a new list of all the movie data
             movieData.addAll(getMovieDataFromJson(result)); //add all the movie data from internet to list
 
             movieAdapter.clear(); //clear all the old movie data out
             //older way - add one movie at a time to the adapter
-           /* for (MovieDataProvider individualMovie : movieData) { //add the movieData to the Adapter
+           /* for (ZZZOLDMovieDataProvider individualMovie : movieData) { //add the movieData to the Adapter
                 movieAdapter.add(individualMovie); //load the movieData into adapter
             }*/
 
@@ -180,10 +180,10 @@ public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, Str
      * and pull out the data needed for the grid view
      *
      * @param movieJsonStr the JSON of all the movie data from themoviedb.org
-     * @return array of MovieDataProvider obects to hold the info for each movie
+     * @return array of ZZZOLDMovieDataProvider obects to hold the info for each movie
      * @throws JSONException
      */
-    private List<MovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {
+    private List<ZZZOLDMovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {
         // These are the names of the JSON objects that need to be extracted.
         final String TMBD_RESULTS = mContext.getString(R.string.movie_json_key_results);
         final String TMDB_POSTER_PATH = mContext.getString(R.string.movie_json_key_poster_path);
@@ -197,7 +197,7 @@ public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, Str
         JSONObject movieJSON = new JSONObject(movieJsonStr); //create JSON object from input string
         JSONArray movieArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of movies
 
-        MovieDataProvider[] movieDataProviderArrayFromJSON = new MovieDataProvider[movieArray.length()]; //array of Movie Data Providers
+        ZZZOLDMovieDataProvider[] movieDataProviderArrayFromJSON = new ZZZOLDMovieDataProvider[movieArray.length()]; //array of Movie Data Providers
 
         int movieArrayLength = movieArray.length();
 
@@ -207,7 +207,7 @@ public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, Str
 
             URL moviePosterURL = makePosterURL(movieDetails.getString(TMDB_POSTER_PATH)); //get movie URL
 
-            movieDataProviderArrayFromJSON[i] = new MovieDataProvider();
+            movieDataProviderArrayFromJSON[i] = new ZZZOLDMovieDataProvider();
             movieDataProviderArrayFromJSON[i].setMovieTitle(movieDetails.getString(TMDB_TITLE));
             movieDataProviderArrayFromJSON[i].setMoviePosterUrl(String.valueOf(moviePosterURL));
             movieDataProviderArrayFromJSON[i].setOriginalTitle(movieDetails.getString(TMDB_ORIGINAL_TITLE));

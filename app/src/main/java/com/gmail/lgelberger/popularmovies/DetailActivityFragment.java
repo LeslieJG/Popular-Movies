@@ -20,23 +20,21 @@ import com.squareup.picasso.Picasso;
 
 /**
  * A placeholder fragment containing a simple view.
- *
+ * <p>
  * This Displays the movie details including a poster and other text details
  * The
- *
+ * <p>
  * Going to implement a Cursor Loader to provide a cursor (from the database)
  * The query URI will be provided by an intent from Main Activity Fragment
  * The cursor loader will monitor changes in data
- *
+ * <p>
  * Will not be using a CursorAdapter as it is only for List/grid views.
  * I will just be displaying one db row worth of data.
  */
-public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // Cursor Loader  ID
     private static final int MOVIE_DETAIL_LOADER = 0;
-
-
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections
@@ -71,8 +69,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     /////////////////////////////////////////////////////////
 
 
-
-
     public DetailActivityFragment() {
     }
 
@@ -92,14 +88,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         //Initialize the Loader with a LoaderManager
         //Arguments - Loader ID, Bundle, Class that implements callback method
         getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
-
-
-
-
-
-
     }
-
 
 
     //returns a cursor loader
@@ -127,18 +116,16 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     //do all UI updates here!
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieDetailCursor) {
+        //   Log.v(LOG_TAG, "In onLoadFinished");
 
-     //   Log.v(LOG_TAG, "In onLoadFinished");
-
-
-        if (!movieDetailCursor.moveToFirst()) { return; } //if no data in cursor do nothing
-
-
+        if (!movieDetailCursor.moveToFirst()) {
+            return;
+        } //if no data in cursor do nothing
 
         //getting information from intent once the activity is created (after activity and fragment are created)
-      //  MovieDataProvider movieDetails = getActivity().getIntent().getParcelableExtra(getString(R.string.movie_details_intent_key));
+        //  ZZZOLDMovieDataProvider movieDetails = getActivity().getIntent().getParcelableExtra(getString(R.string.movie_details_intent_key));
 
-        Context detailContext =  getActivity();// getContext();
+        Context detailContext = getActivity();// getContext();
 
         //get data from Cursor
         String movieURL = movieDetailCursor.getString(COL_MOVIE_POSTER_URL);
@@ -158,12 +145,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         ((TextView) getActivity().findViewById(R.id.textview_plot_synopsis)).setText(movieDetailCursor.getString(COL_PLOT_SYNOPSIS));
         ((TextView) getActivity().findViewById(R.id.textview_user_rating)).setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
         ((TextView) getActivity().findViewById(R.id.textview_release_date)).setText(movieDetailCursor.getString(COL_RELEASE_DATE));
-
     }
 
     //nothing to do here. No Cursor Adapter to swap cursor
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }

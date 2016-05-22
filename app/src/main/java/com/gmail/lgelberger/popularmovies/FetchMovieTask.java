@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
@@ -178,25 +177,12 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        //send the result to getMovieDataFromJson
-
-        //that's it
-
-
-        //load the movie titles into the movieAdapter
         try {
-           // List<MovieDataProvider> movieData = new ArrayList<MovieDataProvider>(); //make a new list of all the movie data - will probably end up deleting this
-         //   movieData.addAll(getMovieDataFromJson(result)); //add all the movie data from internet to list
-
-
-
-
-
             //in future check to see if this is already in database, but for now just delete the database
             int rowsDeleted = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null); //delete entire database
 
             //for debugging
-            Toast.makeText(mContext, "Deleted " +  Integer.toString(rowsDeleted)   + " rws from database", Toast.LENGTH_LONG).show();
+           // Toast.makeText(mContext, "Deleted " +  Integer.toString(rowsDeleted)   + " rws from database", Toast.LENGTH_LONG).show();
 
             //this is my ContentValues[] with all the movie data in it
             ContentValues[] myTempContentValues = getMovieDataFromJson(result); //just put this into the brackets below
@@ -205,49 +191,20 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
 
 
             //or just make a toast? - for debugging
-            Toast.makeText(mContext, Integer.toString(inserted)   +
+            /*Toast.makeText(mContext, Integer.toString(inserted)   +
                     " Out of " +
                     Integer.toString(myTempContentValues.length) +
                     " movies inserted into database.",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_LONG).show();*/
 
 
             //confirm that the data is inserted correctly (throw an exception if inserted != myTempContentValues.getLength();
            /* if (inserted != myTempContentValues.length){
                 //something went horribly wrong and data not in database
                 throw new RuntimeException("FetMovieTask (AsyncTask) The database stored " + Integer.toString(inserted) +
-                        " rows instead of the required " + Integer.toString(myTempContentValues.length));
+                        " rows instead of the required " + Integer.toString(myTempContentValues.length)); */
 
                //////////////LJG ZZZ This thrown runtime exception may not be the best practise way to deal with this
-
-
-
-            }*/
-
-            /* try {
-
-            } catch{
-
-            }*/
-
-
-            //then at the end - delete the database content
-            //then bulk insert this stuff instead
-
-
-
-
-//////////////////NOt needed when using cursor adapter - to be deleted
- //           movieAdapter.clear(); //clear all the old movie data out
-            //older way - add one movie at a time to the adapter
-           /* for (MovieDataProvider individualMovie : movieData) { //add the movieData to the Adapter
-                movieAdapter.add(individualMovie); //load the movieData into adapter
-            }*/
-
-  //          movieAdapter.addAll(movieData); //add all movies at once
-///////////////////////// end of deleted section
-
-
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -265,10 +222,10 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
      * then add this stuff
      *
      * @param movieJsonStr the JSON of all the movie data from themoviedb.org
-     * @return array of MovieDataProvider obects to hold the info for each movie
+     * @return array of ZZZOLDMovieDataProvider obects to hold the info for each movie
      * @throws JSONException
      */
-  //  private List<MovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {
+  //  private List<ZZZOLDMovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {
     private ContentValues[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
         // These are the names of the JSON objects that need to be extracted.
         final String TMBD_RESULTS = mContext.getString(R.string.movie_json_key_results);
@@ -285,10 +242,6 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
         JSONObject movieJSON = new JSONObject(movieJsonStr); //create JSON object from input string
         JSONArray movieArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of movies
 
-
-        //LJG ZZZ will comment out below line - and replace with ContentValue
-       // MovieDataProvider[] movieDataProviderArrayFromJSON = new MovieDataProvider[movieArray.length()]; //array of Movie Data Providers
-
         //the new ContentValues that from the JSON that will be put into the database eventually
         ContentValues[] movieContentValueArrayFromJSON = new ContentValues[movieArray.length()];
 
@@ -298,17 +251,7 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
 
             URL moviePosterURL = makePosterURL(movieDetails.getString(TMDB_POSTER_PATH)); //get movie URL
 
-//            movieDataProviderArrayFromJSON[i] = new MovieDataProvider();
-//            movieDataProviderArrayFromJSON[i].setMovieTitle(movieDetails.getString(TMDB_TITLE));
-//            movieDataProviderArrayFromJSON[i].setMoviePosterUrl(String.valueOf(moviePosterURL));
-//            movieDataProviderArrayFromJSON[i].setOriginalTitle(movieDetails.getString(TMDB_ORIGINAL_TITLE));
-//            movieDataProviderArrayFromJSON[i].setOverview(movieDetails.getString(TMDB_OVERVIEW));
-//            movieDataProviderArrayFromJSON[i].setVoteAverage(movieDetails.getString(TMDB_VOTE_AVERAGE));
-//            movieDataProviderArrayFromJSON[i].setReleaseDate(movieDetails.getString(TMDB_RELEASE_DATE));
-
-
-            //instead, just make a bunch of ContentValues for the database
-
+            //make a bunch of ContentValues for the database
             movieContentValueArrayFromJSON[i] = new ContentValues();
             movieContentValueArrayFromJSON[i].put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, movieDetails.getString(TMDB_TITLE));
             movieContentValueArrayFromJSON[i].put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, String.valueOf(moviePosterURL));
@@ -326,22 +269,13 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
             //figure out how to store the damn poster image itself
 
             //load into database MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW + " TEXT , " +  //I'm allowing this to be null if needed until I can
-                    //figure out how to store the movie reviews  (perhaps just a URL?)
+            //figure out how to store the movie reviews  (perhaps just a URL?)
 
             //load into database   MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO + " TEXT  " +  //I'm allowing this to be null if needed until I can
-
-
-
-
-
-
-
         }
 
 
         return movieContentValueArrayFromJSON;
-
-       // return Arrays.asList(movieDataProviderArrayFromJSON); //convert the movie data provider array into a list
     }
 
 

@@ -60,7 +60,7 @@ release date
      * @param moviePosterResource
      * @param movieTitle
      */
-   /* public MovieDataProvider(int moviePosterResource, String movieTitle) {//commented out as I'm not using moviePosterResource
+   /* public ZZZOLDMovieDataProvider(int moviePosterResource, String movieTitle) {//commented out as I'm not using moviePosterResource
         this.moviePosterResource = moviePosterResource;
         this.movieTitle = movieTitle;
     }*/
@@ -72,7 +72,7 @@ release date
      * @param movieTitle
      * @param moviePosterUrl      url of movie
      */
-  /*  public MovieDataProvider(int moviePosterResource, String movieTitle, String moviePosterUrl) {/commented out as I'm not using moviePosterResource
+  /*  public ZZZOLDMovieDataProvider(int moviePosterResource, String movieTitle, String moviePosterUrl) {/commented out as I'm not using moviePosterResource
         this.setMoviePosterResource(moviePosterResource);
         this.setMovieTitle(movieTitle);
         this.setMoviePosterUrl(moviePosterUrl);

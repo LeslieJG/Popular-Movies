@@ -84,7 +84,7 @@ public class MovieContract {
         //All of the below is to make content provider query URIs
         //designed to make life easier to query the Content Provider
 
-        //Decoder fucntions
+        //Decoder functions
 
         //used to find the final id tag appended to end of uri
         //example  // content://com.gmail.lgelberger.popularmovies/movie/999
