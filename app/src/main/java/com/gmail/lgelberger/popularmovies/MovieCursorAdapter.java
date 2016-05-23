@@ -26,14 +26,36 @@ public class MovieCursorAdapter extends CursorAdapter {
     }
 
 
-    /*
-            Remember that these views are reused as needed.
+    /**
+     * For ViewHolder pattern. I need a static inner class to hold my views
+     * So that they are only assigned ONCE, and they don't have to use view.findViewById every
+     * time they are displayed.
+     * This will cache of the children views for a movie grid item.
      */
+    public static class ViewHolder {
+        public final TextView movieTitle;
+        public final ImageView moviePosterView;
+
+        public ViewHolder(View view) {
+            movieTitle = (TextView) view.findViewById(R.id.grid_item_movies_textview);
+            moviePosterView = (ImageView) view.findViewById(R.id.grid_item_poster);
+        }
+    }
+
+
+    /*
+               Remember that these views are reused as needed.
+      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
         //this is xml layout for each row (or grid item)
         View view = LayoutInflater.from(context).inflate(R.layout.grid_item_movies_layout, parent, false);
+
+        //For Viewholdar pattern add reference to a ViewHolder
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder); //view now has the object viewHolder attached to it
+
         return view;
     }
 
@@ -51,9 +73,13 @@ public class MovieCursorAdapter extends CursorAdapter {
 
         //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
 
-        //set up the views
-        TextView movieTitle = (TextView) view.findViewById(R.id.grid_item_movies_textview);
-        ImageView moviePosterView = (ImageView) view.findViewById(R.id.grid_item_poster);
+        //get a reference to ViewHolder from the current (passed in) View that we are working with
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
+
+
+        //set up the views - using the viewHolder this time!
+        TextView movieTitle = viewHolder.movieTitle; //(TextView) view.findViewById(R.id.grid_item_movies_textview);
+        ImageView moviePosterView = viewHolder.moviePosterView; //(ImageView) view.findViewById(R.id.grid_item_poster);
 
         //get the data needed to put into views - using Cursor Projection Indedis )
         String movieTitleString = cursor.getString(MainActivityFragment.COL_MOVIE_TITLE); //get data to put into text view
