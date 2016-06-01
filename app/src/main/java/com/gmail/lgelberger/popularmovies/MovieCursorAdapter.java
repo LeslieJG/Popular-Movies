@@ -14,7 +14,7 @@ import com.squareup.picasso.Picasso;
 /**
  * Created by Leslie on 2016-05-19.
  * <p>
- * Trying to make a cursor adapter to populate the gridview of movies, instead of my old MovieAdapter which extended ArrayAdapter
+ * Trying to make a cursor adapter to populate the GridView of movies, instead of my old MovieAdapter which extended ArrayAdapter
  * <p>
  * Modified from https://coderwall.com/p/fmavhg/android-cursoradapter-with-custom-layout-and-how-to-use-it
  */
@@ -52,7 +52,7 @@ public class MovieCursorAdapter extends CursorAdapter {
         //this is xml layout for each row (or grid item)
         View view = LayoutInflater.from(context).inflate(R.layout.grid_item_movies_layout, parent, false);
 
-        //For Viewholdar pattern add reference to a ViewHolder
+        //For ViewHolder pattern add reference to a ViewHolder
         ViewHolder viewHolder = new ViewHolder(view);
         view.setTag(viewHolder); //view now has the object viewHolder attached to it
 
@@ -81,7 +81,7 @@ public class MovieCursorAdapter extends CursorAdapter {
         TextView movieTitle = viewHolder.movieTitle; //(TextView) view.findViewById(R.id.grid_item_movies_textview);
         ImageView moviePosterView = viewHolder.moviePosterView; //(ImageView) view.findViewById(R.id.grid_item_poster);
 
-        //get the data needed to put into views - using Cursor Projection Indedis )
+        //get the data needed to put into views - using Cursor Projection  )
         String movieTitleString = cursor.getString(MainActivityFragment.COL_MOVIE_TITLE); //get data to put into text view
         String moviePosterUrl = cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_URL); //get data to put into image view
 
@@ -90,4 +90,20 @@ public class MovieCursorAdapter extends CursorAdapter {
         Picasso.with(context).load(moviePosterUrl).into(moviePosterView);
 
     }
+
+
+   /* @Override
+   //These are used to give a different view for each position of the list view. Important feature
+   //not being used by me
+    public int getItemViewType(int position) {
+      //  return position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return VIEW_TYPE_COUNT; // count must be higher than all the view
+    }
+    */
+
+
 }

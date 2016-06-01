@@ -80,7 +80,7 @@ public class MovieContentProvider extends ContentProvider {
     Query will be the most complex of the required content provider methods.
     We've given you the bones, of the query operation.
 
-    As you can see, we use our SURI nature object,
+    As you can see, we use our URI nature object,
     once again to switch on the type of URI.
 
     Note that each response from this function, will return a cursor that
@@ -246,7 +246,7 @@ public class MovieContentProvider extends ContentProvider {
     /*
     getType is a good way to review the content URI's that will be handled
 
-    We use the urimatcher we built earlier to match the given uri
+    We use the UriMatcher we built earlier to match the given uri
     against the expressions we've compiled in.
 
     For each match, we return the types that we've defined in the movie contract.

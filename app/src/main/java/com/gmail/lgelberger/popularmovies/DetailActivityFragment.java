@@ -38,7 +38,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections
-    //specifiy the coloums we need
+    //specify the columns we need
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry._ID,
             MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,

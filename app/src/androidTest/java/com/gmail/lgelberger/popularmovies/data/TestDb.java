@@ -126,6 +126,7 @@ public class TestDb extends AndroidTestCase {
         assertTrue("Error: The database doesn't contain all of the required location entry columns",
                 movieColumnHashSet.isEmpty());
         db.close();
+        cursor.close();
     }
 
 
@@ -135,7 +136,7 @@ public class TestDb extends AndroidTestCase {
             where you can use the "createMovieValuesForOneMovie" function.  You can
             also make use of the validateCurrentRecord function from within TestUtilities.
          */
-    //LJG FIgure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
+    //LJG Figure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
     public void testMovieTable() {
         // First step: Get reference to writable database
         // If there's an error in those massive SQL table creation Strings,

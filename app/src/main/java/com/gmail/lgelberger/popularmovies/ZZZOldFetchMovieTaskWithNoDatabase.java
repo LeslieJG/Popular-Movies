@@ -180,7 +180,7 @@ public class ZZZOldFetchMovieTaskWithNoDatabase extends AsyncTask<URL, Void, Str
      * and pull out the data needed for the grid view
      *
      * @param movieJsonStr the JSON of all the movie data from themoviedb.org
-     * @return array of ZZZOLDMovieDataProvider obects to hold the info for each movie
+     * @return array of ZZZOLDMovieDataProvider objects to hold the info for each movie
      * @throws JSONException
      */
     private List<ZZZOLDMovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {

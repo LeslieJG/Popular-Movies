@@ -32,7 +32,7 @@ public class TestUtilities extends AndroidTestCase {
      *
      * @param error          :Message to return if cursor doesn't match values of Content Values
      * @param valueCursor    :The Cursor to be tested
-     * @param expectedValues :The Content Valuess that the cursor should contain for the test to pass
+     * @param expectedValues :The Content Values that the cursor should contain for the test to pass
      */
     static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
         assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
@@ -93,7 +93,7 @@ public class TestUtilities extends AndroidTestCase {
         ContentValues movieSingleMovieValues = new ContentValues();
         movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "The Insert 1 Movie Title");
         movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, "123456789");
-        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://newSinlgeMove.com");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL, "http://newSingleMove.com");
         movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, "MovieInsert1Picture - should be pic not text");
         //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
         movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "The Insert 1 Movie ORIGINAL Title");

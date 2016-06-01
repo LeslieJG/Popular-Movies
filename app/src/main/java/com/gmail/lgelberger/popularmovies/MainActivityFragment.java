@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections
-    //specifiy the coloums we need
+    //specify the columns we need
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry._ID,
             MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
@@ -80,8 +81,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     /////////////////////////////////////////////////////////
 
     /*
-    Girdview
-How to auto-fit properly - also add the following to the xml file for gridview
+    GridView
+How to auto-fit properly - also add the following to the xml file for GridView
 To learn more, you can also try to set it equals to auto_fit. By doing so, your app can have the ability to judge the number of columns it should show based on the screen size (or different orientation). Try it! :)
 and width to wrap content
 
@@ -90,7 +91,7 @@ http://stackoverflow.com/questions/6912922/android-how-does-gridview-auto-fit-fi
 The solution is to measure your column size before setting the GridView's column width. Here is a quick way to measure Views offscreen:
 
 
-(where cell is the specific grid cell in the gridview to measure
+(where cell is the specific grid cell in the GridView to measure
 
 public int measureCellWidth( Context context, View cell )
 {
@@ -118,6 +119,8 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
      */
 
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -128,19 +131,21 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         //setup the movieAdapter as a CursorAdapter
 
         //get a cursor showing the entire movie database
-        String sortOrder = MovieContract.MovieEntry._ID + " ASC"; //sort movies in the order they were put into database
+        //don't think I need this here. It will be loaded in from the cursor loader
+        /*String sortOrder = MovieContract.MovieEntry._ID + " ASC"; //sort movies in the order they were put into database
         Cursor entireMovieDatabaseCursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
                 null, null, null, sortOrder);
-
+*/
         //make a new MovieAdapter (cursor adapter)
-        movieAdapter = new MovieCursorAdapter(getActivity(), entireMovieDatabaseCursor, 0); //Cursor Adapter
+        movieAdapter = new MovieCursorAdapter(getActivity(), null, 0);
+       // movieAdapter = new MovieCursorAdapter(getActivity(), entireMovieDatabaseCursor, 0); //Cursor Adapter - Bad version with a real cursor already assigned - don't do this!
         //movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter (ArrayAdapter)
 
         //like before
         // Get a reference to the gridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
 
-        //set adapter to gridview
+        //set adapter to GridView
         gridView.setAdapter(movieAdapter); //my custom adapter
 
 
@@ -166,7 +171,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                     Long detailMovieDatabaseID =selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
                     Uri detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
 
-                    intentDetailActivity.setData(detailMovieUri);//setData puts a URI into the Intent - to be requeried by whomever recieved the intent
+                    intentDetailActivity.setData(detailMovieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
                        //delete below if not needed
                           /*  .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                                     locationSetting, selectedMoviecursor.getLong(COL_WEATHER_DATE)
@@ -175,7 +180,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                     startActivity(intentDetailActivity);
                 }
 
-                //old parts when intent passed the parceble instance of ZZZOLDMovieDataProvider instead of just a URI to requery in detail activity
+                //old parts when intent passed the Parcelable instance of ZZZOLDMovieDataProvider instead of just a URI to requery in detail activity
                //Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
                // intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
                // startActivity(intentDetailActivity);
@@ -204,9 +209,11 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
 
 
+
+
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
         prefListener = new MyPreferenceChangeListener();
-       /* prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged LIstener
+       /* prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged Listener
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 
                 //  if (key == getString(R.string.movie_sort_order_key)) {
@@ -221,6 +228,9 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
         return rootView;
     }
+
+
+
 
 
     //////////////////////////////Initialize Loader with Loader Manager /////////////////////////////////
@@ -265,12 +275,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
     /**
      * My Own OnSharedPreferenceChangeListener
-     * Put on it's own for easier debgugging
+     * Put on it's own for easier debugging
      */
     private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if (isAdded()) { //just makes sure that fragment is attached to an Actvity
+            if (isAdded()) { //just makes sure that fragment is attached to an Activity
                 if (key.equals(getString(R.string.movie_sort_order_key))) {
                     updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
                 }
@@ -299,7 +309,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
         } else { // if there is internet, get the movie date
 
-            //LJG ZZZ tranfering to new separate class
+            //LJG ZZZ transferring to new separate class
             // FetchMovieTask movieTask = new FetchMovieTask();
             //   movieTask.execute(movieQueryURL);
 
@@ -314,7 +324,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     /**
      * Makes URL to access API to get movie info
      * <p/>
-     * movie shoud now look like this
+     * movie should now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
      * @return URL for themoviedb.org
@@ -333,6 +343,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        Log.v("POPMake Movie Query URL", "The Query url is "+ url);
         return url;
     }
 }

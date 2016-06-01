@@ -12,7 +12,7 @@ import android.os.Build;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-// LJG ZZZ make sure all tests will see if contentObserver is refistered correctly!
+// LJG ZZZ make sure all tests will see if contentObserver is registered correctly!
 
 /**
  * Created by Leslie on 2016-05-08.
@@ -108,7 +108,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
     /*
    This test doesn't touch the database.  It verifies that the ContentProvider returns
    the correct type for each type of URI that it can handle. It checks whether each type
-   is a type CONTENT_URI (multple records)
+   is a type CONTENT_URI (multiple records)
    or a type CONTENT_TYPE_URI (single record)
 
             */
@@ -197,7 +197,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 null, // cols for "where" clause
                 null, // values for "where" clause
                 MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " ASC"  // sort order == by _ID ASCENDING
-                //I may have to have a difernt sort order for test to work?  LJG ZZZ
+                //I may have to have a different sort order for test to work?  LJG ZZZ
         );
 
         // we should have as many records in the database as we've inserted - already tested in bulk insert -
@@ -233,7 +233,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 null, // cols for "where" clause
                 null, // values for "where" clause
                 null // sort order
-                //I may have to have a difernt sort order for test to work?  LJG ZZZ
+                //I may have to have a different sort order for test to work?  LJG ZZZ
         );
 
         // we should have as many records in the database as we've inserted
@@ -252,14 +252,14 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
 
         //Create a Detail Movie Query
-        //note for Movie Detail I *JUST* have to give it a Uri with the _id appeneded on the end
+        //note for Movie Detail I *JUST* have to give it a Uri with the _id appended on the end
         Cursor movieDetailQuery = mContext.getContentResolver().query(
                 movieDetailUri,
                 null, // leaving "columns" null just returns all the columns.
                 null, //MovieContract.MovieEntry._ID, // cols for "where" clause    //perhaps add  + " = ?" after this
                 null,  //new String[]{"7"}, // values for "where" clause
                 null  // sort order
-                //I may have to have a difernt sort order for test to work?  LJG ZZZ
+                //I may have to have a different sort order for test to work?  LJG ZZZ
         );
 
         //confirm valid row
@@ -445,7 +445,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 null, // cols for "where" clause
                 null, // values for "where" clause
                 MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " ASC"  // sort order == by _ID ASCENDING
-                //I may have to have a difernt sort order for test to work?  LJG ZZZ
+                //I may have to have a different sort order for test to work?  LJG ZZZ
         );
 
         // we should have as many records in the database as we've inserted

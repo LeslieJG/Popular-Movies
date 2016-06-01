@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Somewhat copied from Sunshine app code
-using this to show how to layout each view in gridiview-->
+using this to show how to layout each view in GridView-->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

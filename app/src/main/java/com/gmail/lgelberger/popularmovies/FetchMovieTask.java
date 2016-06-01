@@ -24,10 +24,10 @@ import java.net.URL;
  * Created by Leslie on 2016-05-16.
  * <p>
  * This is the NEW FetchMovieTask
- * Writes incomming API calls to database
+ * Writes incoming API calls to database
  * I just need to update the database with API info.
  * Right now - no need to check if it is already there.
- * I can just get the info and stuff it straigh into database.
+ * I can just get the info and stuff it straight into database.
  * No need to make an ArrayList of type MovieAdapter as I am going to try to rewrite
  * the MovieAdapter with a Cursor Adapter.
  * <p>
@@ -51,7 +51,7 @@ import java.net.URL;
  * <p>
  * <p>
  * <p>
- * Param String will be the URL to call the moviedb on internet
+ * Param String will be the URL to call the movie db on internet
  * <p>
  * This class modelled after the "Sunshine" AsyncTask
  */
@@ -66,7 +66,7 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
      * This constructor was used before using loaders. It will be deleted soon.
      *
      * @param context      application context for context.getString(R.id etc) - to access the apps String resources
-     * @param movieAdapter A reference to the apps GridAdpater to update data being displayed
+     * @param movieAdapter A reference to the apps GridAdapter to update data being displayed
      */
   /*  FetchMovieTask(Context context, MovieAdapter movieAdapter) {
         this.mContext = context;
@@ -141,10 +141,12 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
             return movieJsonStr; // successful, done here (except for finally block)
 
         } catch (MalformedURLException e) {
+          //  Toast.makeText(mContext, "Got invalid data from server", Toast.LENGTH_LONG).show();
+
             e.printStackTrace(); //the URL was malformed
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the movie data, there's no point in attemping
+            // If the code didn't successfully get the movie data, there's no point in attempting
             // to parse it.
             return null;
         } finally { //disconnect the URL connection and close reader
@@ -176,6 +178,12 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
+
+        //Should deal with the case where NO strings are passed in
+     /*  if (result == null){
+           Toast.makeText(mContext, "Got invalid data from server - IN on post Execute", Toast.LENGTH_LONG).show();
+           return;
+        }*/
 
         try {
             //in future check to see if this is already in database, but for now just delete the database
@@ -222,7 +230,7 @@ public class FetchMovieTask extends AsyncTask<URL, Void, String> {
      * then add this stuff
      *
      * @param movieJsonStr the JSON of all the movie data from themoviedb.org
-     * @return array of ZZZOLDMovieDataProvider obects to hold the info for each movie
+     * @return array of ZZZOLDMovieDataProvider objects to hold the info for each movie
      * @throws JSONException
      */
   //  private List<ZZZOLDMovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {

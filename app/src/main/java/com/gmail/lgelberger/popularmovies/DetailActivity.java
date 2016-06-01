@@ -17,7 +17,7 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        //don't need snackbar
+        //don't need Snackbar
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -27,7 +27,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });*/
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //may produce 'java.lang.NullPointerException' LJG ZZZ Deal with this?
     }
 
 

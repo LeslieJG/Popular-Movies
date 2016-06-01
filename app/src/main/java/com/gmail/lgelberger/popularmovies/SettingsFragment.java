@@ -48,10 +48,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
      * as described in http://developer.android.com/guide/topics/ui/settings.html#ReadingPrefs
      * This is needed to make a sharedPreferencesListener
      * <p/>
-     * will change the preferrence summary if changed
+     * will change the preference summary if changed
      *
-     * @param sharedPreferences
-     * @param key
+     * @param sharedPreferences Shared Preferences
+     * @param key Shared Preference Key
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
