@@ -1,0 +1,44 @@
+<!-- This will have 2 content panes in it. The left one will be a static fragment of the fragment_main
+(It will be static because the android:name will be set to the class name of the MainActivitity Fragment,
+the right one will
+ be a Dynamic fragment of the fragment_detail-->
+
+
+<!--   merge xmlns:android="http://schemas.android.com/apk/res/android"
+The merge tag above is a root view that is ignored when the activity_main uses <include> to put
+this view into itself-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/movie_main_fragment"
+        android:name="com.gmail.lgelberger.popularmovies.MainActivityFragment"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:layout="@layout/fragment_main" />
+    <!-- above line shows LINT that the layout of this fragment is to be found in fragment_main.xml
+    It is not used by the app, only by LINT for correctness checking-->
+    <!-- The above is a static fragment that will hold the contents of MainActivityFragment -->
+
+    <!-- Below will be filled with the detail fragment in code
+    It just has an id tag to identify it for now-->
+    <FrameLayout
+        android:id="@+id/movie_detail_container"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0" >
+
+
+    </FrameLayout>
+
+</LinearLayout>
+
+<!-- merge-->
