@@ -22,7 +22,8 @@
     </android.support.design.widget.AppBarLayout>
 
     <!-- add the content_main fragment to this layout-->
-    <include layout="@layout/content_main" />
+    <include layout="@layout/content_main"/>
+
 
     <!--  Don't think I need sandwich at bottom-->
   <!--  <android.support.design.widget.FloatingActionButton

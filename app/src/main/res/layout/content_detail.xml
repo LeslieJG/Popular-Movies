@@ -1,9 +1,19 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- This can no longer be a fragment, as the detail view will be dynamically assigned as a fragment
+By listing it as a fragment here, I am Statically making it a fragment!
+Change to frameLayout
+removed <fragment  and replaced it with <FrameLayout-->
+
+<FrameLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment"
+    android:id="@+id/movie_detail_container"
     android:name="com.gmail.lgelberger.popularmovies.DetailActivityFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:layout="@layout/fragment_detail" />
+
+    <!-- Making above id= movie_detail_container  the same as the detail container in the 2-pane view
+    in layout-sw600dp/content_main-->

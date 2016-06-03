@@ -28,6 +28,17 @@ public class DetailActivity extends AppCompatActivity {
         });*/
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //may produce 'java.lang.NullPointerException' LJG ZZZ Deal with this?
+
+
+        //dynamically add the detail fragment
+        if (savedInstanceState == null){ //if the fragment hasn't already been created
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.movie_detail_container, new DetailActivityFragment()) //add a new DetailActivityFragment
+                    // to the place where it should be displayed (R.id.movie_detail_container)
+                    .commit();
+        }
+
+
     }
 
 
