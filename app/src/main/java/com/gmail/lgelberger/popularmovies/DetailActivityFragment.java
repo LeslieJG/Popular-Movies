@@ -96,7 +96,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         Intent intent = getActivity().getIntent(); //get intent that is passed to DetailActivity
-        if (intent == null) { //if nothing in intent, do not return a cursor loader
+        if (intent == null || intent.getData() == null) { //if nothing in intent OR if no URI in intent data
+            // (i.e. not created from an intent) - (like a 2 pane layout) where the fragment is created directly
+            // , do not return a cursor loader
             return null;
         }
 

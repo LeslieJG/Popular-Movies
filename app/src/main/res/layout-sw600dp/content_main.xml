@@ -11,30 +11,55 @@ this view into itself-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
 
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    >
+<!--  android:baselineAligned="false"
+Added baselineAligned False to prevent children from going under toolbar
+Doesn't work :(
+
+But putting
+xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+    works
+    allows it to stay Below toolbar - WHY????
+
+
+
+
+
+-->
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/movie_main_fragment"
         android:name="com.gmail.lgelberger.popularmovies.MainActivityFragment"
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_weight="2"
+
         tools:layout="@layout/fragment_main" />
     <!-- above line shows LINT that the layout of this fragment is to be found in fragment_main.xml
     It is not used by the app, only by LINT for correctness checking-->
-    <!-- The above is a static fragment that will hold the contents of MainActivityFragment -->
+    <!-- The above is a static fragment that will hold the contents of MainActivityFragment
+
+    Also, I removed
+ xmlns:app="http://schemas.android.com/apk/res-auto"
+ app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    -->
 
     <!-- Below will be filled with the detail fragment in code
     It just has an id tag to identify it for now-->
     <FrameLayout
         android:id="@+id/movie_detail_container"
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0" >
+        android:layout_weight="4" >
 
 
     </FrameLayout>
