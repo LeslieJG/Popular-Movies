@@ -1,7 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -39,11 +39,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     //  MovieAdapter movieAdapter;//declare custom MovieAdapter
     MovieCursorAdapter movieAdapter; // declare my custom CursorAdapter
 
-    private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
-
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
+
+    OnMovieSelectedListener movieListener; //refers to the containing activity of this fragment.
+    // We will pass the selected movie Uri through this listener to the containing activity to deal with
+
+
+
+    private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
     //Step 1/3 of making Cursor Loader - Create Loader ID
     private static final int MOVIE_LOADER = 0;
@@ -120,6 +125,41 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
 
 
+    /*
+
+    Interface that All activities hosting this fragment must implement
+    i.e Container Activity must implement this interface
+
+    Modelled on https://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
+     */
+    public interface OnMovieSelectedListener {
+        public void OnMovieSelected(Uri movieUri);
+    }
+
+    /*
+    When this fragment is attached to the activity, ensure that it implements onMovieSelectedListener interface
+    and assign my local version to be the activity
+    See:
+    https://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
+
+    May have to change this to onAttach(Context context)
+    and check if context is an activity
+    I'm not sure if this will work on older versions of Android though
+    see
+    http://stackoverflow.com/questions/32083053/android-fragment-onattach-deprecated
+     */
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            movieListener = (OnMovieSelectedListener) activity; //casts the attached Activity into a movieListener
+        } catch (ClassCastException e) { //ensure that the attached Activity implements the proper callback interface
+            throw new ClassCastException(activity.toString() + " must implement OnMovieSelectedListener");
+        }
+
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -156,6 +196,18 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
         //adding click listener for grid
         //passing an instance of ZZZOLDMovieDataProvider with all the movie information on it
+        /*
+        Listens for grid clicks
+        Now it calls containing activity (which implements the OnMovieSelectedListener interface
+        and calls the conatining activity and passes it the URI so that the Activity can then pass the information
+        onto the detail fragment itself
+
+        Old way -  to make a specific intent with the detailMovieUri in it
+        and add that to the intent with intent.setData(detailURI)
+
+
+
+         */
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long gridItemRowId) {
@@ -167,17 +219,23 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 Cursor selectedMoviecursor = (Cursor) adapterView.getItemAtPosition(gridItemClicked);
 
                 if (selectedMoviecursor != null) {
-                    Intent intentDetailActivity = new Intent(getActivity(), DetailActivity.class); //new intent with Detail Activity as recipient
+
+                  //old - making a specific intent to launch the DetailActivity class with the informaiont
+                   // Intent intentDetailActivity = new Intent(getActivity(), DetailActivity.class); //new intent with Detail Activity as recipient
+
+
                     Long detailMovieDatabaseID =selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
                     Uri detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
 
-                    intentDetailActivity.setData(detailMovieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
-                       //delete below if not needed
-                          /*  .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                    locationSetting, selectedMoviecursor.getLong(COL_WEATHER_DATE)
-                            ));*/
 
-                    startActivity(intentDetailActivity);
+                    //Old way with intent
+                    //intentDetailActivity.setData(detailMovieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
+                   // startActivity(intentDetailActivity);
+
+
+                    movieListener.OnMovieSelected(detailMovieUri);//instead pass the URI to containing activity
+                    // which will then pass it on to the detail activity or fragment depending on the layout
+
                 }
 
                 //old parts when intent passed the Parcelable instance of ZZZOLDMovieDataProvider instead of just a URI to requery in detail activity
@@ -276,6 +334,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     /**
      * My Own OnSharedPreferenceChangeListener
      * Put on it's own for easier debugging
+     * updates Movie Images if movie sort order is changed
      */
     private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override

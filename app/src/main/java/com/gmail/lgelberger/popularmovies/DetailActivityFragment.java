@@ -80,6 +80,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     }
 
 
+
     // From http://stackoverflow.com/questions/15392261/android-pass-dataextras-to-a-fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

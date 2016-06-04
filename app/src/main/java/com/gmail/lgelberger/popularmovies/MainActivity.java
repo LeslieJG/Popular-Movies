@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.OnMovieSelectedListener {
 
     private static final String DETAIL_FRAGMENT_TAG = "DFTAG";// Create a Tag to identify the Detail Fragment
     //it will be used in OnResume
@@ -82,5 +83,34 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /*
+    Call back from MainActivityFragment with detail Movie Uri when Movie Grid has been clicked
+    Need to launch the Detail Fragement with this information.
+    Will pass the information to Detail Movie Fragment
+    Either with intent (if one pane view)
+    Or pass it directly to the fragment (if two pane view)
+     */
+    @Override
+    public void OnMovieSelected(Uri movieUri) {
+
+
+        if (mTwoPane == false) { //Just one pane, start DetailActivity and send the Query Uri with an intent
+            //Let's just try to make and intent like old days
+            // Intent intentDetailActivity = new Intent(getActivity(), DetailActivity.class); //new intent with Detail Activity as recipient
+            Intent intentDetailActivity = new Intent(this, DetailActivity.class); //new intent with Detail Activity as recipient
+            intentDetailActivity.setData(movieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
+            startActivity(intentDetailActivity);
+        }
+
+        if (mTwoPane == true) { //then two panes - Update the detail Fragment with new data
+
+
+
+
+
+        }
+
     }
 }
