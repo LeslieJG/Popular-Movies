@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -32,8 +33,19 @@ public class DetailActivity extends AppCompatActivity {
 
         //dynamically add the detail fragment
         if (savedInstanceState == null){ //if the fragment hasn't already been created
+
+            //get intent data and pass it to fragment
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+
+            Bundle arguments = new Bundle(); //this will hold the MovieQuery URI
+            Uri movieDetailQueryUri = getIntent().getData(); //get the movieDetailQuery Uri from intent
+            arguments.putParcelable(DetailActivityFragment.MOVIE_DETAIL_URI, movieDetailQueryUri); // put movieDetailQueryUri into arguments with key MOVIE_DETAIL_URI
+            DetailActivityFragment detailFragment = new DetailActivityFragment(); //make a new DetailActivityFragment
+            detailFragment.setArguments(arguments); //add the arguments (movie query Uri) to the fragment
+            // Now dynamically load fragment into DetailActivity
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.movie_detail_container, new DetailActivityFragment()) //add a new DetailActivityFragment
+                    .add(R.id.movie_detail_container, detailFragment) //add a new DetailActivityFragment
                     // to the place where it should be displayed (R.id.movie_detail_container)
                     .commit();
         }

@@ -1,8 +1,8 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -35,6 +35,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     // Cursor Loader  ID
     private static final int MOVIE_DETAIL_LOADER = 0;
+
+    static final String MOVIE_DETAIL_URI = "MOVIE_DETAIL_URI"; // Movie Detail URI key (for getting arguments from fragment)
+    private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections
@@ -76,6 +79,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        //get the MovieQuery Uri from the fragment itself (it should have been created with one)
+        Bundle arguments = getArguments(); //get arguments from when fragement created
+        if (arguments != null) { //if there are some arguments
+            movieQueryUri = arguments.getParcelable(DetailActivityFragment.MOVIE_DETAIL_URI); //get the movieQuery URI passed in
+        }
+
         return inflater.inflate(R.layout.fragment_detail, container, false);
     }
 
@@ -96,18 +105,22 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        Intent intent = getActivity().getIntent(); //get intent that is passed to DetailActivity
+        //No longer need intent to get query Uri
+        //it is passed into the fragment as an argument (bundle)
+        /*Intent intent = getActivity().getIntent(); //get intent that is passed to DetailActivity
         if (intent == null || intent.getData() == null) { //if nothing in intent OR if no URI in intent data
             // (i.e. not created from an intent) - (like a 2 pane layout) where the fragment is created directly
             // , do not return a cursor loader
             return null;
-        }
+        }*/
+
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(
                 getActivity(), //context
-                intent.getData(),  // Query URI
+               // intent.getData(),  // Query URI
+                movieQueryUri, //Uri retrieved from fragment argument
                 MOVIE_COLUMNS, //projection
                 null,
                 null,

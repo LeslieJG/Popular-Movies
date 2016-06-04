@@ -99,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         if (mTwoPane == false) { //Just one pane, start DetailActivity and send the Query Uri with an intent
             //Let's just try to make and intent like old days
             // Intent intentDetailActivity = new Intent(getActivity(), DetailActivity.class); //new intent with Detail Activity as recipient
+
+
+
+
             Intent intentDetailActivity = new Intent(this, DetailActivity.class); //new intent with Detail Activity as recipient
             intentDetailActivity.setData(movieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
             startActivity(intentDetailActivity);
