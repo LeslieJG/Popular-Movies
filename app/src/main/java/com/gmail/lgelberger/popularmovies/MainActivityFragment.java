@@ -36,17 +36,13 @@ import java.net.URL;
  *
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    //  MovieAdapter movieAdapter;//declare custom MovieAdapter
+    //  MovieAdapter movieAdapter;//declare custom MovieAdapter - old way without cursor adapter
     MovieCursorAdapter movieAdapter; // declare my custom CursorAdapter
 
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
-
-
     OnMovieSelectedListener movieListener; //refers to the containing activity of this fragment.
     // We will pass the selected movie Uri through this listener to the containing activity to deal with
-
-
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
@@ -94,10 +90,7 @@ and width to wrap content
 http://stackoverflow.com/questions/6912922/android-how-does-gridview-auto-fit-find-the-number-of-columns/7874011#7874011
 
 The solution is to measure your column size before setting the GridView's column width. Here is a quick way to measure Views offscreen:
-
-
 (where cell is the specific grid cell in the GridView to measure
-
 public int measureCellWidth( Context context, View cell )
 {
 
@@ -116,16 +109,11 @@ public int measureCellWidth( Context context, View cell )
     return width;
 }
 And then you just set the GridView's column width:
-
 gridView.setColumnWidth( width );
-
-
 You can use setColumnWidth() right after you use setAdapter() on your GridView. –
-     */
 
 
 
-    /*
 
     Interface that All activities hosting this fragment must implement
     i.e Container Activity must implement this interface
@@ -138,15 +126,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
     /*
     When this fragment is attached to the activity, ensure that it implements onMovieSelectedListener interface
-    and assign my local version to be the activity
-    See:
+    and assign my local version to be the activity    See:
     https://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
 
     May have to change this to onAttach(Context context)
-    and check if context is an activity
-    I'm not sure if this will work on older versions of Android though
-    see
-    http://stackoverflow.com/questions/32083053/android-fragment-onattach-deprecated
+    and check if context is an activity I'm not sure if this will work on older versions of Android though
+    see    http://stackoverflow.com/questions/32083053/android-fragment-onattach-deprecated
      */
     @Override
     public void onAttach(Activity activity) {
@@ -156,9 +141,6 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         } catch (ClassCastException e) { //ensure that the attached Activity implements the proper callback interface
             throw new ClassCastException(activity.toString() + " must implement OnMovieSelectedListener");
         }
-
-
-
     }
 
     @Override
@@ -166,7 +148,6 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                              Bundle savedInstanceState) {
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //inflate the fragment view
-
 
         //setup the movieAdapter as a CursorAdapter
 
@@ -178,7 +159,6 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 */
         //make a new MovieAdapter (cursor adapter)
         movieAdapter = new MovieCursorAdapter(getActivity(), null, 0);
-       // movieAdapter = new MovieCursorAdapter(getActivity(), entireMovieDatabaseCursor, 0); //Cursor Adapter - Bad version with a real cursor already assigned - don't do this!
         //movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter (ArrayAdapter)
 
         //like before
@@ -189,13 +169,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         gridView.setAdapter(movieAdapter); //my custom adapter
 
 
-        //adding click listener for grid - now that it is a Cursor Adapter
+        //adding click listener for grid - now that it is a Cursor Adapter - not needed - just leaving it here for reference
         //onclick listener puts the Detail-Movie URI into the intent
-
-
 
         //adding click listener for grid
         //passing an instance of ZZZOLDMovieDataProvider with all the movie information on it
+
         /*
         Listens for grid clicks
         Now it calls containing activity (which implements the OnMovieSelectedListener interface
@@ -204,9 +183,6 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
         Old way -  to make a specific intent with the detailMovieUri in it
         and add that to the intent with intent.setData(detailURI)
-
-
-
          */
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -219,19 +195,15 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 Cursor selectedMoviecursor = (Cursor) adapterView.getItemAtPosition(gridItemClicked);
 
                 if (selectedMoviecursor != null) {
-
                   //old - making a specific intent to launch the DetailActivity class with the informaiont
                    // Intent intentDetailActivity = new Intent(getActivity(), DetailActivity.class); //new intent with Detail Activity as recipient
-
 
                     Long detailMovieDatabaseID =selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
                     Uri detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
 
-
                     //Old way with intent
                     //intentDetailActivity.setData(detailMovieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
                    // startActivity(intentDetailActivity);
-
 
                     movieListener.OnMovieSelected(detailMovieUri);//instead pass the URI to containing activity
                     // which will then pass it on to the detail activity or fragment depending on the layout
@@ -246,8 +218,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         });
 
 
-         /*
-
+         /* Old way  with click listener for grid - keep for reference
         //adding click listener for grid
         //passing an instance of ZZZOLDMovieDataProvider with all the movie information on it
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -261,12 +232,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 startActivity(intentDetailActivity);
             }
         });
-
         */
-
-
-
-
 
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
@@ -280,10 +246,9 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 }
             }
         };*/
+
         sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
-
         updateMovieGridImages(); //update the entire Grid from internet - when Fragment created
-
         return rootView;
     }
 

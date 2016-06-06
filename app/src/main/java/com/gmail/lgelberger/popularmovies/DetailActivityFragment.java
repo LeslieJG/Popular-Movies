@@ -21,15 +21,15 @@ import com.squareup.picasso.Picasso;
 
 /**
  * A placeholder fragment containing a simple view.
- * <p/>
+ * <p>
  * This Displays the movie details including a poster and other text details
  * The
- * <p/>
+ * <p>
  * Implements a Cursor Loader to provide a cursor (from the database)
- *
- * The query URI is provided by an intent from Detail Activity Fragment
- * The cursor loader will monitor changes in data
- * <p/>
+ * <p>
+ * Fragment gets the movieQueryUri from the arguments the fragment is created with.
+ * Fragement is created in either MainActivity or DetailActivity depending on 2-Pane of 1-Pane view
+ * <p>
  * Will not be using a CursorAdapter as it is only for List/grid views.
  * I will just be displaying one db row worth of data.
  */
@@ -41,12 +41,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     static final String LOG_TAG = "DETAIL_ACT_FRAGEMENT";
     static final String MOVIE_DETAIL_URI = "MOVIE_DETAIL_URI"; // Movie Detail URI key (for getting arguments from fragment)
     private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
-
-    private boolean delivered = false; //has the cursor Loader finished been delivered yet?
-    //to stop it being deliverd twice on rotation change
-    //see https://medium.com/@czyrux/presenter-surviving-orientation-changes-with-loaders-6da6d86ffbbf#.6xik57jcg
-    //and  https://github.com/czyrux/MvpLoaderSample/blob/master/app/src/main/java/de/czyrux/mvploadersample/base/BasePresenterFragment.java
-
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections
@@ -98,14 +92,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.v(LOG_TAG, " OnCreateView called");
+        Log.v(LOG_TAG, " OnCreateView called"); //debugging double rotation
 
-        ////////////////////////////////////
         //get the MovieQuery Uri from the fragment itself (it should have been created with one)
         Bundle arguments = getArguments(); //get arguments from when fragement created
         if (arguments != null) { //if there are some arguments
             movieQueryUri = arguments.getParcelable(DetailActivityFragment.MOVIE_DETAIL_URI); //get the movieQuery URI passed in
-
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragement
@@ -130,9 +122,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             Log.v(LOG_TAG, "In OnCreateView - movieQueryUri is null ");
         }
 
-/////////////////////////////////////////
-
-
         // return inflater.inflate(R.layout.fragment_detail, container, false); //old
         return rootView;
     }
@@ -148,23 +137,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         //Initialize the Loader with a LoaderManager
         //Arguments - Loader ID, Bundle, Class that implements callback method
-
-        //   getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
-
-//http://stackoverflow.com/questions/14719814/onloadfinished-called-twice
-       /* if (getLoaderManager().getLoader(MOVIE_DETAIL_LOADER) == null) {
-            getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
-            Log.v(LOG_TAG, "In onActivityCreated - Loader is does not yet exist - It is being made");
-        } else {
-            getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER, null, this);
-            Log.v(LOG_TAG, "In onActivityCreated - Loader exists - It is being restarted");
-        }*/
-
         getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
-
-        // Log.v(LOG_TAG, " In onActivityCreated - init Loader called");
-
-
     }
 
 
@@ -185,12 +158,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         //only return cursor if the query URI was passed in - if no URI passed in, do nothing
         // Bundle arguments = getArguments(); //get arguments from when fragment created
         if (movieQueryUri == null) { //if there are no arguments -->>>>>There ARE argument, just the Query is not set yet?
-
-            Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is NULL!!!!!!! -No Cursor Loader Created");
-
-            // return null;
+            Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is NULL!!!!!!! -No Cursor Loader Created"); //debugging
+            return null;
         }
-
         if (movieQueryUri != null) { //movieQueryUri is not null
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
@@ -207,7 +177,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             );
         }
         Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is NULL!!!!!!! Returning Null - no CursorLoader");
-        return null;
+        return null; //just to be sure, still losing data on rotate twice
     }
 
 
@@ -216,89 +186,43 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieDetailCursor) {
         Log.v(LOG_TAG, "In onLoadFinished - Method Called");
 
+        if (movieDetailCursor == null) {
+            Log.v(LOG_TAG, "onload finished - Movie Cursor is NULL");
+        } else {
+            Log.v(LOG_TAG, "onload finished - Movie Cursor is not Null");
+        }
 
-        if (!delivered) {
+        if (movieDetailCursor.moveToFirst()) {
+            Log.v(LOG_TAG, "onload finished - Movie cursor has values (not Empty)");
+        } else {
+            Log.v(LOG_TAG, "onload finished - Movie cursor is empty");
+        }
 
-        Log.v(LOG_TAG, "In onLoadFinisihed - Not yet delivered so updating UI if needed");
+        //DO it the other way - it data then load views
+        if (movieDetailCursor != null && movieDetailCursor.moveToFirst()) { //if  is not empty and exists
+            //  if(movieDetailCursor != null ){ //if  is not empty and exists
+            Log.v(LOG_TAG, "In OnLoadFinished - updating UI from Cursor");
 
+            ///////////////////////////////////////////////////////////////////
+            //Update UI
+            Context detailContext = getActivity();// getContext();
 
-       /* if (  !movieDetailCursor.moveToFirst()) {
-            return;
-        } //if no data in cursor do nothing
-*/
+            //get data from Cursor
+            String movieURL = movieDetailCursor.getString(COL_MOVIE_POSTER_URL);
 
-            if (movieDetailCursor == null) {
-                Log.v(LOG_TAG, "onload finished - Movie Cursor is NULL");
-            } else {
-                Log.v(LOG_TAG, "onload finished - Movie Cursor is not Null");
-            }
+            //  Picasso.with(detailContext).load(movieURL).into((ImageView) posterThumbnailView);
+            //Allow picasso to deal with errors - some databases will time out
+            Picasso.with(detailContext)
+                    .load(movieURL)
+                    //.placeholder(R.drawable.placeholder) //put a placeholder in place of image while it is loading
+                    .placeholder(R.drawable.placeholder_error_vertical) //put a placeholder in place of image while it is loading
+                    .error(R.drawable.placeholder_error_vertical) //put a picture if there is an error retrieving file
+                    .into((ImageView) mPosterView);
 
-            if (movieDetailCursor.moveToFirst()) {
-                Log.v(LOG_TAG, "onload finished - Movie cursor has values (not Empty)");
-            } else {
-                Log.v(LOG_TAG, "onload finished - Movie cursor is empty");
-            }
-
-
-            //DO it the other way - it data then load views
-            if (movieDetailCursor != null && movieDetailCursor.moveToFirst()) { //if  is not empty and exists
-                //  if(movieDetailCursor != null ){ //if  is not empty and exists
-                Log.v(LOG_TAG, "In OnLoadFinished - updating UI from Cursor");
-
-
-                //getting information from intent once the activity is created (after activity and fragment are created)
-                //  ZZZOLDMovieDataProvider movieDetails = getActivity().getIntent().getParcelableExtra(getString(R.string.movie_details_intent_key));
-
-                //old way - delete if not needed
-       /* Context detailContext = getActivity();// getContext();
-
-        //get data from Cursor
-        String movieURL = movieDetailCursor.getString(COL_MOVIE_POSTER_URL);
-        View posterThumbnailView = getActivity().findViewById(R.id.imageview_poster_thumbnail);
-
-        //  Picasso.with(detailContext).load(movieURL).into((ImageView) posterThumbnailView);
-        //Allow picasso to deal with errors - some databases will time out
-        Picasso.with(detailContext)
-                .load(movieURL)
-                //.placeholder(R.drawable.placeholder) //put a placeholder in place of image while it is loading
-                .placeholder(R.drawable.placeholder_error_vertical) //put a placeholder in place of image while it is loading
-                .error(R.drawable.placeholder_error_vertical) //put a picture if there is an error retrieving file
-                .into((ImageView) posterThumbnailView);
-
-
-        ((TextView) getActivity().findViewById(R.id.textview_title)).setText(movieDetailCursor.getString(COL_MOVIE_TITLE));
-        ((TextView) getActivity().findViewById(R.id.textview_plot_synopsis)).setText(movieDetailCursor.getString(COL_PLOT_SYNOPSIS));
-        ((TextView) getActivity().findViewById(R.id.textview_user_rating)).setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
-        ((TextView) getActivity().findViewById(R.id.textview_release_date)).setText(movieDetailCursor.getString(COL_RELEASE_DATE));
-
-*/
-
-
-                //Update UI
-                Context detailContext = getActivity();// getContext();
-
-                //get data from Cursor
-                String movieURL = movieDetailCursor.getString(COL_MOVIE_POSTER_URL);
-                // View posterThumbnailView = getActivity().findViewById(R.id.imageview_poster_thumbnail);
-
-                //  Picasso.with(detailContext).load(movieURL).into((ImageView) posterThumbnailView);
-                //Allow picasso to deal with errors - some databases will time out
-                Picasso.with(detailContext)
-                        .load(movieURL)
-                        //.placeholder(R.drawable.placeholder) //put a placeholder in place of image while it is loading
-                        .placeholder(R.drawable.placeholder_error_vertical) //put a placeholder in place of image while it is loading
-                        .error(R.drawable.placeholder_error_vertical) //put a picture if there is an error retrieving file
-                        .into((ImageView) mPosterView);
-
-
-                mMovieTitleView.setText(movieDetailCursor.getString(COL_MOVIE_TITLE));
-                mPlotSynopsisView.setText(movieDetailCursor.getString(COL_PLOT_SYNOPSIS));
-                mVoteAverageView.setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
-                mReleaseDateView.setText(movieDetailCursor.getString(COL_RELEASE_DATE));
-
-
-            }
-            delivered = true; //make sure it isn't delivered again
+            mMovieTitleView.setText(movieDetailCursor.getString(COL_MOVIE_TITLE));
+            mPlotSynopsisView.setText(movieDetailCursor.getString(COL_PLOT_SYNOPSIS));
+            mVoteAverageView.setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
+            mReleaseDateView.setText(movieDetailCursor.getString(COL_RELEASE_DATE));
         }
     }
 
@@ -307,37 +231,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.v(LOG_TAG, " onLoaderReset");
     }
-
-//trying to stop double rotation clearing fragment
-  /* @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putParcelable("QURL", this.movieQueryUri);
-    }*/
-
-
-/*
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-
-        if(savedInstanceState!=null) {
-            if (savedInstanceState.getBoolean("QURL", false)) {
-                this.movieQueryUri = (Uri) savedInstanceState.getParcelable("QURL");
-            }
-        }
-    }*/
-
-
-    /*
-    to allow MainActivity to just set the movie Uri if Activity already exists
-
-     */
-    public void setUri(Uri mainUri) {
-        movieQueryUri = mainUri;
-    }
-
 
     @Override
     public void onPause() {
@@ -349,23 +242,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public void onResume() {
         super.onResume();
         Log.v(LOG_TAG, " in onResume");
-        //  getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER, null, this);  //trying to restart loader in onREsume to deal with rotation issues
-        // this.getLoaderManager().restartLoader(0, null, this);
-
-        //  getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER, null, this);
-
-//        getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
-//        Log.v(LOG_TAG, "In onResume - Loader is  being made");
-
-//http://stackoverflow.com/questions/14719814/onloadfinished-called-twice
-       /* if (getLoaderManager().getLoader(MOVIE_DETAIL_LOADER) == null) {
-            getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
-            Log.v(LOG_TAG, "In onResume - Loader is does not yet exist - It is being made");
-        } else {
-            getLoaderManager().restartLoader(MOVIE_DETAIL_LOADER, null, this);
-            Log.v(LOG_TAG, "In onResume - Loader exists - It is being restarted");
-        }*/
-
     }
 
     @Override
@@ -384,8 +260,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(LOG_TAG, " in onCreate");
-
-
     }
 
     @Override
