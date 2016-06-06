@@ -45,12 +45,10 @@ public class DetailActivity extends AppCompatActivity {
             detailFragment.setArguments(arguments); //add the arguments (movie query Uri) to the fragment
             // Now dynamically load fragment into DetailActivity
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.movie_detail_container, detailFragment) //add a new DetailActivityFragment
+                    .add(R.id.movie_detail_container, detailFragment) //put the detailActivityFragment into container
                     // to the place where it should be displayed (R.id.movie_detail_container)
                     .commit();
         }
-
-
     }
 
 

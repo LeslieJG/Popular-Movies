@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by Leslie on 2016-05-03.
@@ -31,6 +32,7 @@ public class MovieContentProvider extends ContentProvider {
     -bulkInsert (test bulkInsert)
      */
 
+    private static final String LOG_TAG = "MovieContentProvider";
 
     ////////////URI Matcher Stuff///////////////////////////////////////////////////
 
@@ -107,6 +109,9 @@ public class MovieContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+
+        //for debugging 2 pane layout on tablet
+        Log.v(LOG_TAG, " Content Provider Query uri is " + uri);
 
         Cursor retCursor; //the cursor with the database information to be returned
 

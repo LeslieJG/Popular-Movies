@@ -402,7 +402,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.v("POPMake Movie Query URL", "The Query url is "+ url);
+        Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is "+ url);
         return url;
     }
 }
