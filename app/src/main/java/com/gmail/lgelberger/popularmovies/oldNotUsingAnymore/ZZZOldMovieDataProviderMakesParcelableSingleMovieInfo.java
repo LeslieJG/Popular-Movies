@@ -1,4 +1,4 @@
-package com.gmail.lgelberger.popularmovies;
+package com.gmail.lgelberger.popularmovies.oldNotUsingAnymore;
 
 import android.os.Parcel;
 import android.os.Parcelable;

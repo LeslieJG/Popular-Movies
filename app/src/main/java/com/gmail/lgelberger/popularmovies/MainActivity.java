@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,6 +19,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     private Boolean mTwoPane; //used to indicate if we are using a two pane main layout (i.e. if it is a tablet)
 
+    //adding stuff needed for initial API call here
+    SharedPreferences sharedPref; //declaring shared pref here
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here, to be able
+    //to do new API calls if needed
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +37,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
 
 
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //initializing sharedPref
+        //get default shared pref doesn't require a file name - it goes for the defulat file name
+
+       // sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //initializing sharedPref with the defaults
+        prefListener = new MyPreferenceChangeListener();
+        sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener*/
+
+
+
+
+        //   prefListener = new MyPreferenceChangeListener();
+        //  sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
+
+
+
         /* Don't think I need snackbar - delete later if needed LJG
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -42,7 +63,50 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         });
         */
 
-        Bundle mainActivitySavedInstanceStateForDebugging = savedInstanceState;
+        //    Bundle mainActivitySavedInstanceStateForDebugging = savedInstanceState;
+
+
+        //if app hasn't been running before
+
+        //API call,
+        //load API stuff into Database (only do this when first starting app, or when preferences change
+        //and we need a different sort order (highest rated or most popular etc) but  NOT favaourites
+
+        if (savedInstanceState == null) { //if app is being run for the first time this session
+
+            //get the sort order from preferences
+            String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
+            String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
+
+
+            ApiUtility.updateMovieGridImages(this, movieSortOrder);
+
+
+            /*//make the sort order URL
+            URL movieQueryURL = ApiUtility.makeMovieApiQueryURL(this, movieSortOrder);
+
+
+            //check for internet connectivity first
+            //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
+            ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+            if (!isConnected) {
+                Toast.makeText(this, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
+                //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
+            } else { // if there is internet, get the movie date
+
+
+                //start FetchMoviesFromApiTask to make API call and load images into database
+                FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(this); //pass in context
+                movieTask.execute(movieQueryURL); //execute with the savedPreferences movieQueryURL needed for API call
+
+                //update MainActivityFragment CursorAdapter to point to this new data
+*/
+
+        }
+
 
         //See if our layout says this is a 2-Pane layout. If yes, set mTwoPane to true, and inflate the second pane fragment
         if (findViewById(R.id.movie_detail_container) != null) {
@@ -54,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            if (savedInstanceState == null) {
+            if (savedInstanceState == null) { //if first time running app
                 Log.v(LOG_TAG, " in OnCreate - savedInstanceState == null - MAKING A NEW DETAIL FRAGMENT");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.movie_detail_container, new DetailActivityFragment(), DETAIL_FRAGMENT_TAG)
@@ -69,6 +133,41 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
 
+
+
+
+
+
+//put this in Main Activity?
+
+    /**
+     * My Own OnSharedPreferenceChangeListener
+     * Put on it's own for easier debugging
+     * updates Movie Images if movie sort order is changed
+     */
+   private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+         //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
+                if (key.equals(getString(R.string.movie_sort_order_key))) {
+
+                    String movieSortOrder = prefs.getString(key, "");
+
+
+                    ApiUtility.updateMovieGridImages(getApplicationContext(), movieSortOrder);
+
+
+                    //will have to call API Update and then when done - re-attach load the movies from grid
+
+//// perhaps this should also be passed to Main Activity?
+
+                   // updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
+
+
+                }
+            }
+      //  }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

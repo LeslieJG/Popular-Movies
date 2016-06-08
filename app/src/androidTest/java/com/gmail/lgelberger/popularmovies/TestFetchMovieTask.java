@@ -17,7 +17,7 @@ public class TestFetchMovieTask extends AndroidTestCase {
             //first create String of JSON values
 
             //then
-      //  FetchMovieTask.onPost
+      //  FetchMoviesFromApiTask.onPost
 
     }
 

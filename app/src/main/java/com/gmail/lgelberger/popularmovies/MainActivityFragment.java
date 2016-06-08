@@ -14,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import android.widget.Toast;
 
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -111,10 +109,10 @@ public int measureCellWidth( Context context, View cell )
 And then you just set the GridView's column width:
 gridView.setColumnWidth( width );
 You can use setColumnWidth() right after you use setAdapter() on your GridView. –
+*/
 
 
-
-
+    /*
     Interface that All activities hosting this fragment must implement
     i.e Container Activity must implement this interface
 
@@ -149,31 +147,15 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //inflate the fragment view
 
-        //setup the movieAdapter as a CursorAdapter
-
-        //get a cursor showing the entire movie database
-        //don't think I need this here. It will be loaded in from the cursor loader
-        /*String sortOrder = MovieContract.MovieEntry._ID + " ASC"; //sort movies in the order they were put into database
-        Cursor entireMovieDatabaseCursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
-                null, null, null, sortOrder);
-*/
         //make a new MovieAdapter (cursor adapter)
         movieAdapter = new MovieCursorAdapter(getActivity(), null, 0);
-        //movieAdapter = new MovieAdapter(getActivity(), R.layout.grid_item_movies_layout);  //initialize custom gridView adapter (ArrayAdapter)
 
-        //like before
         // Get a reference to the gridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
 
         //set adapter to GridView
         gridView.setAdapter(movieAdapter); //my custom adapter
 
-
-        //adding click listener for grid - now that it is a Cursor Adapter - not needed - just leaving it here for reference
-        //onclick listener puts the Detail-Movie URI into the intent
-
-        //adding click listener for grid
-        //passing an instance of ZZZOLDMovieDataProvider with all the movie information on it
 
         /*
         Listens for grid clicks
@@ -187,73 +169,59 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long gridItemRowId) {
-                //From when it was an array adapter
-               // ZZZOLDMovieDataProvider selectedMovieFromGrid = (ZZZOLDMovieDataProvider) movieAdapter.getItem(gridItemClicked); //getting movie detail straight from the movieAdapter
-
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
                 Cursor selectedMoviecursor = (Cursor) adapterView.getItemAtPosition(gridItemClicked);
 
                 if (selectedMoviecursor != null) {
-                  //old - making a specific intent to launch the DetailActivity class with the informaiont
-                   // Intent intentDetailActivity = new Intent(getActivity(), DetailActivity.class); //new intent with Detail Activity as recipient
-
                     Long detailMovieDatabaseID =selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
                     Uri detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
-
-                    //Old way with intent
-                    //intentDetailActivity.setData(detailMovieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
-                   // startActivity(intentDetailActivity);
 
                     movieListener.OnMovieSelected(detailMovieUri);//instead pass the URI to containing activity
                     // which will then pass it on to the detail activity or fragment depending on the layout
 
                 }
-
-                //old parts when intent passed the Parcelable instance of ZZZOLDMovieDataProvider instead of just a URI to requery in detail activity
-               //Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
-               // intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
-               // startActivity(intentDetailActivity);
             }
         });
 
 
-         /* Old way  with click listener for grid - keep for reference
-        //adding click listener for grid
-        //passing an instance of ZZZOLDMovieDataProvider with all the movie information on it
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int gridItemClicked, long grItemClicked) {
 
-                ZZZOLDMovieDataProvider selectedMovieFromGrid = (ZZZOLDMovieDataProvider) movieAdapter.getItem(gridItemClicked); //getting movie detail straight from the movieAdapter
+      //  sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
+       // prefListener = new MyPreferenceChangeListener();
+       // sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
 
-                Intent intentDetailActivity = new Intent(getActivity().getApplicationContext(), DetailActivity.class);
-                intentDetailActivity.putExtra(getString(R.string.movie_details_intent_key), selectedMovieFromGrid);
-                startActivity(intentDetailActivity);
-            }
-        });
-        */
+      //////////////this should be done in Main Activity
+      //  updateMovieGridImages(); //update the entire Grid from internet - when Fragment created
+//would deleting this cause issues? SHould the listener crap be put on when activity is created?
 
 
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext()); //initializing sharedPref with the defaults
-        prefListener = new MyPreferenceChangeListener();
-       /* prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() { //making a OnSharedPreferencesChanged Listener
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-
-                //  if (key == getString(R.string.movie_sort_order_key)) {
-                if (key.equals("movie_sort_order_key")) {
-                    updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
-                }
-            }
-        };*/
-
-        sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
-        updateMovieGridImages(); //update the entire Grid from internet - when Fragment created
         return rootView;
     }
 
 
 
+    //put this in Main Activity?
+
+    /**
+     * My Own OnSharedPreferenceChangeListener
+     * Put on it's own for easier debugging
+     * updates Movie Images if movie sort order is changed
+     */
+   /* private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            if (isAdded()) { //just makes sure that fragment is attached to an Activity
+                if (key.equals(getString(R.string.movie_sort_order_key))) {
+
+                    //will have to call API Update and then when done - re-attach load the movies from grid
+
+//// perhaps this should also be passed to Main Activity?
+                    updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
+                }
+            }
+        }
+    }
+*/
 
 
     //////////////////////////////Initialize Loader with Loader Manager /////////////////////////////////
@@ -296,31 +264,26 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         movieAdapter.swapCursor(null);
     }
 
-    /**
-     * My Own OnSharedPreferenceChangeListener
-     * Put on it's own for easier debugging
-     * updates Movie Images if movie sort order is changed
-     */
-    private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if (isAdded()) { //just makes sure that fragment is attached to an Activity
-                if (key.equals(getString(R.string.movie_sort_order_key))) {
-                    updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
-                }
-            }
-        }
-    }
+
+
+
 
 
     /**
-     * to connect to network and load images into the gridView
+     * to connect to network and load images into
+     * Database
+     * (not the gridview)
+     * the gridView
+     *
+     * This should be put into Api Utilities - can be self contained
      */
     private void updateMovieGridImages() {
+
         final String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
         String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
-        URL movieQueryURL = makeMovieQueryURL(movieSortOrder);
+       // URL movieQueryURL = makeMovieQueryURL(movieSortOrder); //old - delete when not needed
+        URL movieQueryURL = ApiUtility.makeMovieApiQueryURL(getContext(),movieSortOrder);
 
         //check for internet connectivity first
         //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
@@ -334,17 +297,23 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         } else { // if there is internet, get the movie date
 
             //LJG ZZZ transferring to new separate class
-            // FetchMovieTask movieTask = new FetchMovieTask();
+            // FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask();
             //   movieTask.execute(movieQueryURL);
 
             //old method with movieAdapter passed in
-            // FetchMovieTask movieTask = new FetchMovieTask(getActivity(), movieAdapter); //pass in context and movieAdapter
+            // FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(getActivity(), movieAdapter); //pass in context and movieAdapter
 //newer version - no movie adapter will used cursor loader
-            FetchMovieTask movieTask = new FetchMovieTask(getActivity()); //pass in context
+            FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(getActivity()); //pass in context
             movieTask.execute(movieQueryURL);
         }
     }
 
+
+
+
+
+    /////////////////////// This will get moved to API utilities
+    /////delete this version soon!!!!!
     /**
      * Makes URL to access API to get movie info
      * <p/>
@@ -353,7 +322,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
      *
      * @return URL for themoviedb.org
      */
-    private URL makeMovieQueryURL(String sortOrder) {
+    /*private URL makeMovieQueryURL(String sortOrder) {
         URL url = null; //url to be built
 
         Uri builtUri = Uri.parse(getString(R.string.movie_query_url_base)).buildUpon()
@@ -369,7 +338,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         }
         Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is "+ url);
         return url;
-    }
+    }*/
 }
 
 

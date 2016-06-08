@@ -1,4 +1,4 @@
-package com.gmail.lgelberger.popularmovies;
+package com.gmail.lgelberger.popularmovies.oldNotUsingAnymore;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.gmail.lgelberger.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
