@@ -191,7 +191,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
        // sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
 
       //////////////this should be done in Main Activity
-      //  updateMovieGridImages(); //update the entire Grid from internet - when Fragment created
+      //  updateDatabaseFromAPI(); //update the entire Grid from internet - when Fragment created
 //would deleting this cause issues? SHould the listener crap be put on when activity is created?
 
 
@@ -216,7 +216,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                     //will have to call API Update and then when done - re-attach load the movies from grid
 
 //// perhaps this should also be passed to Main Activity?
-                    updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
+                    updateDatabaseFromAPI(); //update the entire Grid from internet when sort order preference is changed
                 }
             }
         }

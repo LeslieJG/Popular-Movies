@@ -14,7 +14,6 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.OnMovieSelectedListener {
 
     private static final String DETAIL_FRAGMENT_TAG = "DFTAG";// Create a Tag to identify the Detail Fragment
-    //it will be used in OnResume
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private Boolean mTwoPane; //used to indicate if we are using a two pane main layout (i.e. if it is a tablet)
@@ -36,21 +35,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
 
-
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //initializing sharedPref
         //get default shared pref doesn't require a file name - it goes for the defulat file name
-
-       // sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //initializing sharedPref with the defaults
         prefListener = new MyPreferenceChangeListener();
-        sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener*/
-
-
-
-
-        //   prefListener = new MyPreferenceChangeListener();
-        //  sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener
-
-
+        sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener to allow for API calls when sort order changes
 
         /* Don't think I need snackbar - delete later if needed LJG
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -63,48 +51,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         });
         */
 
-        //    Bundle mainActivitySavedInstanceStateForDebugging = savedInstanceState;
 
-
-        //if app hasn't been running before
-
-        //API call,
-        //load API stuff into Database (only do this when first starting app, or when preferences change
-        //and we need a different sort order (highest rated or most popular etc) but  NOT favaourites
-
+        //if app hasn't been running before - Do a new API call to update the local database
         if (savedInstanceState == null) { //if app is being run for the first time this session
-
             //get the sort order from preferences
             String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
             String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
-
-            ApiUtility.updateMovieGridImages(this, movieSortOrder);
-
-
-            /*//make the sort order URL
-            URL movieQueryURL = ApiUtility.makeMovieApiQueryURL(this, movieSortOrder);
-
-
-            //check for internet connectivity first
-            //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
-            ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-            if (!isConnected) {
-                Toast.makeText(this, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
-                //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
-            } else { // if there is internet, get the movie date
-
-
-                //start FetchMoviesFromApiTask to make API call and load images into database
-                FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(this); //pass in context
-                movieTask.execute(movieQueryURL); //execute with the savedPreferences movieQueryURL needed for API call
-
-                //update MainActivityFragment CursorAdapter to point to this new data
-*/
-
+            ApiUtility.updateDatabaseFromAPI(this, movieSortOrder); //update the database with new API call
         }
 
 
@@ -133,41 +87,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
 
-
-
-
-
-
-//put this in Main Activity?
-
     /**
      * My Own OnSharedPreferenceChangeListener
      * Put on it's own for easier debugging
-     * updates Movie Images if movie sort order is changed
+     * updates Movie Images if movie sort order is changed in settings
      */
-   private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-         //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
-                if (key.equals(getString(R.string.movie_sort_order_key))) {
-
-                    String movieSortOrder = prefs.getString(key, "");
-
-
-                    ApiUtility.updateMovieGridImages(getApplicationContext(), movieSortOrder);
-
-
-                    //will have to call API Update and then when done - re-attach load the movies from grid
-
-//// perhaps this should also be passed to Main Activity?
-
-                   // updateMovieGridImages(); //update the entire Grid from internet when sort order preference is changed
-
-
-                }
+            //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
+            if (key.equals(getString(R.string.movie_sort_order_key))) {
+                String movieSortOrder = prefs.getString(key, "");
+                ApiUtility.updateDatabaseFromAPI(getApplicationContext(), movieSortOrder);
             }
-      //  }
+        }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

@@ -57,7 +57,7 @@ public class ApiUtility {
      *
      * This should be put into Api Utilities - can be self contained
      */
-    public static void updateMovieGridImages(Context context, String movieSortOrder) {
+    public static void updateDatabaseFromAPI(Context context, String movieSortOrder) {
        // SharedPreferences sharedPref; //declaring shared pref here - I HOPE THIS IS THE SAME AS MAIN ACTIVITY!!!!
 
 
