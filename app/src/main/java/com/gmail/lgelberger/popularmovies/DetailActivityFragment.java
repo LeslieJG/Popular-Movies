@@ -20,10 +20,7 @@ import com.gmail.lgelberger.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 /**
- * A placeholder fragment containing a simple view.
- * <p>
  * This Displays the movie details including a poster and other text details
- * The
  * <p>
  * Implements a Cursor Loader to provide a cursor (from the database)
  * <p>
@@ -43,8 +40,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
 
     /////////////////////Database projection constants///////////////
-    //For making good use of database Projections
-    //specify the columns we need
+    //For making good use of database Projections specify the columns we need
     private static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry._ID,
             MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
@@ -59,8 +55,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO
     };
 
-    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these
-    // must change.
+    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
     static final int COL_MOVIE_ID = 0;
     static final int COL_MOVIE_TITLE = 1;
     static final int COL_API_MOVIE_ID = 2;
@@ -77,6 +72,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     //////Adding the views
     ///hopefully this will make them retain state
+    //LJG don't think I need this
     private ImageView mPosterView;
     private TextView mMovieTitleView;
     private TextView mPlotSynopsisView;
@@ -86,7 +82,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     public DetailActivityFragment() {
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -135,8 +130,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         Log.v(LOG_TAG, "In onActivityCreated - movieQueryUri is currently " + movieQueryUri);
 
-        //Initialize the Loader with a LoaderManager
-        //Arguments - Loader ID, Bundle, Class that implements callback method
+        //Initialize the Loader with a LoaderManager  - Arguments - Loader ID, Bundle, Class that implements callback method
         getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
     }
 
@@ -146,22 +140,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         Log.v(LOG_TAG, " onCreateLoader, movieQueryUri = " + movieQueryUri);
-        //No longer need intent to get query Uri
-        //it is passed into the fragment as an argument (bundle)
-        /*Intent intent = getActivity().getIntent(); //get intent that is passed to DetailActivity
-        if (intent == null || intent.getData() == null) { //if nothing in intent OR if no URI in intent data
-            // (i.e. not created from an intent) - (like a 2 pane layout) where the fragment is created directly
-            // , do not return a cursor loader
-            return null;
-        }*/
 
         //only return cursor if the query URI was passed in - if no URI passed in, do nothing
         // Bundle arguments = getArguments(); //get arguments from when fragment created
         if (movieQueryUri == null) { //if there are no arguments -->>>>>There ARE argument, just the Query is not set yet?
             Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is NULL!!!!!!! -No Cursor Loader Created"); //debugging
             return null;
-        }
-        if (movieQueryUri != null) { //movieQueryUri is not null
+        } else { //movieQueryUri is not null
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
             Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is not Null - Creating New Cursor Loader");
@@ -176,8 +161,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                     null //sort order - just one movie, so no need to sort
             );
         }
-        Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is NULL!!!!!!! Returning Null - no CursorLoader");
-        return null; //just to be sure, still losing data on rotate twice
     }
 
 
@@ -231,6 +214,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.v(LOG_TAG, " onLoaderReset");
     }
+
+
+
+
+    ///////////////////////////delete these - just for debugging
+
+
 
     @Override
     public void onPause() {

@@ -12,28 +12,25 @@ import java.net.URL;
 
 /**
  * Created by Leslie on 2016-06-08.
- *
- * Just trying to put some Utility methods here for API calls
+ * <p>
+ * Utility Methods for API calls
  * Most methods will be static
- *
- *
  */
 public class ApiUtility {
-    private static String LOG_TAG =  ApiUtility.class.getSimpleName(); //for debugging
-
+    private static String LOG_TAG = ApiUtility.class.getSimpleName(); //for debugging
 
 
     /**
-     *Makes URL to access API to get movie info
-     * <p/>
+     * Makes URL to access API to get movie info
+     * <p>
      * movie should now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
-     * @param context Context of Application for String id references
+     * @param context   Context of Application for String id references
      * @param sortOrder Sort Order required to be constructed into API call
      * @return URL for themoviedb.org
      */
-    public static URL makeMovieApiQueryURL(Context context, String sortOrder) {
+    private static URL makeMovieApiQueryURL(Context context, String sortOrder) {
         URL url = null; //url to be built
 
         Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
@@ -47,31 +44,20 @@ public class ApiUtility {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is "+ url);
+        Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is " + url);
         return url;
     }
 
 
     /**
-     * to connect to network and load images into the gridView
+     * to connect to network update the local database of movies
      *
-     * This should be put into Api Utilities - can be self contained
+     * Makes the API query URL from movieSortOrder
+     * Checks to see if network connectivity exists
+     * If yes, calls
      */
     public static void updateDatabaseFromAPI(Context context, String movieSortOrder) {
-       // SharedPreferences sharedPref; //declaring shared pref here - I HOPE THIS IS THE SAME AS MAIN ACTIVITY!!!!
-
-
-        final String MOVIE_SORT_ORDER_KEY = context.getString(R.string.movie_sort_order_key); //to be able to look at sort order preference
-      //I really hope this gets the shared preff from context
-        //SharedPreferences sharedPref = context.getSharedPreferences("",0 ); //trying blank file name, 0 is the private mode (default)
-
-        //Context mContext = getApplicationContext();
-        //mPrefs = mContext.getSharedPreferences("myAppPrefs", Context.MODE_PRIVATE);
-
-
-      //  String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
-        Log.v(LOG_TAG, "Movie sort order key is " + movieSortOrder + " It is retireved from the shared pref correctly");
-        URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrder);
+        URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrder); //make the API url
 
         //check for internet connectivity first
         //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
@@ -79,28 +65,12 @@ public class ApiUtility {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-        if (!isConnected) {
+        if (!isConnected) { //if not network connection
             Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
             //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
         } else { // if there is internet, get the movie date
-
-            //LJG ZZZ transferring to new separate class
-            // FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask();
-            //   movieTask.execute(movieQueryURL);
-
-            //old method with movieAdapter passed in
-            // FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(getActivity(), movieAdapter); //pass in context and movieAdapter
-//newer version - no movie adapter will used cursor loader
             FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(context); //pass in context
             movieTask.execute(movieQueryURL);
         }
     }
-
-
-
-
-
-
-
-
 }

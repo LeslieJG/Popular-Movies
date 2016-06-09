@@ -25,21 +25,12 @@ import java.net.URL;
  * <p>
  * This is the NEW FetchMoviesFromApiTask
  * Writes incoming API calls to database
- * I just need to update the database with API info.
- * Right now - no need to check if it is already there.
- * I can just get the info and stuff it straight into database.
- * No need to make an ArrayList of type MovieAdapter as I am going to try to rewrite
- * the MovieAdapter with a Cursor Adapter.
- * <p>
- * <p>
- * <p>
+ *
  * made the networking stuff an AsyncTask for now to get it off main thread
- * <p>
- * <p>
+ *
  * Params, the type of the parameters sent to the task upon execution.
  * Progress, the type of the progress units published during the background computation.
  * Result, the type of the result of the background computation.
- * <p>
  * <p>
  * ALSO - make sure that AsyncTask is cancel AsyncTask instance properly in onDestroy
  * so that if the fragment is rebuilding, you destroy AsyncTask and rebuild it once
@@ -47,9 +38,7 @@ import java.net.URL;
  * as per
  * http://stackoverflow.com/questions/10919240/fragment-myfragment-not-attached-to-activity
  * <p>
- * <p>
- * <p>
- * <p>
+ *
  * <p>
  * Param String will be the URL to call the movie db on internet
  * <p>
@@ -58,8 +47,7 @@ import java.net.URL;
 public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
     private final String LOG_TAG = FetchMoviesFromApiTask.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
 
- //   private MovieAdapter movieAdapter;
-    private final Context mContext;
+     private final Context mContext;
 
 
     /**
@@ -72,6 +60,8 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
         this.mContext = context;
         this.movieAdapter = movieAdapter;
     }*/
+
+
 
     /**
      * We will use this one with CursorLoader versions
@@ -142,7 +132,6 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
 
         } catch (MalformedURLException e) {
           //  Toast.makeText(mContext, "Got invalid data from server", Toast.LENGTH_LONG).show();
-
             e.printStackTrace(); //the URL was malformed
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
@@ -168,9 +157,7 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
 
 
     /**
-     * This is where the JSON result from the movie query is processed and put into the movieAdapter for display
-     *
-     * Now that we have a database, I'm going to put all the movie data into the database
+     * This is where the JSON result from the movie query is processed into the database
      * (and later just read the results from the database)
      *
      * @param result is the JSON string from themoviedb.org

@@ -48,7 +48,6 @@ public class MovieCursorAdapter extends CursorAdapter {
       */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-
         //this is xml layout for each row (or grid item)
         View view = LayoutInflater.from(context).inflate(R.layout.grid_item_movies_layout, parent, false);
 
@@ -76,7 +75,6 @@ public class MovieCursorAdapter extends CursorAdapter {
         //get a reference to ViewHolder from the current (passed in) View that we are working with
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-
         //set up the views - using the viewHolder this time!
         TextView movieTitle = viewHolder.movieTitle; //(TextView) view.findViewById(R.id.grid_item_movies_textview);
         ImageView moviePosterView = viewHolder.moviePosterView; //(ImageView) view.findViewById(R.id.grid_item_poster);
@@ -88,7 +86,6 @@ public class MovieCursorAdapter extends CursorAdapter {
         //set the views to proper values
         movieTitle.setText(movieTitleString);
         Picasso.with(context).load(moviePosterUrl).into(moviePosterView);
-
     }
 
 
@@ -104,6 +101,5 @@ public class MovieCursorAdapter extends CursorAdapter {
         return VIEW_TYPE_COUNT; // count must be higher than all the view
     }
     */
-
 
 }

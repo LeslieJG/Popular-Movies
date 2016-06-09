@@ -8,6 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * Activity to hold detail fragment in phone (or 1-pane view)
+ */
 public class DetailActivity extends AppCompatActivity {
 
     @Override
@@ -28,8 +31,8 @@ public class DetailActivity extends AppCompatActivity {
             }
         });*/
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //may produce 'java.lang.NullPointerException' LJG ZZZ Deal with this?
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //allows up button
+        //may produce 'java.lang.NullPointerException' LJG ZZZ Deal with this?
 
         //dynamically add the detail fragment
         if (savedInstanceState == null){ //if the fragment hasn't already been created
