@@ -16,13 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
 /**
  * Fragment containing the gridview of Movies displayed from the local database
- * <p>
+ * <p/>
  * Implementing a Cursor Loader to provide a cursor (from the database)
  * Using a CursorAdapter  for grid views.
  */
@@ -35,6 +34,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     int mGridItemSelected = GridView.INVALID_POSITION; //to hold current position to place grid at proper position after rotation
     private final String SELECTED_KEY = "selected_position"; //key for storing mGridItemSelected into savedInstanceState
     GridView gridView = null; //making a reference to the GridView
+
+    int mGridItemFirstVisiblePosition = GridView.INVALID_POSITION; //trying to maintain scroll state after rotation when no selection
+    private final String FIRST_VISIBLE_POSITION_KEY = "first_visisble_position";
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
@@ -139,15 +141,13 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //inflate the fragment view
 
-        //make a new MovieAdapter (cursor adapter)
-        movieAdapter = new MovieCursorAdapter(getActivity(), null, 0);
+        Log.v(LOG_TAG, "In onCreateView of MainFragment");
 
-        // Get a reference to the gridView, and attach this adapter to it.
-        //GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
-        gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        movieAdapter = new MovieCursorAdapter(getActivity(), null, 0); //make a new MovieAdapter (cursor adapter)
+        gridView = (GridView) rootView.findViewById(R.id.gridview_movies); // Get a reference to the gridView,
+        // and attach this adapter to it.
 
-        //set adapter to GridView
-        gridView.setAdapter(movieAdapter); //my custom adapter
+        gridView.setAdapter(movieAdapter); ////set adapter to GridView
 
 
         /*
@@ -172,7 +172,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 }
 
                 mGridItemSelected = gridItemClicked; //set out local member variable with the item clicked id to recover after rotation
-                Log.v(LOG_TAG, "Selected Grid Item Number: "+ mGridItemSelected);
+                Log.v(LOG_TAG, "Selected Grid Item Number: " + mGridItemSelected);
             }
         });
 
@@ -189,6 +189,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             Log.v(LOG_TAG, "Retreived that last GridItem clicked was " + mGridItemSelected);
         }
 
+        //currently not using this for display after rotation - can delete later on
+        if (savedInstanceState != null && savedInstanceState.containsKey(FIRST_VISIBLE_POSITION_KEY)) {
+            //restore FirstVisisblePosition
+            mGridItemFirstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION_KEY);
+            Log.v(LOG_TAG, "Retrieved mGridItemFirstVisiblePosition - it is " + mGridItemFirstVisiblePosition);
+        }
 
         return rootView;
     }
@@ -198,12 +204,19 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.v(LOG_TAG, "in onSaveInstanceState");
+
         // When tablets rotate, the currently selected list item needs to be saved.
         // When no item is selected, mPosition will be set to GridView.INVALID_POSITION,
         // so check for that before storing.
         if (mGridItemSelected != GridView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mGridItemSelected);
         }
+
+        if (mGridItemFirstVisiblePosition != GridView.INVALID_POSITION) {
+            outState.putInt(FIRST_VISIBLE_POSITION_KEY, mGridItemFirstVisiblePosition);
+        }
+
         super.onSaveInstanceState(outState);
     }
 
@@ -241,24 +254,42 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         //add any other UI updates here that are needed once data is ready
 
         //scroll list back to current selection if gridView exists and mGridItemSelected has a valid position
-        if (mGridItemSelected != ListView.INVALID_POSITION && gridView != null) {
+        if (mGridItemSelected != GridView.INVALID_POSITION && gridView != null) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
-
-            //can also use setSelection(mGridItemSelected)
-            gridView.setSelection(mGridItemSelected);
-            //gridView.smoothScrollToPosition(mGridItemSelected);
-
-            Log.v(LOG_TAG, "The gridview has been selected to postition "+ gridView.g)
+            gridView.clearFocus();
+            gridView.post(new Runnable() {
+                @Override
+                public void run() {
+                    gridView.requestFocusFromTouch();
+                    gridView.setSelection(mGridItemSelected);
+                    gridView.requestFocus();
+                }
+            });
         }
+
+        //I've left these here in case I want to use them. They work as well
+        // gridView.smoothScrollToPositionFromTop(mGridItemSelected, 0); //this DOES work
+
+         /*   gridView.post(new Runnable() {
+                @Override
+                public void run() {
+                  //  gridView.smoothScrollToPosition(mGridItemFirstVisiblePosition); //works
+                    //above works
+
+                    //this combination below works works
+                   // gridView.setItemChecked(mGridItemSelected, true);
+                   // gridView.smoothScrollToPosition(mGridItemSelected);
+                }
+            });*/
     }
+
 
     //Clean up when loader destroyed. Don't have Cursor Adapter pointing at any data
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         movieAdapter.swapCursor(null);
     }
-
 
 
 }

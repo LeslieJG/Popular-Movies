@@ -3,7 +3,9 @@ using this to show how to layout each view in GridView-->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+
+    android:foreground="@drawable/touch_selector">
 
 
     <!-- This textview is overriden by the picture, if the picture loads-->

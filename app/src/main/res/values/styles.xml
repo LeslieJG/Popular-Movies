@@ -17,4 +17,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+    <!-- Below is overwritten for sw600dp and landscape-->
+    <style name="GridViewStyle">
+        <item name="android:numColumns">2</item>
+    </style>
+
 </resources>

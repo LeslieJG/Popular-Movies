@@ -10,12 +10,22 @@
     tools:context="com.gmail.lgelberger.popularmovies.MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
+    <!--
+    removed
+    android:numColumns="2"
+    -->
     <GridView
+        style="@style/GridViewStyle"
         android:id="@+id/gridview_movies"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:numColumns="2"
+
+
+
+        android:choiceMode="singleChoice"
+        android:drawSelectorOnTop="true"
+
         android:layout_gravity="center"
         android:verticalSpacing="8dp"
         android:horizontalSpacing="8dp"

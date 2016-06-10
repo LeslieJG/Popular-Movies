@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!-- &F prefix is for 50% transparency-->
+    <color name="colorGridItemPressed">#7FFF8A65</color>
+    <color name="colorGridItemSelected">#7FE0E0E0</color>
+
 </resources>
