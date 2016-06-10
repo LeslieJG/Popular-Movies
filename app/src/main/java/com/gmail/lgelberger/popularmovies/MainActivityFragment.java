@@ -10,11 +10,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ListView;
 
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
@@ -29,6 +31,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     OnMovieSelectedListener movieListener; //refers to the containing activity of this fragment.
     // We will pass the selected movie Uri through this listener to the containing activity to deal with
+
+    int mGridItemSelected = GridView.INVALID_POSITION; //to hold current position to place grid at proper position after rotation
+    private final String SELECTED_KEY = "selected_position"; //key for storing mGridItemSelected into savedInstanceState
+    GridView gridView = null; //making a reference to the GridView
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
@@ -137,7 +143,8 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         movieAdapter = new MovieCursorAdapter(getActivity(), null, 0);
 
         // Get a reference to the gridView, and attach this adapter to it.
-        GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        //GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
 
         //set adapter to GridView
         gridView.setAdapter(movieAdapter); //my custom adapter
@@ -163,11 +170,42 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                     movieListener.OnMovieSelected(detailMovieUri);//pass the URI to containing activity
                     // which will then pass it on to the detail activity or fragment depending on the layout
                 }
+
+                mGridItemSelected = gridItemClicked; //set out local member variable with the item clicked id to recover after rotation
+                Log.v(LOG_TAG, "Selected Grid Item Number: "+ mGridItemSelected);
             }
         });
+
+
+        // If there's instance state, mine it for useful information.
+        // The end-goal here is that the user never knows that turning their device sideways
+        // does crazy lifecycle related things.  It should feel like some stuff stretched out,
+        // or magically appeared to take advantage of room, but data or place in the app was never
+        // actually *lost*.
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            // The listview probably hasn't even been populated yet.  Actually perform the
+            // swapout in onLoadFinished.
+            mGridItemSelected = savedInstanceState.getInt(SELECTED_KEY);
+            Log.v(LOG_TAG, "Retreived that last GridItem clicked was " + mGridItemSelected);
+        }
+
+
         return rootView;
     }
 
+    /*
+    need to store grid position that is selected so can recover to that location in the grid after rotation
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // When tablets rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to GridView.INVALID_POSITION,
+        // so check for that before storing.
+        if (mGridItemSelected != GridView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mGridItemSelected);
+        }
+        super.onSaveInstanceState(outState);
+    }
 
     //////////////////////////////Initialize Loader with Loader Manager /////////////////////////////////
     //////////////////////////////Step 3/3 to create a Cursor Loader //////////////////////
@@ -201,6 +239,18 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         movieAdapter.swapCursor(data);
         //add any other UI updates here that are needed once data is ready
+
+        //scroll list back to current selection if gridView exists and mGridItemSelected has a valid position
+        if (mGridItemSelected != ListView.INVALID_POSITION && gridView != null) {
+            // If we don't need to restart the loader, and there's a desired position to restore
+            // to, do so now.
+
+            //can also use setSelection(mGridItemSelected)
+            gridView.setSelection(mGridItemSelected);
+            //gridView.smoothScrollToPosition(mGridItemSelected);
+
+            Log.v(LOG_TAG, "The gridview has been selected to postition "+ gridView.g)
+        }
     }
 
     //Clean up when loader destroyed. Don't have Cursor Adapter pointing at any data
@@ -208,6 +258,9 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     public void onLoaderReset(Loader<Cursor> loader) {
         movieAdapter.swapCursor(null);
     }
+
+
+
 }
 
 
