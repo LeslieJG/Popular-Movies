@@ -10,10 +10,6 @@
     tools:context="com.gmail.lgelberger.popularmovies.MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
-
-    <!-- I'm just using this to test my code.
-    Delete this whole file when I find that the tablet uses this version instead!!!!-->
-
     <GridView
         android:id="@+id/gridview_movies"
         android:layout_width="match_parent"
@@ -24,7 +20,6 @@
         android:verticalSpacing="8dp"
         android:horizontalSpacing="8dp"
         />
-
 
 
 </LinearLayout>
