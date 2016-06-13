@@ -48,9 +48,12 @@ public class MovieContract {
         public static final String COLUMN_PLOT_SYNOPSIS = "plot_synopsis"; //Plot Synopsis/ Overview (stored as String)
         public static final String COLUMN_VOTE_AVERAGE = "vote_average"; //Vote average for movie as per external DB of vote average (stored as String// - possibly Float??? ZZZ)
         public static final String COLUMN_RELEASE_DATE = "release_date";//Movie release date (stored as String)
-        public static final String COLUMN_MOVIE_REVIEW_1 = "movie_review"; //movie reviews - stored as ZZZ ?? perhaps URL?
-        public static final String COLUMN_MOVIE_REVIEW_2 = "movie_review_2"; //movie reviews - stored as ZZZ ?? perhaps URL?
-        public static final String COLUMN_MOVIE_REVIEW_3 = "movie_review_3"; //movie reviews - stored as ZZZ ?? perhaps URL?
+        public static final String COLUMN_MOVIE_REVIEW_1 = "movie_review_1"; //movie reviews - stored as String
+        public static final String COLUMN_MOVIE_REVIEW_1_AUTHOR = "movie_review_1_author"; //movie review author - stored as String
+        public static final String COLUMN_MOVIE_REVIEW_2 = "movie_review_2"; //movie reviews - stored as String
+        public static final String COLUMN_MOVIE_REVIEW_2_AUTHOR = "movie_review_2_author"; //movie review author - stored as String
+        public static final String COLUMN_MOVIE_REVIEW_3 = "movie_review_3"; //movie reviews - stored as String
+        public static final String COLUMN_MOVIE_REVIEW_3_AUTHOR = "movie_review_3_author"; //movie review author - stored as String
         public static final String COLUMN_MOVIE_VIDEO_1 = "movie_video"; //movie videos - stored as ZZZ ??? perhaps URL?
         public static final String COLUMN_MOVIE_VIDEO_2 = "movie_video_2"; //movie videos - stored as ZZZ ??? perhaps URL?
         public static final String COLUMN_MOVIE_VIDEO_3 = "movie_video_3"; //movie videos - stored as ZZZ ??? perhaps URL?

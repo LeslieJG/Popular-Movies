@@ -112,8 +112,11 @@ public class TestDb extends AndroidTestCase {
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3);
