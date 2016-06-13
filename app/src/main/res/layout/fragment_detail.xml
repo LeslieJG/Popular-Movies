@@ -70,7 +70,21 @@
                     android:layout_alignTop="@id/release_date_label"
                     android:layout_toRightOf="@id/release_date_label"
                     android:text="@string/detail_view_release_date_content_label" />
+
+                <Button
+                    android:layout_alignLeft="@id/textview_release_date"
+                    android:layout_below="@id/textview_release_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add To Favourites"
+                    android:id="@+id/favourites_button" />
+
+
+
             </RelativeLayout>
+
+
+
         </LinearLayout>
 
         <TextView
@@ -78,5 +92,94 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/detail_view_overview_label" />
+
+        <!-- Adding components for Popular Movies 2-->
+
+        <!-- Horizontal divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorDivider"></View>
+
+        <!-- Reviews  -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reviews"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/movie_review_1_author"
+            style="@style/MovieReviewTextTheme"
+            android:text="Review #1 Author" />
+
+        <TextView
+            android:id="@+id/movie_review_1_content"
+            style="@style/MovieReviewTextTheme"
+            android:text="Review#1 Content" />
+
+        <TextView
+            android:id="@+id/movie_review_2_author"
+            style="@style/MovieReviewTextTheme"
+            android:text="Review #2 Author" />
+
+        <TextView
+            android:id="@+id/movie_review_2_content"
+            style="@style/MovieReviewTextTheme"
+            android:text="Review#2 Content" />
+
+        <TextView
+            android:id="@+id/movie_review_3_author"
+            style="@style/MovieReviewTextTheme"
+            android:text="Review #3 Author" />
+
+        <TextView
+            android:id="@+id/movie_review_3_content"
+            style="@style/MovieReviewTextTheme"
+            android:text="Review#3 Content" />
+
+        <!-- Horizontal divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorDivider"></View>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trailers: "
+            android:textStyle="bold" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trailer #1"
+            android:id="@+id/trailer_1_button" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trailer #2"
+            android:id="@+id/trailer_2_button" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trailer #3"
+            android:id="@+id/trailer_3_button" />
+
     </LinearLayout>
+
+
+
+
+    <!-- Trailers -->
+
+
 </ScrollView>

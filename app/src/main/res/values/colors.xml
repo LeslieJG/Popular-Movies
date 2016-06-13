@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!-- divider color  12% black as per Material Design-->
+    <color name="colorDivider">#1E000000</color>
+
     <!-- &F prefix is for 50% transparency-->
     <color name="colorGridItemPressed">#7FFF8A65</color>
     <color name="colorGridItemSelected">#7FE0E0E0</color>

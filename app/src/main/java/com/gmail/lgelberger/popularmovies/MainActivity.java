@@ -52,6 +52,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         */
 
 
+       /* Fragment testFragment = getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG);
+        if (testFragment != null){
+            Log.v(LOG_TAG, "in MainActiivy, the detail fragments exists");
+        } else {
+            Log.v(LOG_TAG, "inMain Activity, the detail fragment is gone");
+        }*/
+
         //if app hasn't been running before - Do a new API call to update the local database
         if (savedInstanceState == null) { //if app is being run for the first time this session
             //get the sort order from preferences
@@ -72,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            if (savedInstanceState == null) { //if first time running app
+            if (savedInstanceState == null ) { //if first time running app
                 Log.v(LOG_TAG, " in OnCreate - savedInstanceState == null - MAKING A NEW DETAIL FRAGMENT");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.movie_detail_container, new DetailActivityFragment(), DETAIL_FRAGMENT_TAG)

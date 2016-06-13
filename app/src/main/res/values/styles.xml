@@ -23,4 +23,16 @@
         <item name="android:numColumns">2</item>
     </style>
 
+
+    <!-- For Movie Review Text in Detail Fragment-->
+    <style name="MovieReviewTextTheme">
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+
+    <!-- -->
+
 </resources>

@@ -49,6 +49,10 @@ public class MovieContract {
         public static final String COLUMN_VOTE_AVERAGE = "vote_average"; //Vote average for movie as per external DB of vote average (stored as String// - possibly Float??? ZZZ)
         public static final String COLUMN_RELEASE_DATE = "release_date";//Movie release date (stored as String)
         public static final String COLUMN_MOVIE_REVIEW = "movie_review"; //movie reviews - stored as ZZZ ?? perhaps URL?
+
+
+
+
         public static final String COLUMN_MOVIE_VIDEO = "movie_video"; //movie videos - stored as ZZZ ??? perhaps URL?
 
         /////////////////The following are needed for the Content Provider////////////////////////////////////////////////////////////
