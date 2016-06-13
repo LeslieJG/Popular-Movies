@@ -79,7 +79,13 @@ public class TestUtilities extends AndroidTestCase {
         movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "2016-04-05");
 
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, "Review");
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, "Review_2");
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, "Review_3");
+
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, "Video");
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, "Video_2");
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, "Video_3");
+
 
         return movieValues;
     }
@@ -102,8 +108,13 @@ public class TestUtilities extends AndroidTestCase {
         movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, "The Insert 1 Movie Release Date");
         movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, "The Insert 1 Movie Movie Review");
         //The reviews may end up being a URL - this may also need to change
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, "The Insert 1 Movie Movie Review 2");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, "The Insert 1 Movie Movie Review 3");
         movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, "The Insert 1 Movie Video");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, "The Insert 1 Movie Video 2");
+        movieSingleMovieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, "The Insert 1 Movie Video 3");
         //the Video may also change format
+
         return movieSingleMovieValues;
     }
 
@@ -130,8 +141,12 @@ public class TestUtilities extends AndroidTestCase {
 
             movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, "Movie Review: It was " + i + "thumbs up");
             //The reviews may end up being a URL - this may also need to change
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, "Movie Review 2: It was " + i + "thumbs up");
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, "Movie Review 3: It was " + i + "thumbs up");
 
             movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, "Here is video number " + i);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, "Here is video number " + i + "Second Trailer");
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, "Here is video number " + i  + "Third Trailer");
             //the Video may also change format
 
             returnContentValues[i] = movieValues;
