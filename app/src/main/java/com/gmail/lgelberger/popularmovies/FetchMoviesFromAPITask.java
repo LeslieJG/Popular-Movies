@@ -263,10 +263,10 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
             //load up the MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
             //figure out how to store the damn poster image itself
 
-            //load into database MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW + " TEXT , " +  //I'm allowing this to be null if needed until I can
+            //load into database MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
             //figure out how to store the movie reviews  (perhaps just a URL?)
 
-            //load into database   MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO + " TEXT  " +  //I'm allowing this to be null if needed until I can
+            //load into database   MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1 + " TEXT  " +  //I'm allowing this to be null if needed until I can
         }
 
 

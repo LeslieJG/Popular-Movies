@@ -51,8 +51,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS,
             MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE,
             MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
-            MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW,
-            MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO
+            MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1,
+            MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2,
+            MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3,
+            MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1,
+            MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2,
+            MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3,
     };
 
     // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
@@ -65,8 +69,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     static final int COL_PLOT_SYNOPSIS = 6;
     static final int COL_VOTE_AVERAGE = 7;
     static final int COL_RELEASE_DATE = 8;
-    static final int COL_MOVIE_REVIEW = 9;
-    static final int COL_MOVIE_VIDEO = 10;
+    static final int COL_MOVIE_REVIEW_1 = 9;
+    static final int COL_MOVIE_REVIEW_2 = 10;
+    static final int COL_MOVIE_REVIEW_3 = 11;
+    static final int COL_MOVIE_VIDEO_1 = 12;
+    static final int COL_MOVIE_VIDEO_2 = 13;
+    static final int COL_MOVIE_VIDEO_3 = 14;
     /////////////////////////////////////////////////////////
 
 

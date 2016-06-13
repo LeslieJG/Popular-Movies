@@ -70,10 +70,14 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
 
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW + " TEXT , " +  //I'm allowing this to be null if needed until I can
-                //figure out how to store the movie reviews  (perhaps just a URL?)
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2 + " TEXT , " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3 + " TEXT , " +
 
-                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO + " TEXT  " +  //I'm allowing this to be null if needed until I can
+                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
+                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2 + " TEXT , " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3 + " TEXT  " +
+
                 //figure out how to store the movie videos (perhaps just a URL?)
                 ");";
 

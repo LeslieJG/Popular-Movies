@@ -111,9 +111,12 @@ public class TestDb extends AndroidTestCase {
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE);
         movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO);
-
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2);
+        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3);
 
         int columnNameIndex = cursor.getColumnIndex("name");
         do {
@@ -123,7 +126,7 @@ public class TestDb extends AndroidTestCase {
 
         // if this fails, it means that your database doesn't contain all of the required location
         // entry columns
-        assertTrue("Error: The database doesn't contain all of the required location entry columns",
+        assertTrue("Error: The database doesn't contain all of the required movie entry columns",
                 movieColumnHashSet.isEmpty());
         db.close();
         cursor.close();
