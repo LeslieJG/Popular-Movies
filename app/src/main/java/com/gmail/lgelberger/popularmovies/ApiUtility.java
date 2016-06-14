@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by Leslie on 2016-06-08.
@@ -49,6 +50,61 @@ public class ApiUtility {
     }
 
 
+//   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
+    //   http://api.themoviedb.org/3/movie/top_rated?api_key=547bc9d14e2d25a3e3429d2f7c8292db
+    // OR the other types
+    //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=547bc9d14e2d25a3e3429d2f7c8292db
+    //
+    //  http://api.themoviedb.org/3/movie/293660/videos?api_key=547bc9d14e2d25a3e3429d2f7c8292db
+    //
+
+
+
+    //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=547bc9d14e2d25a3e3429d2f7c8292db
+    public static URL makeReviewsAPIQueryURL(Context context, String movieID){
+        URL url = null; //url to be built
+
+        Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
+                .appendPath(context.getString(R.string.movie_query_movie))
+                .appendPath(movieID)
+                .appendPath(context.getString(R.string.movie_query_reviews))
+                .appendQueryParameter(context.getString(R.string.movie_query_key_api_key), context.getString(R.string.api_key))
+                .build();
+
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.v(LOG_TAG + "MakeReviewsAPIQueryURL", "The Query url is " + url);
+
+        return url;
+    }
+
+
+    //  http://api.themoviedb.org/3/movie/293660/videos?api_key=547bc9d14e2d25a3e3429d2f7c8292db
+    public static URL makeTrailersAPIQueryURL(Context context, String movieID){
+        URL url = null; //url to be built
+
+        Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
+                .appendPath(context.getString(R.string.movie_query_movie))
+                .appendPath(movieID)
+                .appendPath(context.getString(R.string.movie_query_traliers))
+                .appendQueryParameter(context.getString(R.string.movie_query_key_api_key), context.getString(R.string.api_key))
+                .build();
+
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.v(LOG_TAG + "MakeTrailersAPIQueryURL", "The Query url is " + url);
+
+        return url;
+    }
+
+
+
     /**
      * to connect to network update the local database of movies
      *
@@ -73,4 +129,21 @@ public class ApiUtility {
             movieTask.execute(movieQueryURL);
         }
     }
+
+
+    //Need to get Movie ID from this
+  //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=123456
+    //
+    //  http://api.themoviedb.org/3/movie/293660/videos?api_key=123456
+    public static String getApiMovieIdFromUri (Uri uri){
+        //pathSegments should have 3/movie/293660/videos or 3/movie/293660/reviews
+        List<String> pathSegments = uri.getPathSegments();
+        String movieID = pathSegments.get(2); //get the third (zero indexed) path segment
+        return movieID;
+    }
+
+
+
+
+
 }

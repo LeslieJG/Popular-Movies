@@ -61,7 +61,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 // should be sorted accordingly.
                 MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //don't think I need AUTOINCREMENT ? It just limits the number of movies stored in database - but that limit is huge 10^19
                 MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
-                MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
+              //  MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
+               MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + "  INTEGER NOT NULL UNIQUE, " + //ensuring I only have one row for each single movie
                 MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
                 //figure out how to store the damn poster image itself

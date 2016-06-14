@@ -16,6 +16,8 @@
     <string name="movie_query_top_rated" translatable="false">top_rated</string>
     <string name="movie_query_key_api_key" translatable="false">api_key</string>
 
+    <string name="movie_query_reviews" translatable="false">reviews</string>
+    <string name="movie_query_traliers" translatable="false">videos</string>
 
     <!-- values for building movie poster url  -->
     <string name="poster_url_base" translatable="false">" http://image.tmdb.org/t/p/"</string>
@@ -31,6 +33,10 @@
     <string name="movie_json_key_release_date" translatable="false">release_date</string>
     <string name="movie_json_key_api_movie_id" translatable="false">id</string>
 
+    <string name="movie_json_key_review_author" translatable="false">author</string>
+    <string name="movie_json_key_review_content" translatable="false">content</string>
+
+    <string name="movie_json_key_youtube_key" translatable="false">key</string>
 
     <!-- Settings Strings-->
     <!-- Name for Application Settings [CHAR LIMIT=30] -->
@@ -59,6 +65,9 @@
 
     <!-- Grid View resources [CHAR LIMIT=30]-->
     <string name="grid_items_movies_layout_movie_name_under_poster">Movie name</string>
+
+
+
 
 
 </resources>

@@ -134,11 +134,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
     /*
-    Call back from MainActivityFragment with detail Movie Uri when Movie Grid has been clicked
-    Need to launch the Detail Fragement with this information.
-    Will pass the information to Detail Movie Fragment
-    Either with intent (if one pane view)
-    Or pass it directly to the fragment (if two pane view)
+
+     */
+
+    /**
+     * Call back from MainActivityFragment with detail Movie Uri when Movie Grid has been clicked
+     * Need to launch the Detail Fragement with this information.
+     *  Will pass the information to Detail Movie Fragment
+     * Either with intent (if one pane view)
+     * Or pass it directly to the fragment (if two pane view)
+     *
+     *
+     * @param movieUri ContentProvider query URI for one movie to get details
      */
     @Override
     public void OnMovieSelected(Uri movieUri) {
