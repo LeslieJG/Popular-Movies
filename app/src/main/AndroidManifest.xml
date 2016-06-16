@@ -53,6 +53,11 @@
             android:authorities="com.gmail.lgelberger.popularmovies"
             android:name=".data.MovieContentProvider" />
 
+        <!-- My Service for doing API call and putting into database-->
+        <service android:name=".service.PopularMoviesService"/>
+
+
+
     </application>
 
 </manifest>

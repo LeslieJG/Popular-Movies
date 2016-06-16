@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
             String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
-            ApiUtility.updateDatabaseFromAPI(this, movieSortOrder); //update the database with new API call
+            ApiUtility.updateDatabaseFromApiIfNeeded(this, movieSortOrder); //update the database with new API call
         }
 
 
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
             if (key.equals(getString(R.string.movie_sort_order_key))) {
                 String movieSortOrder = prefs.getString(key, "");
-                ApiUtility.updateDatabaseFromAPI(getApplicationContext(), movieSortOrder);
+                ApiUtility.updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
             }
         }
     }
@@ -145,19 +145,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      * Or pass it directly to the fragment (if two pane view)
      *
      *
-     * @param movieUri ContentProvider query URI for one movie to get details
+     * @param movieDetailDbUri ContentProvider query URI for one movie to get details
      */
     @Override
-    public void OnMovieSelected(Uri movieUri) {
+    public void OnMovieSelected(Uri movieDetailDbUri) {
+            //should update database with Review and Trailers of Detail Movie Selected
+        //perhaps use Android Service instead of AsyncTask - as the AsyncTask may still hold onto data from
+        //Main Activity
+
+
+
         if (mTwoPane == false) { //Just one pane, start DetailActivity and send the Query Uri with an intent
             Intent intentDetailActivity = new Intent(this, DetailActivity.class); //new intent with Detail Activity as recipient
-            intentDetailActivity.setData(movieUri);//setData puts a URI into the Intent - to be required by whomever received the intent
+            intentDetailActivity.setData(movieDetailDbUri);//setData puts a URI into the Intent - to be required by whomever received the intent
             startActivity(intentDetailActivity);
         }
 
         if (mTwoPane == true) { //then two panes - Update the detail Fragment with new data
             Bundle arguments = new Bundle(); //this will hold the MovieQuery URI
-            arguments.putParcelable(DetailActivityFragment.MOVIE_DETAIL_URI, movieUri); // put movieDetailQueryUri into arguments with key MOVIE_DETAIL_URI
+            arguments.putParcelable(DetailActivityFragment.MOVIE_DETAIL_URI, movieDetailDbUri); // put movieDetailQueryUri into arguments with key MOVIE_DETAIL_URI
 
             //  getSupportFragmentManager().beginTransaction().remove(oldFragment); //removes the old fragment
             DetailActivityFragment detailFragment = new DetailActivityFragment(); //make a new DetailActivityFragment

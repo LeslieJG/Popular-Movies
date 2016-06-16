@@ -1,11 +1,15 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.gmail.lgelberger.popularmovies.service.PopularMoviesService;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,6 +23,10 @@ import java.util.List;
  */
 public class ApiUtility {
     private static String LOG_TAG = ApiUtility.class.getSimpleName(); //for debugging
+
+    //keep a lot of the constants for deciding about API here
+    public static final int REVIEWS = 1;
+    public static final int TRAILERS = 2;
 
 
     /**
@@ -48,6 +56,10 @@ public class ApiUtility {
         Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is " + url);
         return url;
     }
+
+
+
+
 
 
 //   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
@@ -111,8 +123,10 @@ public class ApiUtility {
      * Makes the API query URL from movieSortOrder
      * Checks to see if network connectivity exists
      * If yes, calls
+     *
+     * This will have to be rewritten to allow for Reviews and Trailers to be fetched from API if needed
      */
-    public static void updateDatabaseFromAPI(Context context, String movieSortOrder) {
+    public static void updateDatabaseFromApiIfNeeded(Context context, String movieSortOrder) {
         URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrder); //make the API url
 
         //check for internet connectivity first
@@ -125,8 +139,19 @@ public class ApiUtility {
             Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
             //no internet connection so no need to continue - must find a way of running this code when there is internet!!!!!!
         } else { // if there is internet, get the movie date
-            FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(context); //pass in context
-            movieTask.execute(movieQueryURL);
+
+           //make this a service instead
+           // FetchMoviesFromApiTask movieTask = new FetchMoviesFromApiTask(context); //pass in context
+           // movieTask.execute(movieQueryURL);
+
+            String movieQueryURLAsString = movieQueryURL.toString();
+
+            Intent intent = new Intent(context, PopularMoviesService.class);  //make explicit intent for my service
+            intent.putExtra(PopularMoviesService.MOVIE_API_QUERY_EXTRA_KEY, //put extra with key MOVIE_API_QUERY_EXTRA_KEY
+                   // movieQueryURL); //put in the movieQueryURL - THIS WILL CHANGE SOON!!!!!!!!
+                    movieQueryURLAsString); //put in the movieQueryURL - THIS WILL CHANGE SOON!!!!!!!!
+            context.startService(intent);
+
         }
     }
 
@@ -139,10 +164,25 @@ public class ApiUtility {
         //pathSegments should have 3/movie/293660/videos or 3/movie/293660/reviews
         List<String> pathSegments = uri.getPathSegments();
         String movieID = pathSegments.get(2); //get the third (zero indexed) path segment
-        return movieID;
+
+        //should check that the String can be converted to a number, because if wrong API url passed in,
+        //the string COULD be the sort order (popular or top_rated)
+
+         if (TextUtils.isDigitsOnly(movieID)) {  //return movie ID if it is digits only
+             return movieID;
+         }
+      //  Log.v(LOG_TAG, "getApiMovieIdFromUri was passed the wrong uri. Unable to extract APiMovie ID. Uri passed in was " + uri);
+        return null; //if it is not digits we have the wrong uri passed in
+
+
     }
 
+/*
 
+    public static int getTypeOfApiQuery(URL url){
+
+    }
+*/
 
 
 

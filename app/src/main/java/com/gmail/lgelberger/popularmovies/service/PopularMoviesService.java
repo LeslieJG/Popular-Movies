@@ -1,12 +1,15 @@
-package com.gmail.lgelberger.popularmovies;
+package com.gmail.lgelberger.popularmovies.service;
 
+import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.Log;
 
+import com.gmail.lgelberger.popularmovies.ApiUtility;
+import com.gmail.lgelberger.popularmovies.R;
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
 import org.json.JSONArray;
@@ -22,33 +25,31 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by Leslie on 2016-05-16.
- * <p>
- * This is the NEW FetchMoviesFromApiTask
- * Writes incoming API calls to database
- * <p>
- * made the networking stuff an AsyncTask for now to get it off main thread
- * <p>
- * Params, the type of the parameters sent to the task upon execution.
- * Progress, the type of the progress units published during the background computation.
- * Result, the type of the result of the background computation.
- * <p>
- * ALSO - make sure that AsyncTask is cancel AsyncTask instance properly in onDestroy
- * so that if the fragment is rebuilding, you destroy AsyncTask and rebuild it once
- * Fragment has rebuilt so that resources can be accessed e.g. R.string.id
- * as per
- * http://stackoverflow.com/questions/10919240/fragment-myfragment-not-attached-to-activity
- * <p>
- * <p>
- * <p>
- * Param String will be the URL to call the movie db on internet
- * <p>
- * This class modelled after the "Sunshine" AsyncTask
+ * Created by Leslie on 2016-06-16.
+ *
+ *
+ * Intent Service doesn't use main thread for task
+ * This fetches data from API and loads it into the local database if needed.
+ * Service is a context! So can use Context context = this;
+ *
+ * This service is an Android component and MUST be registered in AndroidManifest
+ *  <service android:name=".service.PopularMoviesService"/> as a child of the <application> element
+ * Over ride Constructor to pass in a Thread name to superclass constructor
+ * OverRide onHandleIntent
+ *
+ *Start the Service with explicit intent using StartService method
+ * For more info see:
+ * https://developer.android.com/guide/components/services.html
+ * https://developer.android.com/guide/topics/manifest/service-element.html
+ * https://www.udacity.com/course/viewer#!/c-ud853-nd/l-1614738811/e-1664298683/m-1664298684
+ *
  */
-public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
-    private final String LOG_TAG = FetchMoviesFromApiTask.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
+public class PopularMoviesService extends IntentService{
+    private final String LOG_TAG = PopularMoviesService.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
+    public static final String MOVIE_API_QUERY_EXTRA_KEY = "movie_extra"; //key to retrieve movie query URL from intent
+    // - make public static final so that the activity starting intent can use this as extra key for intent.
 
-    private final Context mContext;
+    Context mContext = this; //explicitly state context - allows for easier porting from AsyncTask to Service
 
     //to decide which values to update in MovieEntry database
     //and also do decided which JSON is expected to be returned
@@ -56,44 +57,63 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
     private static final int updateEntireMovieEntryTable = 1;
     private static final int updateMovieReviews = 2;
     private static final int updateMovieTrailers = 3;
+    private static final int updateNothingWrongURLType = 0;
 
     //for searching URL's
     //if the API movie query URL's change, these static variables need to change to reflect the current API urls needed
+    //LJG ZZZ god damn it these are defined in STRINGS.xml use those!!!!!!!!! - crappy code here!!!!!
     private static final String popularMovies = "popular";
     private static final String topRatedMovies = "top_rated";
     private static final String movieReviews = "reviews";
     private static final String movieVideos = "videos";
 
     private String movieApiId; //should hold the API Id of movie. Needed for inserting Movie Reviews and Trailers
-    private String selection;  //for querying and updating the local database about specific movie using API id
+    //private String selection;  //for querying and updating the local database about specific movie using API id
+
+    String jsonFromApi; //just adding this to hold JSON string returned from API call - perhaps it will be changed on refactoring
 
     /**
-     * We will use this one with CursorLoader versions
+     * Creates an IntentService.  Invoked by your subclass's constructor.
      *
-     * @param context application context for context.getString(R.id etc) - to access the apps String resources
+     * //@param name Used to name the worker thread, important only for debugging.
      */
-    FetchMoviesFromApiTask(Context context) {
-        this.mContext = context;
+    public PopularMoviesService() { //removed from brackets --> String name
+        super("PopularMoviesService"); //pass the name of the worker thread - This must be done when implementing IntentService
+        // to the superclass Service - I've named it the same as this class to make debugging easier
+
+       // super(name);
     }
 
 
-    /**
-     * Get's the movie data from Internet and returns a String containing JSON data of all
-     * the movies requested
-     *
-     * @param params URL of movie Query to access internet
-     * @return movieJsonStr: a String containing the JSON data of all movies from internet
-     */
     @Override
-    protected String doInBackground(URL... params) {
-        //check to see if URL is passed in
-        if (params.length == 0) //no URL passed in
-        {
-            Log.e(LOG_TAG, "No URL passed in");
-            return null;
+    protected void onHandleIntent(Intent intent) { //Do all your off Thread stuff here - It is the only other thing (other than making constructo)
+        //that is needed for IntentService
+
+        //get the API Query URL needed from Intent
+        ///LJG ZZZ Ensure I really need the URL passed in, and not a URI or String?
+
+      //  URL url =  intent.getParcelableExtra(MOVIE_API_QUERY_EXTRA_KEY); //perhaps just pass extra as URI or string?
+
+
+        String urlAsString = intent.getStringExtra(MOVIE_API_QUERY_EXTRA_KEY);//get the incoming URL as string
+        URL url = null;
+        try {
+           url = new URL(urlAsString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
 
-        URL url = params[0]; //get the URL from the input parameters
+        //N.B. Url is the actual API query URL that is passed in
+        //I need to figure out what is required - general API call or looking for reviews/trailers for specific movie
+        // if reviews/trailers I use the API movie ID given in the incomming URL to look that movie up in my local
+        //database and see if I already have the reviews/trailers from it - if not, then do API call to get them
+
+
+        //check to make sure URL passed in, if no URL, no need to do API call
+        if (url == null){
+            Log.e(LOG_TAG, "No URL passed in");
+            return; //nothing to do - just exit
+        }
         Log.v(LOG_TAG, "URL for API call is " + url.toString()); //for figureing out types of calls needed - delete later on
 
         //url should be one of the following types
@@ -104,101 +124,155 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
 
 
         //Check which kind of URL comes in to decide what to do next
-        String urlAsString = url.toString();
-        Uri urlAsUri = Uri.parse(urlAsString);
+     //   String urlAsString = url.toString();
+     //   Uri urlAsUri = Uri.parse(urlAsString);
 
 
-        //Check Which type of API call needed?
-        // Return if correct data already in database - no need to make API call
-        if (urlAsString.toLowerCase().contains(popularMovies) || urlAsString.toLowerCase().contains(topRatedMovies)) {
-            //do the required action for popular movies or top rated - i.e. a normal API query
-            apiCallNeeded = updateEntireMovieEntryTable;
-        } else if (urlAsString.toLowerCase().contains(movieReviews)) { //do the requred action to load just the Movie Reviews in
-            apiCallNeeded = updateMovieReviews;
-            //check database for Reviews at the correct movie ID- If one is there then return null here - don't need to do anything
-            movieApiId = ApiUtility.getApiMovieIdFromUri(urlAsUri); //get the movie ID
-            //get a cursor from Database using API id as query param
-            //make the Query URI
-            //Uri movieDetailQueryUri =  MovieContract.MovieEntry.buildMovieUriWithAppendedID(Long.valueOf(movieApiId)); //perhaps error check if Long.valueOf(movieApiId) returns an actual LONG and is not invalid?
-            Uri dbQueryUri = MovieContract.MovieEntry.CONTENT_URI; //look through entire database
-            String[] reviewMovieColumnProjection = {MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1}; //projection of just First Review - Just need to see if there are reviews there already
-            selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiId;
 
-            // Queries the MovieEntry Table and returns results for just the one movie
-            // - ensure that it will return null if the movie exists but if the reviews aren't there yet!
-            Cursor mCursor = mContext.getContentResolver().query(
-                    //movieDetailQueryUri,   // The content URI of the words table
-                    dbQueryUri,
-                    reviewMovieColumnProjection, // The columns to return for each row - should Just be the first revie
-                    // null,                    // Selection criteria
-                    selection, //selection criteria
-                    null,                     // Selection args
-                    null);                        // The sort order for the returned rows
+       if (dataAlreadyInDb(url)){
+           //if data already there, no need to make API call or load database - We are done
+           return;
+       } //otherwise do API call and load into database
 
-
-            try {
-                //check to see if MovieReviews exits already for this movie
-                if (mCursor.moveToFirst() == true) { //already have Movie Review in the table. No need to load
-                    Log.v(LOG_TAG, "There are already Reviews Loaded - no need to make an API call");
-                    return null;  //return null String - no need to do any loading of Reviews
-                }
-                Log.v(LOG_TAG, "There are NO reviews Loaded - Make the API call");
-
-            } finally {
-                mCursor.close(); //just making sure to close cursor before allowing the above return null or allowing it to continue
-            }
-
-
-        } else if (urlAsString.toLowerCase().contains(movieVideos)) { //do the required action to load just the Movie Trailers in
-            apiCallNeeded = updateMovieTrailers;
-
-            movieApiId = ApiUtility.getApiMovieIdFromUri(urlAsUri); //get the movie API ID
-            //get a cursor from Database using API id as query param
-
-            Uri dbQueryUri = MovieContract.MovieEntry.CONTENT_URI; //look through entire database
-            String[] trailerMovieColumnProjection = {MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1}; //projection of just First Trailer - Just need to see if there are reviews there already
-            selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiId;
-
-            // Queries the MovieEntry Table and returns results for just the one movie
-            // - ensure that it will return null if the movie exists but if the reviews aren't there yet!
-            Cursor mCursor = mContext.getContentResolver().query(
-                    dbQueryUri,   //
-                    trailerMovieColumnProjection,           // The columns to return for each row - should Just be the first trailer
-                    selection,                    // Selection criteria
-                    null,                     // Selection args
-                    null);                        // The sort order for the returned rows
-
-
-            try {
-                //check to see if MovieReviews exits already for this movie
-                if (mCursor.moveToFirst() == true) { //already have Movie Trailer in the table. No need to load
-                    Log.v(LOG_TAG, "There are already Trailers Loaded - no need to make an API call");
-                    return null;  //return null String - no need to do any loading of Reviews
-                }
-                Log.v(LOG_TAG, "There are NO Trailers Loaded - Make the API call");
-            } finally {
-                mCursor.close(); //ensure cursor closed before returning or continuing
-            }
-
-
-        } else {
-            //something went very wrong. Error off
-            Log.e(LOG_TAG, "Something Screwed up with deciding whether to update MovieEntryTable or Review or Trailers");
+        jsonFromApi = doApiCall(url); //do API call and get JSON
+        if (jsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
+            return;
         }
 
 
+
+        apiCallNeeded = getApiCallNeeded(url);
+        String selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiId; //just select the individual movie (if updating reviews or trailers)
+
+        try {
+            switch (apiCallNeeded) { //find out which type of API call was made
+                case updateEntireMovieEntryTable:
+                    int rowsDeleted = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null); //delete entire database
+                    Log.v(LOG_TAG, " - Database deleted after API call"); //for debugging tablet rotated twice
+
+                    ContentValues[] myTempContentValues = getMovieDataFromJson(jsonFromApi); //this is my ContentValues[] with all the movie data in it
+                    //bulk insert all new stuff
+                    int numberOfRowsInserted = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI,
+                            myTempContentValues);
+                    break;
+                case updateMovieReviews:
+                    // (Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+                    ContentValues myTempReviewValues = getReviewsFromJson(jsonFromApi);  //get content values from JSON
+                    int numberOfRowsUpdatedReviews = mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI,
+                            myTempReviewValues,
+                            selection,
+                            null); //update the database with Reviews
+                    break;
+                case updateMovieTrailers:
+                    ContentValues myTempVideoValues = getTrailersFromJson(jsonFromApi);  //get content values from JSON
+                    int numberOfRowsUpdatedTrailers = mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI,
+                            myTempVideoValues,
+                            selection,
+                            null); //update the database with Reviews
+                    //insert into database
+                    break;
+                default:
+                    break;
+            }
+
+
+            //or just make a toast? - for debugging
+            /*Toast.makeText(mContext, Integer.toString(inserted)   +
+                    " Out of " +
+                    Integer.toString(myTempContentValues.length) +
+                    " movies inserted into database.",
+                    Toast.LENGTH_LONG).show();*/
+
+
+            //confirm that the data is inserted correctly (throw an exception if inserted != myTempContentValues.getLength();
+           /* if (inserted != myTempContentValues.length){
+                //something went horribly wrong and data not in database
+                throw new RuntimeException("FetMovieTask (AsyncTask) The database stored " + Integer.toString(inserted) +
+                        " rows instead of the required " + Integer.toString(myTempContentValues.length)); */
+
+            //////////////LJG ZZZ This thrown runtime exception may not be the best practise way to deal with this
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /*
+    Check if data refered to by apiQueryUrl is already in the database
+    returns true if data already in database
+    false if data not in database
+     */
+    private boolean dataAlreadyInDb (URL apiQueryUrl) {
+        int apiCallNeededJustThisMethod = getApiCallNeeded(apiQueryUrl); //figure out which API call was passed in
+
+        //Check which kind of URL comes in to decide what to do next
+        String urlAsString = apiQueryUrl.toString();
+        Uri urlAsUri = Uri.parse(urlAsString);
+
+        String movieApiIdFromJustThisMethod = ApiUtility.getApiMovieIdFromUri(urlAsUri); //get the movie ID if Reviews or Trailers URL
+
+        String selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiIdFromJustThisMethod;
+        String[] projection = new String[1]; //will have only one column in my projection
+
+            switch (apiCallNeededJustThisMethod) { //need to get apiCallNeeded somewhere else for better isolation of methods
+                case updateEntireMovieEntryTable:
+                    //for now do nothing - I will always delete the database and reload it
+                    //in the future we can do a database check
+                    return false; //data is not already in database - we're done with this method.
+                    //break;
+                case updateMovieReviews:
+                    projection[0] = MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1;
+                    //projection of just First Review - Just need to see if there are reviews there already
+                    break;
+                case updateMovieTrailers:
+                    projection[0] = MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1;
+                    //projection of just First Trailer - Just need to see if there are reviews there already
+                    break;
+                default:
+                    //something went wrong - should never reach here
+                    break;
+            }
+
+
+        // Queries the MovieEntry Table and returns results for just the one movie
+        Cursor mCursor = mContext.getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI, //look through entire database
+                projection, // The columns to return for each row - should Just be the first review or trailer
+                selection, //selection criteria - just look for
+                null,                     // Selection args
+                null);                        // The sort order for the returned rows
+
+
+        try {
+            //check to see if MovieReviews exits already for this movie
+            if (mCursor.moveToFirst() == true) { //already have Movie Review in the table. No need to load
+                Log.v(LOG_TAG, "There are already Reviews Loaded - no need to make an API call");
+                return true;  //return true - data already in database- no need to do any loading of Reviews
+            } else {
+                Log.v(LOG_TAG, "There are NO reviews Loaded - Make the API call");
+                return false; //data Not yet in database API call needed
+            }
+
+        } finally {
+            mCursor.close(); //just making sure to close cursor before allowing the above return null or allowing it to continue
+        }
+    }
+
+
+
+    private String doApiCall(URL apiQueryUrl) {
         //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
+        String movieJsonStr = null; // Will contain the raw JSON response as a string.
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
-        String movieJsonStr = null; // Will contain the raw JSON response as a string.
-
         try {
             // Create the request to themoviedb.org, and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection = (HttpURLConnection) apiQueryUrl.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
@@ -248,108 +322,61 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
                 }
             }
         }
-
-        // This will only happen if there was an error getting or parsing the movie data.
+        // This will only happen if there was an error getting or parsing the movie data. or API delivers nothing
         return null;
     }
 
 
-    /**
-     * This is where the JSON result from the movie query is processed into the database
-     * (and later just read the results from the database)
-     *
-     * @param result is the JSON string from themoviedb.org
+
+
+
+
+    //
+    /*
+    takes incoming URL and decides which API URL it is
+    Returns one of the three static final constants
+    //decide where to store the static final constants in this class or in ApiUtilitiy?
+
      */
-    @Override
-    protected void onPostExecute(String result) {
-        super.onPostExecute(result);
+    private int getApiCallNeeded(URL url) {
+         int apiCalltype;
 
-        //if null no API call made (or no results returned)
-        if (result == null) { //do nothing
-            //keep the check for null though - it is needed in case data is already in database and don't have to do API call
-            return;
+        //Check which kind of URL comes in to decide what to do next
+        String urlAsString = url.toString();
+        Uri urlAsUri = Uri.parse(urlAsString);
+
+        if (urlAsString.toLowerCase().contains(popularMovies) || urlAsString.toLowerCase().contains(topRatedMovies)) {
+            //do the required action for popular movies or top rated - i.e. a normal API query
+            apiCalltype = updateEntireMovieEntryTable;
+        }  else if (urlAsString.toLowerCase().contains(movieReviews)) { //do the requred action to load just the Movie Reviews in
+        apiCalltype = updateMovieReviews;}
+        else if (urlAsString.toLowerCase().contains(movieVideos)) { //do the required action to load just the Movie Trailers in
+            apiCalltype = updateMovieTrailers;}
+        else {
+            //something went very wrong. Error off
+            Log.e(LOG_TAG, "Something Screwed up with deciding whether to update MovieEntryTable or Review or Trailers");
+            return 0;
         }
 
-
-        try {
-            switch (apiCallNeeded) { //find out which type of API call was made
-                case updateEntireMovieEntryTable:
-                    //in future check to see if this is already in database, but for now just delete the database
-                    int rowsDeleted = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null); //delete entire database
-                    Log.v(LOG_TAG, " - Database deleted after API call"); //for debugging tablet rotated twice
-                    //for debugging
-                    // Toast.makeText(mContext, "Deleted " +  Integer.toString(rowsDeleted)   + " rws from database", Toast.LENGTH_LONG).show();
-
-                    ContentValues[] myTempContentValues = getMovieDataFromJson(result); //this is my ContentValues[] with all the movie data in it
-                    //bulk insert all new stuff
-                    int numberOfRowsInserted = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, myTempContentValues);
-                    break;
-                case updateMovieReviews:
-                    // (Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-                    Uri reviewUri = MovieContract.MovieEntry.CONTENT_URI;
-                    ContentValues myTempReviewValues = getReviewsFromJson(result);  //get content values from JSON
-                    selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiId;
-                    // String selectionArgs[] = null;
-
-                    //int numberOfRowsUpdated = mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, myTempReviewValues, MovieContract.MovieEntry.COLUMN_API_MOVIE_ID)
-                    int numberOfRowsUpdatedReviews = mContext.getContentResolver().update(reviewUri, myTempReviewValues, selection, null); //update the database with Reviews
-
-                    //int insertedReviews= mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, myTempReviewValues);
-
-                    break;
-                case updateMovieTrailers:
-                    ContentValues myTempTrailerValues = getTrailersFromJson(result);
-
-                    Uri videoUri = MovieContract.MovieEntry.CONTENT_URI;
-                    ContentValues myTempVideoValues = getTrailersFromJson(result);  //get content values from JSON
-                    selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiId;
-                    // String selectionArgs[] = null;
-
-                    //int numberOfRowsUpdated = mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, myTempReviewValues, MovieContract.MovieEntry.COLUMN_API_MOVIE_ID)
-                    int numberOfRowsUpdatedTrailers = mContext.getContentResolver().update(videoUri, myTempVideoValues, selection, null); //update the database with Reviews
-                    //insert into database
-
-                    break;
-                default:
-                    break;
-            }
-
-
-            //or just make a toast? - for debugging
-            /*Toast.makeText(mContext, Integer.toString(inserted)   +
-                    " Out of " +
-                    Integer.toString(myTempContentValues.length) +
-                    " movies inserted into database.",
-                    Toast.LENGTH_LONG).show();*/
-
-
-            //confirm that the data is inserted correctly (throw an exception if inserted != myTempContentValues.getLength();
-           /* if (inserted != myTempContentValues.length){
-                //something went horribly wrong and data not in database
-                throw new RuntimeException("FetMovieTask (AsyncTask) The database stored " + Integer.toString(inserted) +
-                        " rows instead of the required " + Integer.toString(myTempContentValues.length)); */
-
-            //////////////LJG ZZZ This thrown runtime exception may not be the best practise way to deal with this
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        return apiCalltype;
     }
 
 
-    /**
-     * Take the complete string representing the entire initial movie call to themoviedb.org
-     * and pull out the data needed for the grid view
-     * <p>
-     * Put data directly into database
-     * (for now, do not check it if is already in database
-     * just wipe database first,
-     * then add this stuff
-     *
-     * @param movieJsonStr the JSON of all the movie data from themoviedb.org
-     * @return array of ZZZOLDMovieDataProvider objects to hold the info for each movie
-     * @throws JSONException
-     */
+
+
+/**
+ * Take the complete string representing the entire initial movie call to themoviedb.org
+ * and pull out the data needed for the grid view
+ * <p>
+ * Put data directly into database
+ * (for now, do not check it if is already in database
+ * just wipe database first,
+ * then add this stuff
+ *
+ * @param movieJsonStr the JSON of all the movie data from themoviedb.org
+ * @return array of ZZZOLDMovieDataProvider objects to hold the info for each movie
+ * @throws JSONException
+ */
     //  private List<ZZZOLDMovieDataProvider> getMovieDataFromJson(String movieJsonStr) throws JSONException {
     private ContentValues[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
         // These are the names of the JSON objects that need to be extracted.
@@ -485,4 +512,5 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
         }
         return url;
     }
+
 }
