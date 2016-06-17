@@ -56,7 +56,8 @@
         <!-- My Service for doing API call and putting into database-->
         <service android:name=".service.PopularMoviesService"/>
 
-
+        <!-- My Service for putting each Movies Trailers and Reviews into database-->
+        <service android:name=".service.ReviewAndTrailerUpdateService"/>
 
     </application>
 

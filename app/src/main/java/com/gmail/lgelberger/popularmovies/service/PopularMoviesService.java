@@ -4,11 +4,9 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.gmail.lgelberger.popularmovies.ApiUtility;
 import com.gmail.lgelberger.popularmovies.R;
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
@@ -37,11 +35,23 @@ import java.net.URL;
  * Over ride Constructor to pass in a Thread name to superclass constructor
  * OverRide onHandleIntent
  *
+ *
  *Start the Service with explicit intent using StartService method
  * For more info see:
  * https://developer.android.com/guide/components/services.html
  * https://developer.android.com/guide/topics/manifest/service-element.html
  * https://www.udacity.com/course/viewer#!/c-ud853-nd/l-1614738811/e-1664298683/m-1664298684
+ *
+ *
+ *
+ * Get ALL Reviews and Trailers when database updated
+ * Will ONlY be called with API Query url
+ * http://api.themoviedb.org/3/movie/top_rated?api_key=[My API Key]
+ * http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
+ *
+ * WIll need to call API and load data into database.
+ * Then it will need to loop through each movie and get it's own list of API movie ID's needed for all 20 movies
+ * THen for EACH movie, it will have to make a new intent call (to get a
  *
  */
 public class PopularMoviesService extends IntentService{
@@ -53,21 +63,21 @@ public class PopularMoviesService extends IntentService{
 
     //to decide which values to update in MovieEntry database
     //and also do decided which JSON is expected to be returned
-    private int apiCallNeeded = 0; //initial variable set to not one of the below values
+   /* private int apiCallNeeded = 0; //initial variable set to not one of the below values
     private static final int updateEntireMovieEntryTable = 1;
     private static final int updateMovieReviews = 2;
     private static final int updateMovieTrailers = 3;
-    private static final int updateNothingWrongURLType = 0;
+    private static final int updateNothingWrongURLType = 0;*/
 
     //for searching URL's
     //if the API movie query URL's change, these static variables need to change to reflect the current API urls needed
     //LJG ZZZ god damn it these are defined in STRINGS.xml use those!!!!!!!!! - crappy code here!!!!!
-    private static final String popularMovies = "popular";
+   /* private static final String popularMovies = "popular";
     private static final String topRatedMovies = "top_rated";
     private static final String movieReviews = "reviews";
-    private static final String movieVideos = "videos";
+    private static final String movieVideos = "videos";*/
 
-    private String movieApiId; //should hold the API Id of movie. Needed for inserting Movie Reviews and Trailers
+  //  private String movieApiId; //should hold the API Id of movie. Needed for inserting Movie Reviews and Trailers
     //private String selection;  //for querying and updating the local database about specific movie using API id
 
     String jsonFromApi; //just adding this to hold JSON string returned from API call - perhaps it will be changed on refactoring
@@ -89,12 +99,6 @@ public class PopularMoviesService extends IntentService{
     protected void onHandleIntent(Intent intent) { //Do all your off Thread stuff here - It is the only other thing (other than making constructo)
         //that is needed for IntentService
 
-        //get the API Query URL needed from Intent
-        ///LJG ZZZ Ensure I really need the URL passed in, and not a URI or String?
-
-      //  URL url =  intent.getParcelableExtra(MOVIE_API_QUERY_EXTRA_KEY); //perhaps just pass extra as URI or string?
-
-
         String urlAsString = intent.getStringExtra(MOVIE_API_QUERY_EXTRA_KEY);//get the incoming URL as string
         URL url = null;
         try {
@@ -103,11 +107,6 @@ public class PopularMoviesService extends IntentService{
             e.printStackTrace();
         }
 
-        //N.B. Url is the actual API query URL that is passed in
-        //I need to figure out what is required - general API call or looking for reviews/trailers for specific movie
-        // if reviews/trailers I use the API movie ID given in the incomming URL to look that movie up in my local
-        //database and see if I already have the reviews/trailers from it - if not, then do API call to get them
-
 
         //check to make sure URL passed in, if no URL, no need to do API call
         if (url == null){
@@ -115,36 +114,47 @@ public class PopularMoviesService extends IntentService{
             return; //nothing to do - just exit
         }
         Log.v(LOG_TAG, "URL for API call is " + url.toString()); //for figureing out types of calls needed - delete later on
-
         //url should be one of the following types
         //   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
         //   http://api.themoviedb.org/3/movie/top_rated?api_key=[My API Key]
-        //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=[My API Key]
-        //  http://api.themoviedb.org/3/movie/293660/videos?api_key=[My API Key]
 
 
-        //Check which kind of URL comes in to decide what to do next
-     //   String urlAsString = url.toString();
-     //   Uri urlAsUri = Uri.parse(urlAsString);
-
-
-
-       if (dataAlreadyInDb(url)){
+      /* if (dataAlreadyInDb(url)){
            //if data already there, no need to make API call or load database - We are done
            return;
-       } //otherwise do API call and load into database
+       }
 
-        jsonFromApi = doApiCall(url); //do API call and get JSON
+       //otherwise do API call and load into database*/
+
+        jsonFromApi = doApiCall(url); //do API call and get JSON  LJG -- see if we can use the ApiUtility version of this
         if (jsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             return;
         }
 
 
+        int rowsDeleted = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null); //delete entire database
+        Log.v(LOG_TAG, " - Database deleted after API call"); //for debugging tablet rotated twice
 
-        apiCallNeeded = getApiCallNeeded(url);
-        String selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiId; //just select the individual movie (if updating reviews or trailers)
-
+        //ContentValues[] myTempContentValues = new ContentValues[0]; //this is my ContentValues[] with all the movie data in it
         try {
+             ContentValues[] myTempContentValues = getMovieDataFromJson(jsonFromApi);
+            //bulk insert all new stuff
+            int numberOfRowsInserted = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI,
+                    myTempContentValues);
+
+
+
+        } catch (JSONException e1) {
+            e1.printStackTrace();
+        }
+
+
+
+
+       // apiCallNeeded = getApiCallNeeded(url);
+       // String selection = MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " = " + movieApiId; //just select the individual movie (if updating reviews or trailers)
+
+      /*  try {
             switch (apiCallNeeded) { //find out which type of API call was made
                 case updateEntireMovieEntryTable:
                     int rowsDeleted = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null); //delete entire database
@@ -154,6 +164,13 @@ public class PopularMoviesService extends IntentService{
                     //bulk insert all new stuff
                     int numberOfRowsInserted = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI,
                             myTempContentValues);
+
+                    //Now database entries inserted
+                    //Go through contentValues and get each movie API ID. (AND database _ID ??)
+                    // For each API id, make a new intent for ReviewAndTrailerUpdateService
+                    //and start the service in loop
+
+
                     break;
                 case updateMovieReviews:
                     // (Uri uri, ContentValues values, String selection, String[] selectionArgs) {
@@ -173,7 +190,7 @@ public class PopularMoviesService extends IntentService{
                     break;
                 default:
                     break;
-            }
+            }*/
 
 
             //or just make a toast? - for debugging
@@ -192,9 +209,9 @@ public class PopularMoviesService extends IntentService{
 
             //////////////LJG ZZZ This thrown runtime exception may not be the best practise way to deal with this
 
-        } catch (JSONException e) {
+        /*} catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -203,12 +220,16 @@ public class PopularMoviesService extends IntentService{
     returns true if data already in database
     false if data not in database
      */
-    private boolean dataAlreadyInDb (URL apiQueryUrl) {
+   /* private boolean dataAlreadyInDb (URL apiQueryUrl) {
         int apiCallNeededJustThisMethod = getApiCallNeeded(apiQueryUrl); //figure out which API call was passed in
 
         //Check which kind of URL comes in to decide what to do next
         String urlAsString = apiQueryUrl.toString();
         Uri urlAsUri = Uri.parse(urlAsString);
+
+
+
+
 
         String movieApiIdFromJustThisMethod = ApiUtility.getApiMovieIdFromUri(urlAsUri); //get the movie ID if Reviews or Trailers URL
 
@@ -257,10 +278,13 @@ public class PopularMoviesService extends IntentService{
         } finally {
             mCursor.close(); //just making sure to close cursor before allowing the above return null or allowing it to continue
         }
-    }
+    }*/
 
 
 
+
+
+    // LJG ZZZ see if I can use the static method identical to this in ApiUtilities instead!
     private String doApiCall(URL apiQueryUrl) {
         //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
         String movieJsonStr = null; // Will contain the raw JSON response as a string.
@@ -338,7 +362,7 @@ public class PopularMoviesService extends IntentService{
     //decide where to store the static final constants in this class or in ApiUtilitiy?
 
      */
-    private int getApiCallNeeded(URL url) {
+   /* private int getApiCallNeeded(URL url) {
          int apiCalltype;
 
         //Check which kind of URL comes in to decide what to do next
@@ -359,7 +383,7 @@ public class PopularMoviesService extends IntentService{
         }
 
         return apiCalltype;
-    }
+    }*/
 
 
 
@@ -429,6 +453,7 @@ public class PopularMoviesService extends IntentService{
         return movieContentValueArrayFromJSON;
     }
 
+/*
 
     // This is tied specidifically to the JSON output from our API
     //If TheMovieDB.COM changes its JSON output, this method must change to reflect that.
@@ -485,6 +510,7 @@ public class PopularMoviesService extends IntentService{
         return movieReviewCVFromJSON;
     }
 
+*/
 
     /**
      * Helper method Makes URL to access API to get movie poster

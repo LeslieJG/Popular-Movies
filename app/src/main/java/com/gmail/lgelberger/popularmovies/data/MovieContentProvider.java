@@ -237,7 +237,12 @@ public class MovieContentProvider extends ContentProvider {
                 rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
-
+            case MOVIE_DETAIL:
+                rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME,
+                        values,
+                        MovieContract.MovieEntry._ID + " = ? ",  //selection -  columns for "where" clause - where  (Just need to look for _ID column)
+                        new String[]{MovieContract.MovieEntry.getIdFromUri(uri)}); //selectionArgs - values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

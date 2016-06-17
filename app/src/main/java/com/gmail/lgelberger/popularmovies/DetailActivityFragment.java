@@ -3,6 +3,7 @@ package com.gmail.lgelberger.popularmovies;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,12 +22,12 @@ import com.squareup.picasso.Picasso;
 
 /**
  * This Displays the movie details including a poster and other text details
- * <p>
+ * <p/>
  * Implements a Cursor Loader to provide a cursor (from the database)
- * <p>
+ * <p/>
  * Fragment gets the movieQueryUri from the arguments the fragment is created with.
  * Fragement is created in either MainActivity or DetailActivity depending on 2-Pane of 1-Pane view
- * <p>
+ * <p/>
  * Will not be using a CursorAdapter as it is only for List/grid views.
  * I will just be displaying one db row worth of data.
  */
@@ -77,7 +78,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     static final int COL_MOVIE_REVIEW_2 = 11;
     static final int COL_MOVIE_REVIEW_2_AUTHOR = 12;
     static final int COL_MOVIE_REVIEW_3 = 13;
-    static final int COL_MOVIE_REVIEW_3_AUTHOR =14;
+    static final int COL_MOVIE_REVIEW_3_AUTHOR = 14;
     static final int COL_MOVIE_VIDEO_1 = 15;
     static final int COL_MOVIE_VIDEO_2 = 16;
     static final int COL_MOVIE_VIDEO_3 = 17;
@@ -107,6 +108,37 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         Bundle arguments = getArguments(); //get arguments from when fragement created
         if (arguments != null) { //if there are some arguments
             movieQueryUri = arguments.getParcelable(DetailActivityFragment.MOVIE_DETAIL_URI); //get the movieQuery URI passed in
+            //the movieQueryUri of the form content://com.gmail.lgelberger.popularmovies/movie/182
+            //and is the Uri to our local content provider to look up movie details in the local database
+            //need to make this an API call, so we need to use this URI to look up in the database what the API call ID is!
+
+
+            //call the Database/API to get the movie reviews/trailers loaded in as well.???  - oR should I load ALL the reviews
+            //at the same time? (big cookie model?)
+            //for Now just load them here
+
+            //getting URI
+            //content://com.gmail.lgelberger.popularmovies/movie/182
+            //but thought it would be ...
+            ////  http://api.themoviedb.org/3/movie/293660/reviews?api_key=[My API Key]
+            //  http://api.themoviedb.org/3/movie/293660/videos?api_key=[My API Key]
+            //which is what I need to send to PopularMoviesService
+
+
+            //The movieQueryUri passed in is ALWAYS going to be content://com.gmail.lgelberger.popularmovies/movie/182.
+            // in an AsyncTask, just get cursor from Query, then find the API id from cursor,
+            // then onPostExecute - call the update database
+
+            //make a new Async Task for database lookup to find movieAPIidFromDatabase
+
+
+
+
+
+           // String apiMovieID = ApiUtility.getApiMovieIdFromUri(movieQueryUri);
+
+            //update Reviews and Trailers if needed
+            //ApiUtility.updateDatabaseFromApiIfNeeded(getContext(), apiMovieID); //updates Reviews and Trailers into detail view if needed
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragement
@@ -232,43 +264,34 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
 
 
-    ///////////////////////////delete these - just for debugging
 
 
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.v(LOG_TAG, " in onPause");
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.v(LOG_TAG, " in onResume");
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.v(LOG_TAG, " in onStart");
-    }
+    /**
+     * Takes in the database URI
+     *
+     *
+     */
+    private class getMovieApiIDTask extends AsyncTask<Uri, Void, String> {
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.v(LOG_TAG, " in onStop");
-    }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.v(LOG_TAG, " in onCreate");
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.v(LOG_TAG, " in onDestroy");
+
+
+
+        @Override
+        protected String doInBackground(Uri... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+
     }
 }
+

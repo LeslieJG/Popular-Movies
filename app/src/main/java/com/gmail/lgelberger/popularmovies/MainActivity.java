@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
             String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
+            //create a API query URL and pass to updateDatabase from API if needed
             ApiUtility.updateDatabaseFromApiIfNeeded(this, movieSortOrder); //update the database with new API call
         }
 
@@ -105,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
             if (key.equals(getString(R.string.movie_sort_order_key))) {
                 String movieSortOrder = prefs.getString(key, "");
+                //update entire Database with new sort Order
+
+                //make a new MovieQueryURL then pass it to updateDatabasefromAPI
+
                 ApiUtility.updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
             }
         }
@@ -152,6 +157,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             //should update database with Review and Trailers of Detail Movie Selected
         //perhaps use Android Service instead of AsyncTask - as the AsyncTask may still hold onto data from
         //Main Activity
+
+        //Movie Selected from grid
+        //ensure that the detail fragement has the informataion it needs
+        //LJG ZZZ delete above comments?
+
+        //LJG
+        //If movie selected by pressing
+        //then will get a movieDetailDbUri which will be displayed by detailFragment
+        //It is HERE that we should call AsyncTask to update Database for Reviews and Movies????
+
 
 
 
