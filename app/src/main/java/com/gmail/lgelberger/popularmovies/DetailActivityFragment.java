@@ -94,6 +94,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView mVoteAverageView;
     private TextView mReleaseDateView;
 
+    private TextView mReviewAuthor_1;
+    private TextView mReview_1;
+    private TextView mReviewAuthor_2;
+    private TextView mReview_2;
+    private TextView mReviewAuthor_3;
+    private TextView mReview_3;
+
 
     public DetailActivityFragment() {
     }
@@ -132,10 +139,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             //make a new Async Task for database lookup to find movieAPIidFromDatabase
 
 
-
-
-
-           // String apiMovieID = ApiUtility.getApiMovieIdFromUri(movieQueryUri);
+            // String apiMovieID = ApiUtility.getApiMovieIdFromUri(movieQueryUri);
 
             //update Reviews and Trailers if needed
             //ApiUtility.updateDatabaseFromApi(getContext(), apiMovieID); //updates Reviews and Trailers into detail view if needed
@@ -149,6 +153,15 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mPlotSynopsisView = ((TextView) rootView.findViewById(R.id.textview_plot_synopsis));
         mVoteAverageView = ((TextView) rootView.findViewById(R.id.textview_user_rating));
         mReleaseDateView = ((TextView) rootView.findViewById(R.id.textview_release_date));
+
+        //adding the Reviews
+        mReviewAuthor_1 = (TextView) rootView.findViewById(R.id.textview_movie_review_1_author);
+        mReview_1 = (TextView) rootView.findViewById(R.id.textview_movie_review_1_content);
+        mReviewAuthor_2 = (TextView) rootView.findViewById(R.id.textview_movie_review_2_author);
+        mReview_2 = (TextView) rootView.findViewById(R.id.textview_movie_review_2_content);
+        mReviewAuthor_3 = (TextView) rootView.findViewById(R.id.textview_movie_review_3_author);
+        mReview_3 = (TextView) rootView.findViewById(R.id.textview_movie_review_3_content);
+
 
         if (arguments != null) { //for debugging
             Log.v(LOG_TAG, "In OnCreateView - arguments not null");
@@ -252,6 +265,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mPlotSynopsisView.setText(movieDetailCursor.getString(COL_PLOT_SYNOPSIS));
             mVoteAverageView.setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
             mReleaseDateView.setText(movieDetailCursor.getString(COL_RELEASE_DATE));
+
+            mReviewAuthor_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1_AUTHOR));
+            mReview_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1));
+            mReviewAuthor_2.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_2_AUTHOR));
+            mReview_2.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_2));
+            mReviewAuthor_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3_AUTHOR));
+            mReview_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3));
         }
     }
 
@@ -262,23 +282,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     }
 
 
-
-
-
-
-
-
-
     /**
      * Takes in the database URI
-     *
-     *
      */
     private class getMovieApiIDTask extends AsyncTask<Uri, Void, String> {
-
-
-
-
 
 
         @Override
