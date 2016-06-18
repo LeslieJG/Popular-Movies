@@ -14,10 +14,13 @@
         android:theme="@style/AppTheme"
 
         > <!-- DELETE THIS WHEN APP FINISHED   android:debuggable="true"-->
+        <!-- android:launchMode="singleTop"> means that the Main Activity will NOT be destroyed and recreated entirely when
+         up navigated to from Detail Activity.. It SHOULD be popped off back-stack and restored from there -->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

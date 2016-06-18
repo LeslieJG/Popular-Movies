@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     private Boolean mTwoPane; //used to indicate if we are using a two pane main layout (i.e. if it is a tablet)
 
     //testing this for deciding to do API call if activity recreated
-    private Boolean apiCallDone = false;
-    private static final String API_CALL_DONE_KEY = "apiCallKey"; //key for stored instance state
+   /* private Boolean apiCallDone = false;
+    private static final String API_CALL_DONE_KEY = "apiCallKey"; //key for stored instance state*/
 
     //adding stuff needed for initial API call here
     SharedPreferences sharedPref; //declaring shared pref here
@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         if (savedInstanceState == null) { //if app is being run for the first time this session
             //get the sort order from preferences
-
-
-
 
             String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
             String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
@@ -209,13 +206,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     // Need to make sure that the API doesn't get called again when coming back from the detailActivity (on a phone)
     //save that I've already made API call
     //see http://stackoverflow.com/questions/151777/saving-android-activity-state
-    @Override
+   /* @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.v(LOG_TAG, "in onSaveInstanceState");
         super.onSaveInstanceState(outState);
 
         outState.putBoolean(API_CALL_DONE_KEY, true); //perhaps change this from true to a variable name?
 
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "in onRestoreInstanceState");
+        super.onRestoreInstanceState(savedInstanceState);
 
     }
 
@@ -232,5 +236,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         Log.v(LOG_TAG, "in onResume");
         super.onResume();
     }
-}
 
+
+*/
+
+}
