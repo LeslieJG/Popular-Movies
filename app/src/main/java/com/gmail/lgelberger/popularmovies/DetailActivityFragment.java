@@ -138,7 +138,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
            // String apiMovieID = ApiUtility.getApiMovieIdFromUri(movieQueryUri);
 
             //update Reviews and Trailers if needed
-            //ApiUtility.updateDatabaseFromApiIfNeeded(getContext(), apiMovieID); //updates Reviews and Trailers into detail view if needed
+            //ApiUtility.updateDatabaseFromApi(getContext(), apiMovieID); //updates Reviews and Trailers into detail view if needed
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragement

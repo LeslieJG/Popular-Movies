@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Created by Leslie on 2016-06-08.
- * <p>
+ * <p/>
  * Utility Methods for API calls
  * Most methods will be static
  */
@@ -36,7 +36,7 @@ public class ApiUtility {
 
     /**
      * Makes URL to access API to get movie info
-     * <p>
+     * <p/>
      * movie should now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
@@ -63,10 +63,6 @@ public class ApiUtility {
     }
 
 
-
-
-
-
 //   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
     //   http://api.themoviedb.org/3/movie/top_rated?api_key=547bc9d14e2d25a3e3429d2f7c8292db
     // OR the other types
@@ -76,10 +72,9 @@ public class ApiUtility {
     //
 
 
-
     //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=547bc9d14e2d25a3e3429d2f7c8292db
-    public static URL makeReviewsAPIQueryURL(Context context, String movieID){
-   // public static URL makeReviewsAPIQueryURL(String movieID){
+    public static URL makeReviewsAPIQueryURL(Context context, String movieID) {
+        // public static URL makeReviewsAPIQueryURL(String movieID){
         URL url = null; //url to be built
 
         Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
@@ -101,7 +96,7 @@ public class ApiUtility {
 
 
     //  http://api.themoviedb.org/3/movie/293660/videos?api_key=547bc9d14e2d25a3e3429d2f7c8292db
-    public static URL makeTrailersAPIQueryURL(Context context, String movieID){
+    public static URL makeTrailersAPIQueryURL(Context context, String movieID) {
         URL url = null; //url to be built
 
         Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
@@ -122,9 +117,8 @@ public class ApiUtility {
     }
 
 
-
     //private helper method to check internet connectivity before starting PopularMoviesService
-    private static boolean isConnectedToInternet(Context context){
+    private static boolean isConnectedToInternet(Context context) {
         //check for internet connectivity first
         //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -135,25 +129,33 @@ public class ApiUtility {
     }
 
 
-
     /**
      * to connect to network update the local database of movies
-     *
+     * <p/>
      * Makes the API query URL from movieSortOrder
      * Checks to see if network connectivity exists
      * If yes, calls
-     *
+     * <p/>
      * This will have to be rewritten to allow for Reviews and Trailers to be fetched from API if needed
      */
-    public static void updateDatabaseFromApiIfNeeded(Context context, String movieSortOrderOrMovieApiID) {
+    public static void updateDatabaseFromApi(Context context, String movieSortOrderOrMovieApiID) {
 
         //figure out whether looking at sort order or API movie ID
         //to do this check to see if it is a number, if yes, then it is API movie ID - get Revies and trailers
         Boolean isConnected = isConnectedToInternet(context);
 
-        if (isConnected){
-            //check type whether input String is movieSortOrder or MovieAPI ID
-            if (TextUtils.isDigitsOnly(movieSortOrderOrMovieApiID)) {  //return digits only - IE it is an API movie ID
+
+        if (isConnected) {
+            URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
+            startPopularMoviesService(context, movieQueryURL);
+            Log.v(LOG_TAG, "starting Sort Order API call");
+
+        } else { //no internet connection
+            Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
+        }
+
+        //check type whether input String is movieSortOrder or MovieAPI ID
+            /*if (TextUtils.isDigitsOnly(movieSortOrderOrMovieApiID)) {  //return digits only - IE it is an API movie ID
 
 
 
@@ -166,9 +168,9 @@ public class ApiUtility {
                 startPopularMoviesService(context, trailersApiQueryUrl);// start downloading the trailers for the desired movie
                 Log.v(LOG_TAG, "starting Trailers API call");
 
+*/
 
-
-
+/*
             } else { //it is a sort order URI - update the entire database
                 URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
                 startPopularMoviesService(context, movieQueryURL);
@@ -176,7 +178,7 @@ public class ApiUtility {
             }
         }else { //no internet connection
             Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
-        }
+        }*/
     }
 
     //Starts the PopularMoviesService to update the Database from API if needed
@@ -185,32 +187,32 @@ public class ApiUtility {
 
         Intent intent = new Intent(context, PopularMoviesService.class);  //make explicit intent for my service
         intent.putExtra(PopularMoviesService.MOVIE_API_QUERY_EXTRA_KEY, //put extra with key MOVIE_API_QUERY_EXTRA_KEY
-               // movieQueryURL); //put in the movieQueryURL - THIS WILL CHANGE SOON!!!!!!!!
+                // movieQueryURL); //put in the movieQueryURL - THIS WILL CHANGE SOON!!!!!!!!
                 movieQueryURLAsString); //put in the movieQueryURL - THIS WILL CHANGE SOON!!!!!!!!
         context.startService(intent);
     }
 
 
     //Need to get Movie ID from this
-  //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=123456
+    //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=123456
     //
     //  http://api.themoviedb.org/3/movie/293660/videos?api_key=123456
-    public static String getApiMovieIdFromUri (Uri uri){
+    public static String getApiMovieIdFromUri(Uri uri) {
         //pathSegments should have 3/movie/293660/videos or 3/movie/293660/reviews
-       Log.v(LOG_TAG, "in getApiMovieIdFromUri. The Uri passed in is "+ uri);
+        Log.v(LOG_TAG, "in getApiMovieIdFromUri. The Uri passed in is " + uri);
 
         List<String> pathSegments = uri.getPathSegments();
         String movieID = pathSegments.get(2); //get the third (zero indexed) path segment
 
-        Log.v(LOG_TAG, "in getApiMovieIdFromUri. The movieID (or third path segment is"+ movieID);
+        Log.v(LOG_TAG, "in getApiMovieIdFromUri. The movieID (or third path segment is" + movieID);
 
         //should check that the String can be converted to a number, because if wrong API url passed in,
         //the string COULD be the sort order (popular or top_rated)
 
-         if (TextUtils.isDigitsOnly(movieID)) {  //return movie ID if it is digits only
-             return movieID;
-         }
-      //  Log.v(LOG_TAG, "getApiMovieIdFromUri was passed the wrong uri. Unable to extract APiMovie ID. Uri passed in was " + uri);
+        if (TextUtils.isDigitsOnly(movieID)) {  //return movie ID if it is digits only
+            return movieID;
+        }
+        //  Log.v(LOG_TAG, "getApiMovieIdFromUri was passed the wrong uri. Unable to extract APiMovie ID. Uri passed in was " + uri);
         return null; //if it is not digits we have the wrong uri passed in
     }
 
@@ -220,7 +222,6 @@ public class ApiUtility {
 
     }
 */
-
 
 
     /*
@@ -292,8 +293,6 @@ public class ApiUtility {
         // This will only happen if there was an error getting or parsing the movie data. or API delivers nothing
         return null;
     }
-
-
 
 
 }

@@ -34,7 +34,7 @@ import java.net.URL;
  */
 public class ReviewAndTrailerUpdateService extends IntentService {
     private final String LOG_TAG = ReviewAndTrailerUpdateService.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
-    public static final String REVIEW_TRAILER_SERVICE_EXTRA = "movie_extra"; //key to retrieve API id from intent
+    public static final String REVIEW_TRAILER_API_ID_EXTRA = "movie_extra"; //key to retrieve API id from intent
     public static final String REVIEW_TRAILER_DB_ID_EXTRA = "movie_db_id_extra";//key to retrieve the _ID of the local database for this movie
 
     Context mContext = this; //explicitly state context - allows for easier porting from AsyncTask to Service
@@ -54,7 +54,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         //Get the API movie ID
-        apiMovieID = intent.getStringExtra(REVIEW_TRAILER_SERVICE_EXTRA);//get the incoming API movie ID
+        apiMovieID = intent.getStringExtra(REVIEW_TRAILER_API_ID_EXTRA);//get the incoming API movie ID
         databaseMovieID = intent.getStringExtra(REVIEW_TRAILER_DB_ID_EXTRA); //get the incoming movies _ID in local database
 
         //check to make sure we have valid data
@@ -103,7 +103,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         movieTotalContentValues.putAll(trailerContentValues);// add the trailer content values
 
         //now add update the database with this information
-        Uri updateUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(Long.parseLong(apiMovieID));
+        Uri updateUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(Long.parseLong(databaseMovieID));
 
         int numberOfRowsUpdatedReviews = mContext.getContentResolver().update(updateUri,
                 movieTotalContentValues,
@@ -122,20 +122,49 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         final String TMBD_RESULTS = mContext.getString(R.string.movie_json_key_results);
         final String TMDB_TRAILER = mContext.getString(R.string.movie_json_key_youtube_key);
 
+        Log.v(LOG_TAG, "The Trailers JSON is "+ movieTrailerJsonStr);
+
         JSONObject movieJSON = new JSONObject(movieTrailerJsonStr); //create JSON object from input string
         JSONArray movieTrailerArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of trailers
 
         ContentValues movieTrailersCVFromJSON = new ContentValues(); // Make the Content Values that will be updating database rows
 
-        //I will manually put in the content values without a FOR loop for now
-        JSONObject movieTrailer1 = movieTrailerArray.getJSONObject(0);
+        int movieTrailerArraySize = movieTrailerArray.length();
+
+
+        //I need to know if the size is 0 , 1, 2, more (if more then just do the 3rd one, ignore rest)
+        //this is a cludge for now - change later to more elegant solution
+
+        //assume no Reviews - so load up with NoReviews for all
+       // String noTrailers = "No Reviews Yet";
+        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, (String) null);
+        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2,(String) null);
+        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3,(String) null);
+
+
+        switch (movieTrailerArraySize) {
+            default: //overwrite all the reviews - just overwrite third review right now
+                movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, movieTrailerArray.getJSONObject(2).getString(TMDB_TRAILER));
+                //no break so move to next one
+            case 2: // overwrite the middle review
+                movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, movieTrailerArray.getJSONObject(1).getString(TMDB_TRAILER));
+                //no break so move to next one
+            case 1: //overwrite just the first review
+                movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, movieTrailerArray.getJSONObject(0).getString(TMDB_TRAILER));
+            case 0: //no reviews in array!!! Don't overwrite anything
+                break;
+        }
+
+
+            //I will manually put in the content values without a FOR loop for now
+      /*  JSONObject movieTrailer1 = movieTrailerArray.getJSONObject(0);
         JSONObject movieTrailer2 = movieTrailerArray.getJSONObject(1);
         JSONObject movieTrailer3 = movieTrailerArray.getJSONObject(2);
 
         movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, movieTrailer1.getString(TMDB_TRAILER));
         movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, movieTrailer2.getString(TMDB_TRAILER));
         movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, movieTrailer3.getString(TMDB_TRAILER));
-
+*/
         return movieTrailersCVFromJSON;
     }
 
@@ -147,13 +176,70 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         final String TMDB_AUTHOR = mContext.getString(R.string.movie_json_key_review_author);
         final String TMDB_CONTENT = mContext.getString(R.string.movie_json_key_review_content);
 
+        Log.v(LOG_TAG, "The Reviews JSON is "+ movieReviewJsonStr);
+
         JSONObject movieJSON = new JSONObject(movieReviewJsonStr); //create JSON object from input string
         JSONArray movieReviewArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of reviews
+        //NB Some arrays may be zero in size
+        int movieReviewArraySize = movieReviewArray.length();
+
 
         ContentValues movieReviewCVFromJSON = new ContentValues(); // Make the Content Values that will be updating database rows
 
+
+        //I need to know if the size is 0 , 1, 2, more (if more then just do the 3rd one, ignore rest)
+        //this is a cludge for now - change later to more elegant solution
+
+        //assume no Reviews - so load up with NoReviews for all
+        String noReviews = "No Reviews Yet";
+        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, noReviews);
+        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, noReviews);
+
+        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR,noReviews);
+        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, noReviews);
+
+        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR,noReviews);
+        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, noReviews);
+
+
+        switch (movieReviewArraySize) {
+            default: //overwrite all the reviews - just overwrite third review right now
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR, movieReviewArray.getJSONObject(2).getString(TMDB_AUTHOR));
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, movieReviewArray.getJSONObject(2).getString(TMDB_CONTENT));
+                //no break so move to next one
+            case 2: // overwrite the middle review
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR, movieReviewArray.getJSONObject(1).getString(TMDB_AUTHOR));
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, movieReviewArray.getJSONObject(1).getString(TMDB_CONTENT));
+                //no break so move to next one
+            case 1: //overwrite just the first review
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, movieReviewArray.getJSONObject(0).getString(TMDB_AUTHOR));
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, movieReviewArray.getJSONObject(0).getString(TMDB_CONTENT));
+            case 0: //no reviews in array!!! Don't overwrite anything
+                break;
+        }
+
+
+           /* case 0: //no reviews - make all Content Values say "no Reviews)
+                break;
+            case 1: //overwrite just the first review
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, movieReviewArray.getJSONObject(0).getString(TMDB_AUTHOR));
+                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, movieReviewArray.getJSONObject(0).getString(TMDB_CONTENT));
+                break;
+            case 2: //overwrite the second review AND the first review
+
+
+                break;*/
+
+
+
+
+
+
+        //below commented out - wasn't able to deal with different review sizes
+
+
         //I will manually put in the content values without a FOR loop for now
-        JSONObject movieReview1 = movieReviewArray.getJSONObject(0);
+        /*JSONObject movieReview1 = movieReviewArray.getJSONObject(0);
         JSONObject movieReview2 = movieReviewArray.getJSONObject(1);
         JSONObject movieReview3 = movieReviewArray.getJSONObject(2);
 
@@ -165,6 +251,8 @@ public class ReviewAndTrailerUpdateService extends IntentService {
 
         movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR, movieReview3.getString(TMDB_AUTHOR));
         movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, movieReview3.getString(TMDB_CONTENT));
+
+*/
 
 
         return movieReviewCVFromJSON;
