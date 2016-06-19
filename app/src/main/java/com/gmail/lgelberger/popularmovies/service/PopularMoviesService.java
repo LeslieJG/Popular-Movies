@@ -142,7 +142,9 @@ public class PopularMoviesService extends IntentService{
 
 
         //now go through the database and get each movie API uri AND each movie _ID and start new intentService calls to ReviewAndTrailerUpdateService
-        startReviewandTrailerUpdates();
+
+        //stopping this for now. Just going to do it from Detail Fragment
+        // startReviewandTrailerUpdates();
 
 
 
@@ -152,7 +154,11 @@ public class PopularMoviesService extends IntentService{
     }
 
 
-
+/*
+WIll be deleting this from here
+running it just from Api Utitilies (called from Main Activity)
+That way only updating reviews/trailers as needed
+ */
     //now go through the database and get each movie API uri AND each movie _ID and start new intentService calls to ReviewAndTrailerUpdateService
     private void startReviewandTrailerUpdates() {
 

@@ -3,6 +3,7 @@ package com.gmail.lgelberger.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,8 +34,12 @@ import com.squareup.picasso.Picasso;
  * <p/>
  * Will not be using a CursorAdapter as it is only for List/grid views.
  * I will just be displaying one db row worth of data.
+ *
+ * Implementing Multiple Button Click listener as per
+ * http://stackoverflow.com/questions/25905086/multiple-buttons-onclicklistener-android
+ *
  */
-public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     // Cursor Loader  ID
     private static final int MOVIE_DETAIL_LOADER = 0;
@@ -42,6 +47,44 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     static final String LOG_TAG = "DETAIL_ACT_FRAGEMENT";
     static final String MOVIE_DETAIL_URI = "MOVIE_DETAIL_URI"; // Movie Detail URI key (for getting arguments from fragment)
     private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
+
+   // private static final int BUTTON_1_ID = 1;
+
+        //////Adding the views
+    ///hopefully this will make them retain state
+    //LJG don't think I need this
+    private ImageView mPosterView;
+    private TextView mMovieTitleView;
+    private TextView mPlotSynopsisView;
+    private TextView mVoteAverageView;
+    private TextView mReleaseDateView;
+
+    private TextView mReviewAuthor_1;
+    private TextView mReview_1;
+    private TextView mReviewAuthor_2;
+    private TextView mReview_2;
+    private TextView mReviewAuthor_3;
+    private TextView mReview_3;
+
+    private TextView mTrailersTitle;
+    final static int TRAILERS_TITLE_ID = 500;
+
+    //holding reference to the Video Button Container - to inlfate buttons as needed
+    LinearLayout mButtonContainer;
+    Button mButtonVideo1;
+    Button mButtonVideo2;
+    Button mButtonVideo3;
+
+    final static int BUTTON_1_ID = 400;
+    final static int BUTTON_2_ID = 401;
+    final static int BUTTON_3_ID = 402;
+
+    //For YouTube movie Id keys - to play trailers
+    private String mTrailerYoutubeKey1;
+    private String mTrailerYoutubeKey2;
+    private String mTrailerYoutubeKey3;
+
+
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections specify the columns we need
@@ -88,25 +131,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     /////////////////////////////////////////////////////////
 
 
-    //////Adding the views
-    ///hopefully this will make them retain state
-    //LJG don't think I need this
-    private ImageView mPosterView;
-    private TextView mMovieTitleView;
-    private TextView mPlotSynopsisView;
-    private TextView mVoteAverageView;
-    private TextView mReleaseDateView;
 
-    private TextView mReviewAuthor_1;
-    private TextView mReview_1;
-    private TextView mReviewAuthor_2;
-    private TextView mReview_2;
-    private TextView mReviewAuthor_3;
-    private TextView mReview_3;
 
-    private String mTrailerYoutubeKey1 = null;
-    private String mTrailerYoutubeKey2;
-    private String mTrailerYoutubeKey3;
+
 
 
     public DetailActivityFragment() {
@@ -169,10 +196,63 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mReviewAuthor_3 = (TextView) rootView.findViewById(R.id.textview_movie_review_3_author);
         mReview_3 = (TextView) rootView.findViewById(R.id.textview_movie_review_3_content);
 
+        mButtonContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_video_button_container);
+
+        LinearLayout.LayoutParams textViewTitleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
+
+        mTrailersTitle = new TextView(getContext());
+        mTrailersTitle.setLayoutParams(textViewTitleParams);
+        mTrailersTitle.setTypeface(null, Typeface.BOLD);
+        mTrailersTitle.setId(TRAILERS_TITLE_ID);
+        mTrailersTitle.setText("Trailers");
+
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
+
+        //Define the buttons
+        mButtonVideo1 = new Button(getContext());
+        mButtonVideo1.setLayoutParams(buttonParams);
+        mButtonVideo1.setText("Play Trailer #1");
+        mButtonVideo1.setId(BUTTON_1_ID);
+        mButtonVideo1.setOnClickListener(this);  //this fragment implements onClickListener
+
+        mButtonVideo2 = new Button(getContext());
+        mButtonVideo2.setLayoutParams(buttonParams);
+        mButtonVideo2.setText("Play Trailer #2");
+        mButtonVideo2.setId(BUTTON_2_ID);
+        mButtonVideo2.setOnClickListener(this);  //this fragment implements onClickListener
+
+        mButtonVideo3 = new Button(getContext());
+        mButtonVideo3.setLayoutParams(buttonParams);
+        mButtonVideo3.setText("Play Trailer #3");
+        mButtonVideo3.setId(BUTTON_3_ID);
+        mButtonVideo3.setOnClickListener(this);  //this fragment implements onClickListener
 
 
 
-        final Button mTrailerButton_1 = (Button) rootView.findViewById(R.id.button_trailer);
+       /* mButtonVideo1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mButtonVideo1.setText("Clicked Button");
+            }
+        });
+*/
+
+
+
+
+     //   mButtonContainer.addView(mButtonVideo1);
+
+       // final Button mTrailerButton_1 = (Button) rootView.findViewById(R.id.button_trailer);
+       /* Button.LayoutParams params = new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+        params.weight = 1.0f;
+        Button button = new Button(this);
+        button.setLayoutParams(params);*/
+
+
+       /* final Button mTrailerButton_1 =new Button(getContext(), );
         mTrailerButton_1.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
             public void onClick(View v) {
                 // Do something in response to button click
@@ -183,13 +263,15 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 }
             }
         });
+*/
 
+/*
         final Button mTrailerButton_2 = (Button) rootView.findViewById(R.id.button_trailer);
-        mTrailerButton_1.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
+        mTrailerButton_2.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
             public void onClick(View v) {
                 // Do something in response to button click
                 mTrailerButton_1.setText("ButtonPressed"); //this works!
-                if (mTrailerButton_1 != null) { //if there really is a trailer
+                if (mTrailerButton_2 != null) { //if there really is a trailer
                     Intent youTubeIntent =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey2));
                     startActivity(youTubeIntent);
                 }
@@ -197,29 +279,27 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         });
 
         final Button mTrailerButton_3 = (Button) rootView.findViewById(R.id.button_trailer);
-        mTrailerButton_1.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
+        mTrailerButton_3.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
             public void onClick(View v) {
                 // Do something in response to button click
                 mTrailerButton_1.setText("ButtonPressed"); //this works!
-                if (mTrailerButton_1 != null) { //if there really is a trailer
+                if (mTrailerButton_3 != null) { //if there really is a trailer
                     Intent youTubeIntent =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey3));
                     startActivity(youTubeIntent);
                 }
             }
         });
 
+*/
 
-        //add some random test button to the button conatiner
-        Button mTestButton1 = new Button(getContext());
-        mTestButton1.setText("TestButton1");
 
-        Button mTestButton2 = new Button(getContext());
-        mTestButton2.setText("TestButton2");
 
-        //get a reference to button container
-        LinearLayout mButtonContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_video_button_container);
-        mButtonContainer.addView(mTestButton1);
-        mButtonContainer.addView(mTestButton2);
+
+
+
+
+
+
 
 
 
@@ -329,6 +409,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mVoteAverageView.setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
             mReleaseDateView.setText(movieDetailCursor.getString(COL_RELEASE_DATE));
 
+
+            //inflate Buttons and Reviews only if they exists
+
+            //get the Movie Reviews
             mReviewAuthor_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1_AUTHOR));
             mReview_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1));
             mReviewAuthor_2.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_2_AUTHOR));
@@ -336,9 +420,63 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mReviewAuthor_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3_AUTHOR));
             mReview_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3));
 
+
+
+            //get the YouTubeKeys for each video
             mTrailerYoutubeKey1 = movieDetailCursor.getString(COL_MOVIE_VIDEO_1);
             mTrailerYoutubeKey2 = movieDetailCursor.getString(COL_MOVIE_VIDEO_2);
             mTrailerYoutubeKey3 = movieDetailCursor.getString(COL_MOVIE_VIDEO_3);
+
+            //try inflating buttons here
+
+           /* if (mButtonVideo1 == mButtonContainer.findViewById(BUTTON_1_ID)) {
+                mButtonContainer.removeView(mButtonVideo1);
+                Log.v(LOG_TAG, "Button in parent veiw");
+            }*/
+
+
+            //mButtonContainer.addView(mTrailersTitle);
+            if (mTrailerYoutubeKey1 != null && mTrailersTitle !=  mButtonContainer.findViewById(TRAILERS_TITLE_ID)){
+                mButtonContainer.addView(mTrailersTitle); //only add trailers title if there are trailers and it has not been added before
+            }
+
+            //only add button if YouTube key exists and it is not already loaded into button container
+            if (mTrailerYoutubeKey1 != null  && mButtonVideo1 != mButtonContainer.findViewById(BUTTON_1_ID)) {
+                mButtonContainer.addView(mButtonVideo1);
+            }
+            //only add button if YouTube key exists and it is not already loaded into button container
+            if (mTrailerYoutubeKey2 != null  && mButtonVideo2 != mButtonContainer.findViewById(BUTTON_2_ID)) {
+                mButtonContainer.addView(mButtonVideo2);
+            }
+
+            //only add button if YouTube key exists and it is not already loaded into button container
+            if (mTrailerYoutubeKey3 != null  && mButtonVideo3 != mButtonContainer.findViewById(BUTTON_3_ID)) {
+                mButtonContainer.addView(mButtonVideo3);
+            }
+
+
+         /*   if (mTrailerYoutubeKey2 != null) {
+                mButtonContainer.addView(mButtonVideo2);
+            }
+
+            if (mTrailerYoutubeKey3 != null) {
+                mButtonContainer.addView(mButtonVideo3);
+            }*/
+
+            //add some random test button to the button conatiner
+          /*  Button mTestButton1 = new Button(getContext());
+            mTestButton1.setText("TestButton1");
+
+            Button mTestButton2 = new Button(getContext());
+            mTestButton2.setText("TestButton2");
+
+            //get a reference to button container
+            //LinearLayout mButtonContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_video_button_container);
+            mButtonContainer.addView(mTestButton1);
+            mButtonContainer.addView(mTestButton2);
+
+*/
+
         }
     }
 
@@ -362,9 +500,42 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         return youTubeUri;
     }
 
+    /*
+    Needed to over ride as Fragment implements onClickListener
+    Allows one Listener for many buttons
+    As described in :
+    http://stackoverflow.com/questions/25905086/multiple-buttons-onclicklistener-android
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
 
+            case BUTTON_1_ID:
+                // do your code
+              //  mButtonVideo1.setText("Clicked Button 1");
+                Intent youTubeIntent1 =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey1));
+                startActivity(youTubeIntent1);
+                break;
 
+            case BUTTON_2_ID:
+                // do your code
+               // mButtonVideo2.setText("Clicked Button 2");
+                Intent youTubeIntent2 =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey2));
+                startActivity(youTubeIntent2);
+                break;
 
+            case BUTTON_3_ID:
+                // do your code
+             //   mButtonVideo3.setText("Clicked Button 3");
+                Intent youTubeIntent3 =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey3));
+                startActivity(youTubeIntent3);
+                break;
+
+            default:
+                break;
+        }
+
+    }
 
 
     /**

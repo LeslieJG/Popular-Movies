@@ -108,29 +108,32 @@
 
 
         <!-- TRAILERS-->
-        <TextView
+       <!-- <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Trailers: "
-            android:textStyle="bold" />
+            android:textStyle="bold" />-->
 
-        <Button
-            android:id="@+id/button_trailer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trailer #1" />
+        <!--Just getting rid of Trailer Buttons - trying to add them dynamically-->
 
-        <Button
-            android:id="@+id/button_trailer_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trailer #2" />
+        <!---->
+        <!--<Button-->
+            <!--android:id="@+id/button_trailer"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Trailer #1" />-->
 
-        <Button
-            android:id="@+id/button_trailer_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trailer #3" />
+        <!--<Button-->
+            <!--android:id="@+id/button_trailer_2"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Trailer #2" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/button_trailer_3"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Trailer #3" />-->
 
 
         <!-- Horizontal divider -->
@@ -246,7 +249,7 @@
     </LinearLayout>
 
 
-    <!-- Trailers -->
+
 
 
 </ScrollView>

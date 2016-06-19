@@ -25,6 +25,12 @@ import java.net.URL;
  * <p/>
  * I am assuming that the majority of the data is ALREADY in the database and I can just update entries
  * Make sure this is the case!!!!!
+ *
+ * In The Future it might be good to just do the API calls and not load the reviews
+ * into the database, but instead using a ResultReciever call-back to the calling Fragment
+ * and just load the data directly into the views from API call. This would allow for more than the 3 reviews
+ * and 3 trailers currently in the database.
+ *
  * <p/>
  *
  * params
@@ -62,6 +68,9 @@ public class ReviewAndTrailerUpdateService extends IntentService {
             Log.v(LOG_TAG, "Invalid apiMovieID or databaseMovieID passed in");
             return; //
         }
+
+        //perhaps should check to see if reviews/trailers are already in the database?
+        //skip for now - add later
 
         //get URLs for API query
         URL reviewApiQueryUrl = ApiUtility.makeReviewsAPIQueryURL(mContext, apiMovieID);

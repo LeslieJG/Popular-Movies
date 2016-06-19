@@ -18,6 +18,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     private Boolean mTwoPane; //used to indicate if we are using a two pane main layout (i.e. if it is a tablet)
 
+
+
+
+
+
+
     //testing this for deciding to do API call if activity recreated
    /* private Boolean apiCallDone = false;
     private static final String API_CALL_DONE_KEY = "apiCallKey"; //key for stored instance state*/
@@ -166,22 +172,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      */
     @Override
     public void OnMovieSelected(Uri movieDetailDbUri) {
-            //should update database with Review and Trailers of Detail Movie Selected
-        //perhaps use Android Service instead of AsyncTask - as the AsyncTask may still hold onto data from
-        //Main Activity
-
         //Movie Selected from grid
         //ensure that the detail fragement has the informataion it needs
-        //LJG ZZZ delete above comments?
 
-        //LJG
-        //If movie selected by pressing
-        //then will get a movieDetailDbUri which will be displayed by detailFragment
-        //It is HERE that we should call AsyncTask to update Database for Reviews and Movies????
+        // update database with this movies Trailers and Reviews - so they will be there to display
+        ApiUtility.updateOneMovieReviewsAndTrailersFromApi(this, movieDetailDbUri);
 
-
-
-
+        //do different things for phone or tablet
         if (mTwoPane == false) { //Just one pane, start DetailActivity and send the Query Uri with an intent
             Intent intentDetailActivity = new Intent(this, DetailActivity.class); //new intent with Detail Activity as recipient
             intentDetailActivity.setData(movieDetailDbUri);//setData puts a URI into the Intent - to be required by whomever received the intent

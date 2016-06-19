@@ -2,6 +2,7 @@ package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -9,7 +10,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.gmail.lgelberger.popularmovies.data.MovieContract;
 import com.gmail.lgelberger.popularmovies.service.PopularMoviesService;
+import com.gmail.lgelberger.popularmovies.service.ReviewAndTrailerUpdateService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +25,7 @@ import java.util.List;
 
 /**
  * Created by Leslie on 2016-06-08.
- * <p/>
+ * <p>
  * Utility Methods for API calls
  * Most methods will be static
  */
@@ -33,10 +36,20 @@ public class ApiUtility {
     public static final int REVIEWS = 1;
     public static final int TRAILERS = 2;
 
+    /////////////////////Database projection constants///////////////
+    //For making good use of database Projections specify the columns we need
+    private static final String[] MOVIE_COLUMNS = {
+            MovieContract.MovieEntry.COLUMN_API_MOVIE_ID
+    };
+
+    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
+    static final int COL_API_MOVIE_ID = 0;
+    /////////////////////////////////////////////////////////
+
 
     /**
      * Makes URL to access API to get movie info
-     * <p/>
+     * <p>
      * movie should now look like this
      * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
      *
@@ -131,11 +144,11 @@ public class ApiUtility {
 
     /**
      * to connect to network update the local database of movies
-     * <p/>
+     * <p>
      * Makes the API query URL from movieSortOrder
      * Checks to see if network connectivity exists
      * If yes, calls
-     * <p/>
+     * <p>
      * This will have to be rewritten to allow for Reviews and Trailers to be fetched from API if needed
      */
     public static void updateDatabaseFromApi(Context context, String movieSortOrderOrMovieApiID) {
@@ -181,6 +194,7 @@ public class ApiUtility {
         }*/
     }
 
+
     //Starts the PopularMoviesService to update the Database from API if needed
     private static void startPopularMoviesService(Context context, URL ApiQueryUrl) {
         String movieQueryURLAsString = ApiQueryUrl.toString();
@@ -190,6 +204,42 @@ public class ApiUtility {
                 // movieQueryURL); //put in the movieQueryURL - THIS WILL CHANGE SOON!!!!!!!!
                 movieQueryURLAsString); //put in the movieQueryURL - THIS WILL CHANGE SOON!!!!!!!!
         context.startService(intent);
+    }
+
+
+    /**
+     * Gets the information needed to start the ReviewAndTrailerUpdateService
+     *
+     * @param context          Application context for accessing Strings
+     * @param movieDetailDbUri The database Uri for one movie
+     */
+    public static void updateOneMovieReviewsAndTrailersFromApi(Context context, Uri movieDetailDbUri) {
+        //Do a database lookup to get the API Id
+        //get cursor for entire database
+        Cursor oneMovieCursor = context.getContentResolver().query(movieDetailDbUri, //get just one row back
+                MOVIE_COLUMNS, //the projection - just the API movie ID in projections
+                null, //selection - select the entire database
+                null, //selection Args
+                null); //sort order (doesn't matter since we're going to go through them all anyway  - order doesn't matter to us
+
+        try {
+            String movieDatabaseId = MovieContract.MovieEntry.getIdFromUri(movieDetailDbUri);//get the movieDatabaseId
+
+            if (oneMovieCursor.moveToFirst()) { //move cursor to first  - if no cursor, don't do API call
+
+                String movieApiId = oneMovieCursor.getString(COL_API_MOVIE_ID); //get the API id of movie
+
+                //now start the ReviewandTrailerUpdateService for the movie returned from cursor
+                Intent intent = new Intent(context, ReviewAndTrailerUpdateService.class);  //make explicit intent for service
+                intent.putExtra(ReviewAndTrailerUpdateService.REVIEW_TRAILER_DB_ID_EXTRA, movieDatabaseId); //put the _ID of local database in
+                intent.putExtra(ReviewAndTrailerUpdateService.REVIEW_TRAILER_API_ID_EXTRA, movieApiId);
+                context.startService(intent);
+            } else {
+                Log.v(LOG_TAG, "updateOneMovieReviewsAndTrailersFromApi - no valid cursor from database");
+            }
+        } finally {
+            oneMovieCursor.close(); //close cursor at the end
+        }
     }
 
 
