@@ -23,6 +23,11 @@
     <string name="poster_url_base" translatable="false">" http://image.tmdb.org/t/p/"</string>
     <string name="poster_url_poster_size" translatable="false">w185</string>
 
+    <!--  values for building YouTube Video URL-->
+    <string name="video_query_url_base" translatable="false">http://www.youtube.com</string>
+    <string name="video_query_url_watch" translatable="false">watch</string>
+    <string name="video_query_key" translatable="false">v</string>
+
     <!-- search keys for analysing JSON data from moviedb.org-->
     <string name="movie_json_key_results" translatable="false">results</string>
     <string name="movie_json_key_title" translatable="false">title</string>

@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,7 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
@@ -101,6 +104,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView mReviewAuthor_3;
     private TextView mReview_3;
 
+    private String mTrailerYoutubeKey1 = null;
+    private String mTrailerYoutubeKey2;
+    private String mTrailerYoutubeKey3;
+
 
     public DetailActivityFragment() {
     }
@@ -163,7 +170,63 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mReview_3 = (TextView) rootView.findViewById(R.id.textview_movie_review_3_content);
 
 
-        if (arguments != null) { //for debugging
+
+
+        final Button mTrailerButton_1 = (Button) rootView.findViewById(R.id.button_trailer);
+        mTrailerButton_1.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
+            public void onClick(View v) {
+                // Do something in response to button click
+            mTrailerButton_1.setText("ButtonPressed"); //this works!
+                if (mTrailerButton_1 != null) { //if there really is a trailer
+                    Intent youTubeIntent =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey1));
+                    startActivity(youTubeIntent);
+                }
+            }
+        });
+
+        final Button mTrailerButton_2 = (Button) rootView.findViewById(R.id.button_trailer);
+        mTrailerButton_1.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
+            public void onClick(View v) {
+                // Do something in response to button click
+                mTrailerButton_1.setText("ButtonPressed"); //this works!
+                if (mTrailerButton_1 != null) { //if there really is a trailer
+                    Intent youTubeIntent =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey2));
+                    startActivity(youTubeIntent);
+                }
+            }
+        });
+
+        final Button mTrailerButton_3 = (Button) rootView.findViewById(R.id.button_trailer);
+        mTrailerButton_1.setOnClickListener(new View.OnClickListener() { //https://developer.android.com/guide/topics/ui/controls/button.html
+            public void onClick(View v) {
+                // Do something in response to button click
+                mTrailerButton_1.setText("ButtonPressed"); //this works!
+                if (mTrailerButton_1 != null) { //if there really is a trailer
+                    Intent youTubeIntent =new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey3));
+                    startActivity(youTubeIntent);
+                }
+            }
+        });
+
+
+        //add some random test button to the button conatiner
+        Button mTestButton1 = new Button(getContext());
+        mTestButton1.setText("TestButton1");
+
+        Button mTestButton2 = new Button(getContext());
+        mTestButton2.setText("TestButton2");
+
+        //get a reference to button container
+        LinearLayout mButtonContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_video_button_container);
+        mButtonContainer.addView(mTestButton1);
+        mButtonContainer.addView(mTestButton2);
+
+
+
+        //  mButtonContainer.addView(mTestButton);
+
+
+       /* if (arguments != null) { //for debugging
             Log.v(LOG_TAG, "In OnCreateView - arguments not null");
         } else {
             Log.v(LOG_TAG, "In OnCreateView - arguments is null");
@@ -174,7 +237,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             Log.v(LOG_TAG, "In OnCreateView - movieQueryUri not null, it is " + movieQueryUri);
         } else {
             Log.v(LOG_TAG, "In OnCreateView - movieQueryUri is null ");
-        }
+        }*/
 
         // return inflater.inflate(R.layout.fragment_detail, container, false); //old
         return rootView;
@@ -272,6 +335,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mReview_2.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_2));
             mReviewAuthor_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3_AUTHOR));
             mReview_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3));
+
+            mTrailerYoutubeKey1 = movieDetailCursor.getString(COL_MOVIE_VIDEO_1);
+            mTrailerYoutubeKey2 = movieDetailCursor.getString(COL_MOVIE_VIDEO_2);
+            mTrailerYoutubeKey3 = movieDetailCursor.getString(COL_MOVIE_VIDEO_3);
         }
     }
 
@@ -282,8 +349,28 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     }
 
 
+
+    //helper method to build YouTube Uri for a given movie
+    private Uri buildYouTubeUri(String youTubeMovieIdKey){
+
+        //example http://www.youtube.com/watch?v=cxLG2wtE7TM
+
+        Uri youTubeUri = Uri.parse(getContext().getString(R.string.video_query_url_base)).buildUpon() //
+                .appendPath(getContext().getString(R.string.video_query_url_watch)) //watch
+                .appendQueryParameter(getContext().getString(R.string.video_query_key), youTubeMovieIdKey)
+                .build();
+        return youTubeUri;
+    }
+
+
+
+
+
+
     /**
      * Takes in the database URI
+     *
+     * NOT being used right now
      */
     private class getMovieApiIDTask extends AsyncTask<Uri, Void, String> {
 

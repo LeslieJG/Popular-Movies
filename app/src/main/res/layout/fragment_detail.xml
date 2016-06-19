@@ -72,19 +72,13 @@
                     android:text="@string/detail_view_release_date_content_label" />
 
                 <Button
-                    android:layout_alignLeft="@id/textview_release_date"
-                    android:layout_below="@id/textview_release_date"
+                    android:id="@+id/favourites_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add To Favourites"
-                    android:id="@+id/favourites_button" />
-
-
-
+                    android:layout_alignLeft="@id/textview_release_date"
+                    android:layout_below="@id/textview_release_date"
+                    android:text="Add To Favourites" />
             </RelativeLayout>
-
-
-
         </LinearLayout>
 
         <TextView
@@ -95,16 +89,60 @@
 
         <!-- Adding components for Popular Movies 2-->
 
-        <!-- Horizontal divider -->
+        <!-- Thick Horizontal divider -->
         <View
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
             android:background="@color/colorDivider"></View>
+        <!-- Thick Horizontal divider -->
 
-        <!-- Reviews  -->
 
+        <!-- Video Button Container-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/linear_layout_video_button_container"></LinearLayout>
+
+
+        <!-- TRAILERS-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trailers: "
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button_trailer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trailer #1" />
+
+        <Button
+            android:id="@+id/button_trailer_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trailer #2" />
+
+        <Button
+            android:id="@+id/button_trailer_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trailer #3" />
+
+
+        <!-- Horizontal divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorDivider"></View>
+        <!-- Horizontal divider -->
+
+        <!-- REVIEWS -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,20 +152,22 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
+                android:id="@+id/textview_review_1_author_title"
+                style="@style/MovieReviewTextTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/MovieReviewTextTheme"
-                android:text="Author:   "
-                android:id="@+id/textview_review_1_author_title"/>
+                android:text="Author:   " />
 
             <TextView
                 android:id="@+id/textview_movie_review_1_author"
                 style="@style/MovieReviewTextTheme"
-                android:text="Review #1 Author"
                 android:layout_alignTop="@id/textview_review_1_author_title"
-                android:layout_toRightOf="@id/textview_review_1_author_title"/>
+                android:layout_toRightOf="@id/textview_review_1_author_title"
+                android:text="Review #1 Author" />
         </RelativeLayout>
+
         <TextView
             android:id="@+id/textview_movie_review_1_content"
             style="@style/MovieReviewTextTheme"
@@ -145,18 +185,20 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
+                android:id="@+id/textview_review_2_author_title"
+                style="@style/MovieReviewTextTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/MovieReviewTextTheme"
-                android:text="Author:   "
-                android:id="@+id/textview_review_2_author_title"/>
+                android:text="Author:   " />
+
             <TextView
                 android:id="@+id/textview_movie_review_2_author"
                 style="@style/MovieReviewTextTheme"
-                android:text="Review #2 Author"
                 android:layout_alignTop="@id/textview_review_2_author_title"
-                android:layout_toRightOf="@id/textview_review_2_author_title"/>
+                android:layout_toRightOf="@id/textview_review_2_author_title"
+                android:text="Review #2 Author" />
         </RelativeLayout>
 
         <TextView
@@ -176,20 +218,21 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
+                android:id="@+id/textview_review_3_author_title"
+                style="@style/MovieReviewTextTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/MovieReviewTextTheme"
-                android:text="Author:   "
-                android:id="@+id/textview_review_3_author_title"/>
+                android:text="Author:   " />
+
             <TextView
                 android:id="@+id/textview_movie_review_3_author"
                 style="@style/MovieReviewTextTheme"
-                android:text="Review #3 Author"
                 android:layout_alignTop="@id/textview_review_3_author_title"
-                android:layout_toRightOf="@id/textview_review_3_author_title"/>
+                android:layout_toRightOf="@id/textview_review_3_author_title"
+                android:text="Review #3 Author" />
         </RelativeLayout>
-
 
 
         <TextView
@@ -198,41 +241,9 @@
             android:text="Review#3 Content" />
 
         <!-- Horizontal divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
-            android:background="@color/colorDivider"></View>
-        <!-- Horizontal divider -->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Trailers: "
-            android:textStyle="bold" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trailer #1"
-            android:id="@+id/button_trailer" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trailer #2"
-            android:id="@+id/button_trailer_2" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trailer #3"
-            android:id="@+id/button_trailer_3" />
 
     </LinearLayout>
-
-
 
 
     <!-- Trailers -->
