@@ -28,7 +28,7 @@ public class MovieContract {
     // Possible paths (appended to base content URI for possible URI's)
     // Note: These paths match the database tables
     public static final String PATH_MOVIE = "movie";
-    public static final String PATH_FAVOURITES = "favourites";
+    public static final String PATH_FAVOURITES = "favourite";
 
 
 
@@ -108,7 +108,7 @@ public class MovieContract {
     Inner Class that defines the contents of some other, as yet unknown table
     I left this in here for now in case it is needed later on
      */
-    public static final class FavouriteMovies implements BaseColumns {
+    public static final class FavouriteEntry implements BaseColumns {
         public static final String TABLE_NAME = "favourites";
 
 
