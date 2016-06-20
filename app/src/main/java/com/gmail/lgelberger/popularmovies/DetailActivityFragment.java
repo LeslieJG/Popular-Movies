@@ -2,11 +2,9 @@ package com.gmail.lgelberger.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,7 +21,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
@@ -87,7 +84,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     Button mButtonVideo1;
     Button mButtonVideo2;
     Button mButtonVideo3;
-
     final static int BUTTON_1_ID = 400;
     final static int BUTTON_2_ID = 401;
     final static int BUTTON_3_ID = 402;
@@ -97,27 +93,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private String mTrailerYoutubeKey2;
     private String mTrailerYoutubeKey3;
 
-
     //Titles
     private TextView mTrailersTitle;
     final static int TRAILERS_TITLE_ID = 500;
     private TextView mReviewsTitle;
     final static int REVIEWS_TITLE_ID = 501;
-    private TextView mReviewsAuthorTitle;
-    final static int REVIEWS_AUTHOR_TITLE_ID = 502;
-
-    //Horizontal Dividers
-    private View mHorizontalDivider1;
-    private View mHorizontalDivider2;
-    private View mHorizontalDivider3;
-    final static int HORIZONTAL_DIVIDER_1_ID = 600;
-    final static int HORIZONTAL_DIVIDER_2_ID = 601;
-    final static int HORIZONTAL_DIVIDER_3_ID = 602;
-
-    //Blank text line - so I don't have to add a line to my textviews
-    private TextView newLine;
-
-    Resources mresources;
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections specify the columns we need
@@ -164,15 +144,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     /////////////////////////////////////////////////////////
 
 
-    //Testing Review Views
-    /*LinearLayout mTestReviewView1;
-    LinearLayout mTestReviewView2;
-    LinearLayout mTestReviewView3;
-
-    static final int    M_TEST_REVIEW_VIEW_1_ID = 800;
-    static final int    M_TEST_REVIEW_VIEW_2_ID = 801;
-    static final int    M_TEST_REVIEW_VIEW_3_ID = 802;
-*/
     public DetailActivityFragment() {
     }
 
@@ -193,10 +164,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragement
 
-        mresources = getResources();
-
-
-        //assign all the views
+        //assign all the general detail views
         mPosterView = (ImageView) rootView.findViewById(R.id.imageview_poster_thumbnail);
         mMovieTitleView = ((TextView) rootView.findViewById(R.id.textview_title));
         mPlotSynopsisView = ((TextView) rootView.findViewById(R.id.textview_plot_synopsis));
@@ -207,34 +175,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mButtonContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_video_button_container);
         mReviewsContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_reviews_container);
 
-        //adding the Reviews
-        mReviewAuthor_1 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
-        mReview_1 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
-        mReviewAuthor_2 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
-        mReview_2 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
-        mReviewAuthor_3 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
-        mReview_3 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
-        mReview_1.setId(REVIEW_1_CONTENT_ID);
-        mReview_2.setId(REVIEW_2_CONTENT_ID);
-        mReview_3.setId(REVIEW_3_CONTENT_ID);
-
-      /*
-        mReviewAuthor_1 = (TextView) rootView.findViewById(R.id.textview_movie_review_1_author);
-        mReview_1 = (TextView) rootView.findViewById(R.id.textview_movie_review_1_content);
-        mReviewAuthor_2 = (TextView) rootView.findViewById(R.id.textview_movie_review_2_author);
-        mReview_2 = (TextView) rootView.findViewById(R.id.textview_movie_review_2_content);
-        mReviewAuthor_3 = (TextView) rootView.findViewById(R.id.textview_movie_review_3_author);
-        mReview_3 = (TextView) rootView.findViewById(R.id.textview_movie_review_3_content);
-
-
-*/
-
-
-        LinearLayout.LayoutParams textViewTitleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
 
         //Trailers Title
         mTrailersTitle = new TextView(getContext());
+        LinearLayout.LayoutParams textViewTitleParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
         mTrailersTitle.setLayoutParams(textViewTitleParams);
         mTrailersTitle.setTypeface(null, Typeface.BOLD);
         mTrailersTitle.setId(TRAILERS_TITLE_ID);
@@ -247,14 +192,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mReviewsTitle.setId(REVIEWS_TITLE_ID);
         mReviewsTitle.setText("Reviews");
 
-        /*mReviewsAuthorTitle = new TextView(getContext());
-        mReviewsAuthorTitle.setText("Author:   ");
-*/
-        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
-
         //Define the buttons
         mButtonVideo1 = new Button(getContext());
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
         mButtonVideo1.setLayoutParams(buttonParams);
         mButtonVideo1.setText("Play Trailer #1");
         mButtonVideo1.setId(BUTTON_1_ID);
@@ -272,34 +213,24 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mButtonVideo3.setId(BUTTON_3_ID);
         mButtonVideo3.setOnClickListener(this);  //this fragment implements onClickListener
 
-        //Setup the horizontal divider
-        /*mHorizontalDivider1 = new View(getContext(), null, R.style.HorizontalDividerStyle);
-        mHorizontalDivider1.setId(HORIZONTAL_DIVIDER_1_ID);
-
-        mHorizontalDivider2 = new View(getContext(), null, R.style.HorizontalDividerStyle);
-        mHorizontalDivider2.setId(HORIZONTAL_DIVIDER_2_ID);
-
-        mHorizontalDivider3 = new View(getContext(), null, R.style.HorizontalDividerStyle);
-        mHorizontalDivider3.setId(HORIZONTAL_DIVIDER_3_ID);*/
-
-       // mHorizontalDivider1 = inflater.inflate(R.layout.horizontal_divider, null);
-
-       /* LayoutInflater testInflator = (LayoutInflater)getContext().getSystemService
-                (Context.LAYOUT_INFLATER_SERVICE);
-        mHorizontalDivider1 = testInflator.inflate(R.layout.horizontal_divider, null);*/
-
-       /* mHorizontalDivider1 = new View (getContext());
-        mHorizontalDivider1.*/
+        //Reviews
+        mReviewAuthor_1 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
+        mReview_1 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
+        mReviewAuthor_2 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
+        mReview_2 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
+        mReviewAuthor_3 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
+        mReview_3 = new TextView(getContext(), null, R.style.MovieReviewTextTheme);
+        mReview_1.setId(REVIEW_1_CONTENT_ID);
+        mReview_2.setId(REVIEW_2_CONTENT_ID);
+        mReview_3.setId(REVIEW_3_CONTENT_ID);
 
 
-
-        /*View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragement
-        View view = inflater.inflate(R.layout.new_layout,null);
-*/
         //Individual Reviews Containers.
         mReviewLayout1 = new LinearLayout(getContext());
         mReviewLayout2 = new LinearLayout(getContext());
         mReviewLayout3 = new LinearLayout(getContext());
+
+
         //first one is width, height
         LinearLayout.LayoutParams reviewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
@@ -314,17 +245,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mReviewLayout3.setLayoutParams(reviewParams);
         mReviewLayout3.setId(REVIEW_3_CONTAINER_ID);
         mReviewLayout3.setOrientation(LinearLayout.HORIZONTAL);
-
-
-        newLine = new TextView(getContext());
-        newLine.setText("\n"); //should be a new line
-
-
-
-        //LJG ZZZ My test
-        /*mTestReviewView1 =  rootView.findViewById(R.id.single_review_layout);
-        //mTestReviewView1.setId(M_TEST_REVIEW_VIEW_1_ID);*/
-
 
         // return inflater.inflate(R.layout.fragment_detail, container, false); //old
         return rootView;
@@ -377,18 +297,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieDetailCursor) {
         Log.v(LOG_TAG, "In onLoadFinished - Method Called");
-/*
-        if (movieDetailCursor == null) {
-            Log.v(LOG_TAG, "onload finished - Movie Cursor is NULL");
-        } else {
-            Log.v(LOG_TAG, "onload finished - Movie Cursor is not Null");
-        }
-
-        if (movieDetailCursor.moveToFirst()) {
-            Log.v(LOG_TAG, "onload finished - Movie cursor has values (not Empty)");
-        } else {
-            Log.v(LOG_TAG, "onload finished - Movie cursor is empty");
-        }*/
 
         //DO it the other way - it data then load views
         if (movieDetailCursor != null && movieDetailCursor.moveToFirst()) { //if  is not empty and exists
@@ -416,15 +324,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mVoteAverageView.setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
             mReleaseDateView.setText(movieDetailCursor.getString(COL_RELEASE_DATE));
 
-
-            //inflate Buttons and Reviews only if they exists
-
             //get the Movie Reviews
-            mReviewAuthor_1.setText("Author:    " + movieDetailCursor.getString(COL_MOVIE_REVIEW_1_AUTHOR ) + "\n");
+            mReviewAuthor_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1_AUTHOR));
             mReview_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1));
-            mReviewAuthor_2.setText("Author:    " + movieDetailCursor.getString(COL_MOVIE_REVIEW_2_AUTHOR ) + "\n");
+            mReviewAuthor_2.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_2_AUTHOR));
             mReview_2.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_2));
-            mReviewAuthor_3.setText("Author:    " + movieDetailCursor.getString(COL_MOVIE_REVIEW_3_AUTHOR ) + "\n");
+            mReviewAuthor_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3_AUTHOR));
             mReview_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3));
 
 
@@ -433,11 +338,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mTrailerYoutubeKey2 = movieDetailCursor.getString(COL_MOVIE_VIDEO_2);
             mTrailerYoutubeKey3 = movieDetailCursor.getString(COL_MOVIE_VIDEO_3);
 
-            //try inflating buttons here
 
             //TRAILERS
             //Add the Trailers Title if there are trailers and it hasn't been added yet
             if (mTrailerYoutubeKey1 != null && mTrailersTitle != mButtonContainer.findViewById(TRAILERS_TITLE_ID)) {
+             //   mButtonContainer.addView(horiztonalThickLine());
                 mButtonContainer.addView(mTrailersTitle); //only add trailers title if there are trailers and it has not been added before
             }
 
@@ -459,48 +364,38 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             //REVIEWS
             //Only add Header title if there are reviews, and if title hasn't already been added
             if (mReview_1 != null && mReviewsTitle != mReviewsContainer.findViewById(REVIEWS_TITLE_ID)) {
+                mReviewsContainer.addView(horiztonalLine());
                 mReviewsContainer.addView(mReviewsTitle);
             }
 
             //only load 1st review if there is a review, and if the review content hasn't been loaded yet
             if (mReview_1 != null && mReview_1 != mReviewsContainer.findViewById(REVIEW_1_CONTENT_ID)) {
-                mReviewsContainer.addView(mReviewAuthor_1); //added the Review Author with title
+                mReviewLayout1.addView(author());
+                mReviewLayout1.addView(mReviewAuthor_1);
+
+                mReviewsContainer.addView(mReviewLayout1); //added the Review Author with title
                 mReviewsContainer.addView(mReview_1); //added the actual review
             }
-
 
             //only load 2nd review if there is a review, and if the review content hasn't been loaded yet
             if (mReview_2 != null && mReview_2 != mReviewsContainer.findViewById(REVIEW_2_CONTENT_ID)) {
                 mReviewsContainer.addView(horiztonalLine());
-                mReviewsContainer.addView(mReviewAuthor_2); //added the Review Author with title
-                mReviewsContainer.addView(mReview_2); //added the actual review
-            }
-
-//only load 3rd review if there is a review, and if the review content hasn't been loaded yet
-            if (mReview_3 != null && mReview_3 != mReviewsContainer.findViewById(REVIEW_3_CONTENT_ID)) {
-                mReviewsContainer.addView(horiztonalLine());
-                mReviewsContainer.addView(mReviewAuthor_3); //added the Review Author with title
-                mReviewsContainer.addView(mReview_3); //added the actual review
-            }
-
-
-
-
-/*
-
-            //only load 2ndt review if there is a review, and if the review content hasn't been loaded yet
-            if (mReview_2 != null && mReview_2 != mReviewsContainer.findViewById(REVIEW_2_CONTENT_ID)) {
-                mReviewLayout2.addView(mHorizontalDivider1);
-                mReviewLayout2.addView(mReviewsAuthorTitle); //adding "Author:  "
-                mReviewLayout2.addView(mReviewAuthor_2); //adding the actual author
-                mReviewLayout2.addView(newLine);
+                mReviewLayout2.addView(author());
+                mReviewLayout2.addView(mReviewAuthor_2);
 
                 mReviewsContainer.addView(mReviewLayout2); //added the Review Author with title
                 mReviewsContainer.addView(mReview_2); //added the actual review
             }
 
-*/
+            //only load 3rd review if there is a review, and if the review content hasn't been loaded yet
+            if (mReview_3 != null && mReview_3 != mReviewsContainer.findViewById(REVIEW_3_CONTENT_ID)) {
+                mReviewsContainer.addView(horiztonalLine());
+                mReviewLayout3.addView(author());
+                mReviewLayout3.addView(mReviewAuthor_3);
 
+                mReviewsContainer.addView(mReviewLayout3); //added the Review Author with title
+                mReviewsContainer.addView(mReview_3); //added the actual review
+            }
 
         }
     }
@@ -562,57 +457,47 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     }
 
 
-    ////http://stackoverflow.com/questions/5959870/programatically-set-height-on-layoutparams-as-density-independent-pixels
-    //or
-    //http://stackoverflow.com/questions/7793436/give-padding-with-setpadding-with-dip-unit-not-px-unit
-    //int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,1 , getResources().getDisplayMetrics());
-    private int getPixelsFromDip (int dip){
+
+   /*
+   Helper method to convert dp to pixels. Needed for progammatically setting layout heights in pixels
+
+   Inspiration from: http://stackoverflow.com/questions/5959870/programatically-set-height-on-layoutparams-as-density-independent-pixels
+   and
+   http://stackoverflow.com/questions/7793436/give-padding-with-setpadding-with-dip-unit-not-px-unit
+    */
+    private int getPixelsFromDip(int dip) {
         //http://stackoverflow.com/questions/5959870/programatically-set-height-on-layoutparams-as-density-independent-pixels
-      //  int pixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,1 , getResources().getDisplayMetrics());
+        //  int pixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,1 , getResources().getDisplayMetrics());
 
         int pixels = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 dip,
                 getResources().getDisplayMetrics()
         );
-
-        Toast.makeText(getContext(), "COnverting " + dip + " dp to " + pixels +" pixels", Toast.LENGTH_LONG).show();
+        // Toast.makeText(getContext(), "COnverting " + dip + " dp to " + pixels +" pixels", Toast.LENGTH_LONG).show();
         return pixels;
     }
 
 
-    //For returning a Horizontal Line
-    private View horiztonalLine (){
+    //For returning a Horizontal Line - 1dp
+    private View horiztonalLine() {
         View horizontalLine = new View(getContext());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 getPixelsFromDip(1));
         params.setMargins(0, getPixelsFromDip(16), 0, getPixelsFromDip(16)); //left, top, right, bottom
         horizontalLine.setLayoutParams(params);
-        horizontalLine.setBackgroundColor(ContextCompat.getColor( getContext(),R.color.colorDivider));
+        horizontalLine.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorDivider));
 
-
-        return  horizontalLine;
+        return horizontalLine;
     }
 
-    /**
-     * Takes in the database URI
-     * <p>
-     * NOT being used right now
-     */
-    private class getMovieApiIDTask extends AsyncTask<Uri, Void, String> {
 
-
-        @Override
-        protected String doInBackground(Uri... params) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-        }
-
-
+    //For returning a textview with Author in it
+    private TextView author() {
+        TextView authorTextView = new TextView(getContext());
+        authorTextView.setText("Author:    ");
+        return authorTextView;
     }
+
 }
 
