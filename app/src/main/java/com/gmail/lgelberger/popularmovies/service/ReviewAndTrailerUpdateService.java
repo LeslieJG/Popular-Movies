@@ -191,7 +191,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         Log.v(LOG_TAG, "The Reviews JSON is "+ movieReviewJsonStr);
 
         ContentValues movieReviewCVFromJSON = new ContentValues(); // Make the Content Values that will be updating database rows
-        //assume no Reviews - so load up with NoReviews for all
+       /* //assume no Reviews - so load up with NoReviews for all
         String noReviews = "No Reviews Yet";
         movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, noReviews);
         movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, noReviews);
@@ -201,7 +201,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
 
         movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR,noReviews);
         movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, noReviews);
-
+*/
         //only load up the reviews if the incoming ReviewJSON string is valid
         if (movieReviewJsonStr != null){
             JSONObject movieJSON = new JSONObject(movieReviewJsonStr); //create JSON object from input string

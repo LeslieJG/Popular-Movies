@@ -324,6 +324,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mVoteAverageView.setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
             mReleaseDateView.setText(movieDetailCursor.getString(COL_RELEASE_DATE));
 
+
             //get the Movie Reviews
             mReviewAuthor_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1_AUTHOR));
             mReview_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1));
@@ -361,15 +362,20 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             }
 
 
+            //Review Strings for testing if any reviews available
+            String reviewString1 = movieDetailCursor.getString(COL_MOVIE_REVIEW_1);
+            String reviewString2 = movieDetailCursor.getString(COL_MOVIE_REVIEW_2);
+            String reviewString3 = movieDetailCursor.getString(COL_MOVIE_REVIEW_3);
+
             //REVIEWS
             //Only add Header title if there are reviews, and if title hasn't already been added
-            if (mReview_1 != null && mReviewsTitle != mReviewsContainer.findViewById(REVIEWS_TITLE_ID)) {
+            if (reviewString1 != null  &&  mReviewsTitle != mReviewsContainer.findViewById(REVIEWS_TITLE_ID)) {
                 mReviewsContainer.addView(horiztonalLine());
                 mReviewsContainer.addView(mReviewsTitle);
             }
 
-            //only load 1st review if there is a review, and if the review content hasn't been loaded yet
-            if (mReview_1 != null && mReview_1 != mReviewsContainer.findViewById(REVIEW_1_CONTENT_ID)) {
+            //only load 1st review if there is a review, and if the review content hasn't been loaded into container yet
+            if (reviewString1 != null && mReview_1 != mReviewsContainer.findViewById(REVIEW_1_CONTENT_ID)) {
                 mReviewLayout1.addView(author());
                 mReviewLayout1.addView(mReviewAuthor_1);
 
@@ -377,8 +383,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 mReviewsContainer.addView(mReview_1); //added the actual review
             }
 
-            //only load 2nd review if there is a review, and if the review content hasn't been loaded yet
-            if (mReview_2 != null && mReview_2 != mReviewsContainer.findViewById(REVIEW_2_CONTENT_ID)) {
+            //only load 2nd review if there is a review, and if the review content hasn't been loaded into container yet
+            if (reviewString2 != null && mReview_2 != mReviewsContainer.findViewById(REVIEW_2_CONTENT_ID)) {
                 mReviewsContainer.addView(horiztonalLine());
                 mReviewLayout2.addView(author());
                 mReviewLayout2.addView(mReviewAuthor_2);
@@ -387,8 +393,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 mReviewsContainer.addView(mReview_2); //added the actual review
             }
 
-            //only load 3rd review if there is a review, and if the review content hasn't been loaded yet
-            if (mReview_3 != null && mReview_3 != mReviewsContainer.findViewById(REVIEW_3_CONTENT_ID)) {
+            //only load 3rd review if there is a review, and if the review content hasn't been loaded into container yet
+            if (reviewString3 != null && mReview_3 != mReviewsContainer.findViewById(REVIEW_3_CONTENT_ID)) {
                 mReviewsContainer.addView(horiztonalLine());
                 mReviewLayout3.addView(author());
                 mReviewLayout3.addView(mReviewAuthor_3);
