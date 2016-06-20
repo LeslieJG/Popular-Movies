@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         //Movie Selected from grid
         //ensure that the detail fragement has the informataion it needs
 
-        // update database with this movies Trailers and Reviews - so they will be there to display
+        // update database with this movie's Trailers and Reviews - so they will be there to display
         ApiUtility.updateOneMovieReviewsAndTrailersFromApi(this, movieDetailDbUri);
 
         //do different things for phone or tablet
