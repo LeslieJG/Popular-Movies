@@ -80,8 +80,6 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
                 MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2 + " TEXT , " +
                 MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3 + " TEXT  " +
-
-                //figure out how to store the movie videos (perhaps just a URL?)
                 ");";
 
         /* From original sunshine
@@ -92,7 +90,39 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                         " UNIQUE (" + WeatherEntry.COLUMN_DATE + ", " +
                         WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";*/
 
+        final String SQL_CREATE_FAVOURITE_TABLE = "CREATE TABLE " + MovieContract.FavouriteEntry.TABLE_NAME + " (" +
+                // Why AutoIncrement here, and not above?
+                // Unique keys will be auto-generated in either case.  But for weather
+                // forecasting, it's reasonable to assume the user will want information
+                // for a certain date and all dates *following*, so the forecast data
+                // should be sorted accordingly.
+                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //don't think I need AUTOINCREMENT ? It just limits the number of movies stored in database - but that limit is huge 10^19
+                MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
+                //  MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + "  INTEGER NOT NULL UNIQUE, " + //ensuring I only have one row for each single movie
+                MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL + " TEXT NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
+                //figure out how to store the damn poster image itself
+                MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS + " TEXT NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " TEXT NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2 + " TEXT , " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3 + " TEXT , " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
+                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
+                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2 + " TEXT , " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3 + " TEXT  " +
+                ");";
+
+
+
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_FAVOURITE_TABLE);
     }
 
 
@@ -106,6 +136,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         // should be your top priority before modifying this method.
         //Then use ALTER TABLE to add columns to the existing table
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.MovieEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.FavouriteEntry.TABLE_NAME);
         //  sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }

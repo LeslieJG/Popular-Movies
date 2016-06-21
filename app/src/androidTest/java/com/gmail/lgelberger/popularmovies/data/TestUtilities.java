@@ -62,6 +62,66 @@ public class TestUtilities extends AndroidTestCase {
     }
 
 
+
+
+
+    /*
+        The functions inside of TestMovieContentProvider use this utility class to test
+        the ContentObserver callbacks using the PollingCheck class that was grabbed from the Android
+        CTS tests.
+
+        Note that this only tests that the onChange function is called; it does not test that the
+        correct Uri is returned.
+     */
+    static class TestContentObserver extends ContentObserver {
+        final HandlerThread mHT;
+        boolean mContentChanged;
+
+        static TestContentObserver getTestContentObserver() {
+            HandlerThread ht = new HandlerThread("ContentObserverThread");
+            ht.start();
+            return new TestContentObserver(ht);
+        }
+
+        private TestContentObserver(HandlerThread ht) {
+            super(new Handler(ht.getLooper()));
+            mHT = ht;
+        }
+
+        // On earlier versions of Android, this onChange method is called
+        @Override
+        public void onChange(boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            mContentChanged = true;
+        }
+
+        //uncomment when polling check needed LJG ZZZ
+        public void waitForNotificationOrFail() {
+            // Note: The PollingCheck class is taken from the Android CTS (Compatibility Test Suite).
+            // It's useful to look at the Android CTS source for ideas on how to test your Android
+            // applications.  The reason that PollingCheck works is that, by default, the JUnit
+            // testing framework is not running on the main Android application thread.
+            new PollingCheck(5000) {
+                @Override
+                protected boolean check() {
+                    return mContentChanged;
+                }
+            }.run();
+            mHT.quit();
+        }
+    }
+
+    static TestContentObserver getTestContentObserver() {
+        return TestContentObserver.getTestContentObserver();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //Movie Entry Table helper methods - these are duplicated below for Favourite Entry helper methods
+
     /**
      * Use  to create some default movieValues for the database and content Provider tests tests.
      *
@@ -87,7 +147,6 @@ public class TestUtilities extends AndroidTestCase {
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, "Video");
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, "Video_2");
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, "Video_3");
-
 
         return movieValues;
     }
@@ -186,58 +245,134 @@ public class TestUtilities extends AndroidTestCase {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+    //Favourite Entry Table helper methods - These are just duplicate methods to the ones above.
+    // In case Favourite Entry Table changes columns in the future, I'm keeping these helper methods
+    //separate from the Movie Entry Table heler test methods
+
+    /**
+     * Use  to create some default movieValues for the database and content Provider tests tests.
+     *
+     * @return Content Values containing the contents of one movie
+     */
+    static ContentValues createFavouriteValuesForOneMovie() {
+        ContentValues movieValues = new ContentValues();
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE, "The test Movie");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID, "123456");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_URL, "http://BiteMe.com");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER, "Movie Poster Image");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_ORIGINAL_TITLE, "The test Movie - Original Title");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_PLOT_SYNOPSIS, "Summary - the movie sucked!");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_VOTE_AVERAGE, "1/102");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_RELEASE_DATE, "2016-04-05");
+
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1, "Review");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Review 1 Author");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2, "Review_2");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR, "Review 2 Author");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3, "Review_3");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR, "Review 3 Author");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_1, "Video");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_2, "Video_2");
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3, "Video_3");
+
+        return movieValues;
+    }
+
+
+    @NonNull
+    static ContentValues createFavouriteValuesForAnotherMovie() {
+        //extract to method
+
+        //create a new movie // first built a new contentValue
+        ContentValues movieSingleMovieValues = new ContentValues();
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE, "The Insert 1 Movie Title");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID, "123456789");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_URL, "http://newSingleMove.com");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER, "MovieInsert1Picture - should be pic not text");
+        //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_ORIGINAL_TITLE, "The Insert 1 Movie ORIGINAL Title");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_PLOT_SYNOPSIS, "The Insert 1 Movie Plot Synopsis");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_VOTE_AVERAGE, "The Insert 1 Movie Vote Average");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_RELEASE_DATE, "The Insert 1 Movie Release Date");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1, "The Insert 1 Movie Movie Review");
+        //The reviews may end up being a URL - this may also need to change
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "The Insert 1 Movie Movie Review Author");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2, "The Insert 1 Movie Movie Review 2");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR, "The Insert 2 Movie Movie Review 2 Author");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3, "The Insert 1 Movie Movie Review 3");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR, "The Insert 1 Movie Movie Review  3 Author");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_1, "The Insert 1 Movie Video");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_2, "The Insert 1 Movie Video 2");
+        movieSingleMovieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3, "The Insert 1 Movie Video 3");
+        //the Video may also change format
+
+        return movieSingleMovieValues;
+    }
+
 
     /*
-        The functions inside of TestMovieContentProvider use this utility class to test
-        the ContentObserver callbacks using the PollingCheck class that was grabbed from the Android
-        CTS tests.
+       Creates the bulk insert values for 10 movies
+        */
+    static ContentValues[] createBulkInsertFavouriteValues() {    //don't need a location id - this is not Sunshine!
+        ContentValues[] returnContentValues = new ContentValues[NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT]; //create an array of Movie Entries
 
-        Note that this only tests that the onChange function is called; it does not test that the
-        correct Uri is returned.
+        for (int i = 0; i < NUMBER_OF_BULK_INSERT_RECORDS_TO_INSERT; i++) {
+            ContentValues movieValues = new ContentValues();
+
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE, "Movie Title " + i);
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID, i);
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_URL, "http://biteme.com/" + i);
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER, "This should be a picture, not text_" + i);
+            //LJG ZZZ This will error off once the database is changed to have a jpg store here!!!!
+
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_ORIGINAL_TITLE, "Movie Original Title " + i);
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_PLOT_SYNOPSIS, "This movie sucked, times " + i);
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_VOTE_AVERAGE, i + " out of 10");
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_RELEASE_DATE, "Release date the year " + i + " A.D");
+
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1, "Movie Review: It was " + i + "thumbs up");
+            //The reviews may end up being a URL - this may also need to change
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review Author It was Buddy" + i );
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2, "Movie Review 2: It was " + i + "thumbs up");
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 2 Author It was Buddy" + i );
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3, "Movie Review 3: It was " + i + "thumbs up");
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 3 Author It was Buddy" + i );
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_1, "Here is video number " + i);
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_2, "Here is video number " + i + "Second Trailer");
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3, "Here is video number " + i  + "Third Trailer");
+            //the Video may also change format
+
+            returnContentValues[i] = movieValues;
+        }
+        return returnContentValues;
+    }
+
+
+
+    /**
+     * Inserts a single movie into the database
+     *
+     * @param context
+     * @return : Row Id of Movie inserted into database
      */
-    static class TestContentObserver extends ContentObserver {
-        final HandlerThread mHT;
-        boolean mContentChanged;
+    static long insertFavouriteValues(Context context) {
+        // insert our test records into the database
+        MovieDbHelper dbHelper = new MovieDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues testValues = TestUtilities.createFavouriteValuesForOneMovie();
 
-        static TestContentObserver getTestContentObserver() {
-            HandlerThread ht = new HandlerThread("ContentObserverThread");
-            ht.start();
-            return new TestContentObserver(ht);
-        }
+        long movieRowId;
+        movieRowId = db.insert(MovieContract.FavouriteEntry.TABLE_NAME, null, testValues);
 
-        private TestContentObserver(HandlerThread ht) {
-            super(new Handler(ht.getLooper()));
-            mHT = ht;
-        }
+        // Verify we got a row back.
+        assertTrue("Error: Failure to insert Favourite Values", movieRowId != -1);
 
-        // On earlier versions of Android, this onChange method is called
-        @Override
-        public void onChange(boolean selfChange) {
-            onChange(selfChange, null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            mContentChanged = true;
-        }
-
-        //uncomment when polling check needed LJG ZZZ
-        public void waitForNotificationOrFail() {
-            // Note: The PollingCheck class is taken from the Android CTS (Compatibility Test Suite).
-            // It's useful to look at the Android CTS source for ideas on how to test your Android
-            // applications.  The reason that PollingCheck works is that, by default, the JUnit
-            // testing framework is not running on the main Android application thread.
-            new PollingCheck(5000) {
-                @Override
-                protected boolean check() {
-                    return mContentChanged;
-                }
-            }.run();
-            mHT.quit();
-        }
+        return movieRowId;
     }
 
-    static TestContentObserver getTestContentObserver() {
-        return TestContentObserver.getTestContentObserver();
-    }
+
+
+
+
 }
