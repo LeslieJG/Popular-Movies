@@ -9,6 +9,10 @@ import android.provider.BaseColumns;
  * Created by Leslie on 2016-03-22.
  * <p>
  * Defines table and column names for regular movie database
+ * There are two tables MovieEntry and FavouriteEntry
+ * MovieEntry stores the results of API call for the working list of movies after a "popular movie" or "highest rated" search
+ * FavouriteEntry stores the local list of favourite movies stored by the user
+ *
  * Modelled after the class "WeatherContract" in the sunshine app lesson 4A
  * https://github.com/udacity/Sunshine-Version-2/blob/4.03_define_contract_constants/app/src/main/java/com/example/android/sunshine/app/data/WeatherContract.java
  */
@@ -28,7 +32,7 @@ public class MovieContract {
     // Possible paths (appended to base content URI for possible URI's)
     // Note: These paths match the database tables
     public static final String PATH_MOVIE = "movie";
-    public static final String PATH_FAVOURITES = "favourite";
+    public static final String PATH_FAVOURITE = "favourite";
 
 
 
@@ -141,7 +145,7 @@ public class MovieContract {
         //This way the content uri can be built for each table in a content provider
         //This just makes the base content uri, and adds the table path to it.
         public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVOURITES).build();
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVOURITE).build();
 
         //functions to help build content provider queries
         //helpful to have so that other parts of app don't have to know how to do this. It
@@ -157,9 +161,9 @@ public class MovieContract {
         //ZZZ LJG I think this is for making cursors?
         // for each of the return types, we ask for 1 record (item) or a list of records (dir)
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVOURITES;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVOURITE;
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVOURITES;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVOURITE;
 
 
         ///////////////////////////////////////////////////////////////////////

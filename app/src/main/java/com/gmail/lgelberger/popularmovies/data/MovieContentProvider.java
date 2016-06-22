@@ -13,7 +13,9 @@ import android.util.Log;
 /**
  * Created by Leslie on 2016-05-03.
  * <p/>
- * Starting to make a content provider to deal with my locally stored movies (favourites) in Popular Movies Part 2
+ * Content Provider to access the movies database.
+ * There are two tables that can be accessed - MovieEntry for general API call storage
+ * and FavouriteEntry for the table of locally stored favourite movies
  */
 public class MovieContentProvider extends ContentProvider {
     /*
@@ -46,6 +48,8 @@ public class MovieContentProvider extends ContentProvider {
     static final int MOVIE = 100;  //content://com.gmail.lgelberger.popularmovies/movie
     static final int MOVIE_DETAIL = 101;//com.gmail.lgelberger.popularmovies/movie/3423
 
+    static final int FAVOURITE = 300; //content://com.gmail.lgelberger.popularmovies/favourite
+    static final int FAVOURITE_DETAIL = 301;//content://com.gmail.lgelberger.popularmovies/favourite/2468
 
     /**
      * UriMatcher will match each URI to the MOVIE nad MOVIE_DETAIL integer constants defined above.
@@ -61,11 +65,19 @@ public class MovieContentProvider extends ContentProvider {
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
+        ////////////////////// Accessing Movie Entry Table ///////////////////////
         //for matching a query for the whole movie database
         matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
 
         //for matching a query for just the details of ONE movie
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", MOVIE_DETAIL);
+
+        ////////////////////// Accessing Favourite Entry Table ///////////////////////
+        //for matching a query for the whole movie database
+        matcher.addURI(authority, MovieContract.PATH_FAVOURITE, FAVOURITE);
+
+        //for matching a query for just the details of ONE movie
+        matcher.addURI(authority, MovieContract.PATH_FAVOURITE + "/#", FAVOURITE_DETAIL);
 
         return matcher;
     }
@@ -148,6 +160,36 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
 
+
+            //  content://com.gmail.lgelberger.popularmovies/favourite
+            // "favourite"
+            case FAVOURITE: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.FavouriteEntry.TABLE_NAME, //table name to query
+                        projection, // leaving "columns" null just returns all the columns.
+                        selection,// columns for "where" clause
+                        selectionArgs, // values for "where" clause
+                        null,       // columns to group by
+                        null,      // columns to filter by row groups
+                        sortOrder //sort order
+                );
+                break;
+            }
+
+            // content://com.gmail.lgelberger.popularmovies/favourite/#
+            // "favourite/#"
+            case FAVOURITE_DETAIL: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.FavouriteEntry.TABLE_NAME, //table name to query
+                        projection, // leaving "columns" null just returns all the columns.
+                        MovieContract.FavouriteEntry._ID + " = ? ",  //selection -  columns for "where" clause - where  (Just need to look for _ID column)
+                        new String[]{MovieContract.FavouriteEntry.getIdFromUri(uri)}, //selectionArgs - values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
+                        null,       // columns to group by
+                        null,      // columns to filter by row groups
+                        sortOrder); //sort order
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -178,10 +220,18 @@ public class MovieContentProvider extends ContentProvider {
 
         switch (match) {
             case MOVIE: {
-
                 long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(_id);//  WeatherContract.WeatherEntry.buildWeatherUri(_id);
+                    returnUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+
+            case FAVOURITE: {
+                long _id = db.insert(MovieContract.FavouriteEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = MovieContract.FavouriteEntry.buildMovieUriWithAppendedID(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -213,9 +263,15 @@ public class MovieContentProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         MovieContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+
+            case FAVOURITE:
+                rowsDeleted = db.delete(
+                        MovieContract.FavouriteEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+
         // Because a null deletes all rows
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
@@ -243,6 +299,17 @@ public class MovieContentProvider extends ContentProvider {
                         MovieContract.MovieEntry._ID + " = ? ",  //selection -  columns for "where" clause - where  (Just need to look for _ID column)
                         new String[]{MovieContract.MovieEntry.getIdFromUri(uri)}); //selectionArgs - values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
                 break;
+            case FAVOURITE:
+                rowsUpdated = db.update(MovieContract.FavouriteEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case FAVOURITE_DETAIL:
+                rowsUpdated = db.update(MovieContract.FavouriteEntry.TABLE_NAME,
+                        values,
+                        MovieContract.FavouriteEntry._ID + " = ? ",  //selection -  columns for "where" clause - where  (Just need to look for _ID column)
+                        new String[]{MovieContract.FavouriteEntry.getIdFromUri(uri)}); //selectionArgs - values for "where" clause  (when it equals the one we are looking for  -as specified by the last bit of uri)
+                break;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -281,6 +348,12 @@ public class MovieContentProvider extends ContentProvider {
                 return MovieContract.MovieEntry.CONTENT_TYPE; //MOVIE Uri returns multiple records type directory - for grid display info
             case MOVIE_DETAIL:
                 return MovieContract.MovieEntry.CONTENT_ITEM_TYPE; //returns a single record type (for movie detail page)
+
+            case FAVOURITE:
+                return MovieContract.FavouriteEntry.CONTENT_TYPE; //MOVIE Uri returns multiple records type directory - for grid display info
+            case FAVOURITE_DETAIL:
+                return MovieContract.FavouriteEntry.CONTENT_ITEM_TYPE; //returns a single record type (for movie detail page)
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
 
@@ -317,6 +390,25 @@ public class MovieContentProvider extends ContentProvider {
                 }
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
+
+            case FAVOURITE:
+                db.beginTransaction();
+                int returnFavouriteCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        //normalizeDate(value);
+                        long _id = db.insert(MovieContract.FavouriteEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnFavouriteCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();  //if this is not done, the inserts won't be saved in database
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnFavouriteCount;
+
             default:
                 return super.bulkInsert(uri, values);
         }
