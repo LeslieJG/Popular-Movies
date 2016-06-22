@@ -18,6 +18,7 @@
 
     <string name="movie_query_reviews" translatable="false">reviews</string>
     <string name="movie_query_traliers" translatable="false">videos</string>
+    <string name="movie_query_favourites" translatable="false">favourites</string>
 
     <!-- values for building movie poster url  -->
     <string name="poster_url_base" translatable="false">" http://image.tmdb.org/t/p/"</string>
@@ -50,6 +51,7 @@
     <!-- Movie Sort Order Preferences [CHAR LIMIT=NONE]-->
     <string name="movie_sort_order_key" translatable="false">movie_sort_order_key</string>
     <string name="movie_sort_order_title" translatable="false">Movie Sort Order</string>
+
 
 
     <!-- the below string is not making it into a newly installed App url for movie query-->

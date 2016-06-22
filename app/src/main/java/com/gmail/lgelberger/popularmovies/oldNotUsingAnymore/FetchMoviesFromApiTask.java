@@ -1,12 +1,14 @@
-package com.gmail.lgelberger.popularmovies;
+package com.gmail.lgelberger.popularmovies.oldNotUsingAnymore;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.gmail.lgelberger.popularmovies.R;
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
 import org.json.JSONArray;
@@ -20,6 +22,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by Leslie on 2016-05-16.
@@ -116,7 +119,7 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
         } else if (urlAsString.toLowerCase().contains(movieReviews)) { //do the requred action to load just the Movie Reviews in
             apiCallNeeded = updateMovieReviews;
             //check database for Reviews at the correct movie ID- If one is there then return null here - don't need to do anything
-            movieApiId = ApiUtility.getApiMovieIdFromUri(urlAsUri); //get the movie ID
+            movieApiId = getApiMovieIdFromUri(urlAsUri); //get the movie ID
             //get a cursor from Database using API id as query param
             //make the Query URI
             //Uri movieDetailQueryUri =  MovieContract.MovieEntry.buildMovieUriWithAppendedID(Long.valueOf(movieApiId)); //perhaps error check if Long.valueOf(movieApiId) returns an actual LONG and is not invalid?
@@ -152,7 +155,7 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
         } else if (urlAsString.toLowerCase().contains(movieVideos)) { //do the required action to load just the Movie Trailers in
             apiCallNeeded = updateMovieTrailers;
 
-            movieApiId = ApiUtility.getApiMovieIdFromUri(urlAsUri); //get the movie API ID
+            movieApiId = getApiMovieIdFromUri(urlAsUri); //get the movie API ID
             //get a cursor from Database using API id as query param
 
             Uri dbQueryUri = MovieContract.MovieEntry.CONTENT_URI; //look through entire database
@@ -484,5 +487,39 @@ public class FetchMoviesFromApiTask extends AsyncTask<URL, Void, String> {
             e.printStackTrace();
         }
         return url;
+    }
+
+
+    //Need to get Movie ID from this
+    //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=123456
+    //
+    //  http://api.themoviedb.org/3/movie/293660/videos?api_key=123456
+
+    /**
+     * NOT USED ANY MORE - PUt this into FetchMoviesFromAPI task
+     * Private Helper Method - used 4 times
+     * Twice in testGetApiMovieIdFromUri() - tested
+     * Twice in FetchMoviesFromAPiTask - which is becomming obsolete
+     *
+     * @param uri
+     * @return
+     */
+    public  String getApiMovieIdFromUri(Uri uri) {
+        //pathSegments should have 3/movie/293660/videos or 3/movie/293660/reviews
+        Log.v(LOG_TAG, "in getApiMovieIdFromUri. The Uri passed in is " + uri);
+
+        List<String> pathSegments = uri.getPathSegments();
+        String movieID = pathSegments.get(2); //get the third (zero indexed) path segment
+
+        Log.v(LOG_TAG, "in getApiMovieIdFromUri. The movieID (or third path segment is" + movieID);
+
+        //should check that the String can be converted to a number, because if wrong API url passed in,
+        //the string COULD be the sort order (popular or top_rated)
+
+        if (TextUtils.isDigitsOnly(movieID)) {  //return movie ID if it is digits only
+            return movieID;
+        }
+        //  Log.v(LOG_TAG, "getApiMovieIdFromUri was passed the wrong uri. Unable to extract APiMovie ID. Uri passed in was " + uri);
+        return null; //if it is not digits we have the wrong uri passed in
     }
 }

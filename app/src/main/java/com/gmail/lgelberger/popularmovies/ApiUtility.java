@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 /**
  * Created by Leslie on 2016-06-08.
@@ -47,33 +45,7 @@ public class ApiUtility {
     /////////////////////////////////////////////////////////
 
 
-    /**
-     * Makes URL to access API to get movie info
-     * <p>
-     * movie should now look like this
-     * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
-     *
-     * @param context   Context of Application for String id references
-     * @param sortOrder Sort Order required to be constructed into API call
-     * @return URL for themoviedb.org
-     */
-    private static URL makeMovieApiQueryURL(Context context, String sortOrder) {
-        URL url = null; //url to be built
 
-        Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
-                .appendPath(context.getString(R.string.movie_query_movie))
-                .appendPath(sortOrder)
-                .appendQueryParameter(context.getString(R.string.movie_query_key_api_key), context.getString(R.string.api_key))
-                .build();
-
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is " + url);
-        return url;
-    }
 
 
 //   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
@@ -86,6 +58,13 @@ public class ApiUtility {
 
 
     //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=547bc9d14e2d25a3e3429d2f7c8292db
+
+    /**
+     * Used by Review and Trailer Update Service ONLY
+     * @param context
+     * @param movieID
+     * @return
+     */
     public static URL makeReviewsAPIQueryURL(Context context, String movieID) {
         // public static URL makeReviewsAPIQueryURL(String movieID){
         URL url = null; //url to be built
@@ -109,6 +88,13 @@ public class ApiUtility {
 
 
     //  http://api.themoviedb.org/3/movie/293660/videos?api_key=547bc9d14e2d25a3e3429d2f7c8292db
+
+    /**
+     * Used by ReviewAndTrailerUpdateService ONLY
+     * @param context
+     * @param movieID
+     * @return
+     */
     public static URL makeTrailersAPIQueryURL(Context context, String movieID) {
         URL url = null; //url to be built
 
@@ -130,19 +116,12 @@ public class ApiUtility {
     }
 
 
-    //private helper method to check internet connectivity before starting PopularMoviesService
-    private static boolean isConnectedToInternet(Context context) {
-        //check for internet connectivity first
-        //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-        return isConnected;
-    }
 
 
     /**
+     * Used Twice by MainActivityOnly !!!!
+     * Used in onCreate and onSharedPreferenceListener
+     *
      * to connect to network update the local database of movies
      * <p>
      * Makes the API query URL from movieSortOrder
@@ -150,6 +129,7 @@ public class ApiUtility {
      * If yes, calls
      * <p>
      * This will have to be rewritten to allow for Reviews and Trailers to be fetched from API if needed
+     *
      */
     public static void updateDatabaseFromApi(Context context, String movieSortOrderOrMovieApiID) {
 
@@ -195,6 +175,48 @@ public class ApiUtility {
     }
 
 
+    //private helper method to check internet connectivity before starting PopularMoviesService
+    private static boolean isConnectedToInternet(Context context) {
+        //check for internet connectivity first
+        //code snippet from http://developer.android.com/training/monitoring-device-state/connectivity-monitoring.html
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        return isConnected;
+    }
+
+
+    /**
+     * Private Helper Method
+     * Makes URL to access API to get movie info
+     * <p>
+     * movie should now look like this
+     * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
+     *
+     * @param context   Context of Application for String id references
+     * @param sortOrder Sort Order required to be constructed into API call
+     * @return URL for themoviedb.org
+     */
+    private static URL makeMovieApiQueryURL(Context context, String sortOrder) {
+        URL url = null; //url to be built
+
+        Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
+                .appendPath(context.getString(R.string.movie_query_movie))
+                .appendPath(sortOrder)
+                .appendQueryParameter(context.getString(R.string.movie_query_key_api_key), context.getString(R.string.api_key))
+                .build();
+
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is " + url);
+        return url;
+    }
+
+
     //Starts the PopularMoviesService to update the Database from API if needed
     private static void startPopularMoviesService(Context context, URL ApiQueryUrl) {
         String movieQueryURLAsString = ApiQueryUrl.toString();
@@ -207,7 +229,13 @@ public class ApiUtility {
     }
 
 
+
+
+
+
     /**
+     * Used by MainActivityONLY
+     *
      * Gets the information needed to start the ReviewAndTrailerUpdateService
      *
      * @param context          Application context for accessing Strings
@@ -243,28 +271,7 @@ public class ApiUtility {
     }
 
 
-    //Need to get Movie ID from this
-    //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=123456
-    //
-    //  http://api.themoviedb.org/3/movie/293660/videos?api_key=123456
-    public static String getApiMovieIdFromUri(Uri uri) {
-        //pathSegments should have 3/movie/293660/videos or 3/movie/293660/reviews
-        Log.v(LOG_TAG, "in getApiMovieIdFromUri. The Uri passed in is " + uri);
 
-        List<String> pathSegments = uri.getPathSegments();
-        String movieID = pathSegments.get(2); //get the third (zero indexed) path segment
-
-        Log.v(LOG_TAG, "in getApiMovieIdFromUri. The movieID (or third path segment is" + movieID);
-
-        //should check that the String can be converted to a number, because if wrong API url passed in,
-        //the string COULD be the sort order (popular or top_rated)
-
-        if (TextUtils.isDigitsOnly(movieID)) {  //return movie ID if it is digits only
-            return movieID;
-        }
-        //  Log.v(LOG_TAG, "getApiMovieIdFromUri was passed the wrong uri. Unable to extract APiMovie ID. Uri passed in was " + uri);
-        return null; //if it is not digits we have the wrong uri passed in
-    }
 
 /*
 
@@ -275,6 +282,8 @@ public class ApiUtility {
 
 
     /*
+    USed ONLY by ReviewAndTrailerUpdateService
+    BUT!!!!!! PopularMoviesService used an IDENTICAL method - it should use this one instead!!!!
     Trying to put doAPI Call here - It should ALWAYS be called from within a separate Service or AsyncTask
     i.e. OFF the main thread
      */
