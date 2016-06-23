@@ -16,14 +16,18 @@
 
 
     <ListPreference
-  android:defaultValue="@string/movie_sort_order_default_value"
+        android:defaultValue="@string/movie_sort_order_default_value"
+        android:entries="@array/sort_order_entries"
+        android:entryValues="@array/sort_order_values"
+        android:key="@string/movie_sort_order_key"
+        android:summary="%s"
+        android:title="@string/movie_sort_order_title" />
 
-    android:entries="@array/sort_order_entries"
-    android:entryValues="@array/sort_order_values"
-    android:key="@string/movie_sort_order_key"
-    android:summary="%s"
-    android:title="@string/movie_sort_order_title" />
 
+    <Preference
+        android:key="@string/delete_favourites_key"
+        android:title="@string/delete_favourite_movies_title" />
+    <!--  android:summary="This is a cool button"-->
 
     <!--
     <CheckBoxPreference

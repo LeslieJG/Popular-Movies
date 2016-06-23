@@ -52,7 +52,8 @@
     <string name="movie_sort_order_key" translatable="false">movie_sort_order_key</string>
     <string name="movie_sort_order_title" translatable="false">Movie Sort Order</string>
 
-
+    <string name="delete_favourites_key" translatable="false">delete_favourite_table</string>
+<string name="delete_favourite_movies_title" translatable="false">Delete All Favourite Movies</string>
 
     <!-- the below string is not making it into a newly installed App url for movie query-->
     <string name="movie_sort_order_default_value" translatable="false">popular</string>

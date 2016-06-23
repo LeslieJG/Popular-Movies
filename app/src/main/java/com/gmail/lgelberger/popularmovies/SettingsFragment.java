@@ -6,6 +6,8 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by Leslie on 2016-03-10.
@@ -31,7 +33,7 @@ import android.preference.PreferenceFragment;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     //added to have reference to movie_sort_order_key
-
+    final String LOG_TAG = SettingsFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
     //SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
@@ -40,6 +42,23 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
+
+
+
+        Preference button = (Preference)findPreference(getString(R.string.delete_favourites_key));
+        button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                //code for what you want it to do
+                Toast.makeText(getActivity().getApplicationContext(), "Pressed the Delete Favourites Button", Toast.LENGTH_LONG).show();
+                Log.v(LOG_TAG, "Pressed the Delete Favourites Button");
+
+              ///LJG Add delete the entire Favourites Database here!
+
+                return true;
+            }
+        });
+
     }
 
 
@@ -55,7 +74,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+         final String LOG_TAG = SettingsFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
         final String MOVE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
+        final String DELETE_FAVOURITES_KEY = getString(R.string.delete_favourites_key);
 
         Preference pref = findPreference(key);
 
@@ -69,6 +90,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
             pref.setSummary(sharedPreferences.getString(key, "")); // Set summary to be the user-description for the selected value
         }
+
+
     }
 
 
