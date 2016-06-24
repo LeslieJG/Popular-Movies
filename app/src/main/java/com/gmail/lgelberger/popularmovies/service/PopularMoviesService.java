@@ -112,7 +112,7 @@ public class PopularMoviesService extends IntentService{
 
 
        // do API call and load into database*/
-        jsonFromApi = ApiUtility.doApiCall(url); //do API call and get JSON  LJG -- see if we can use the ApiUtility version of this
+        jsonFromApi = ApiUtility.fetchJsonFromApi(url); //do API call and get JSON  LJG -- see if we can use the ApiUtility version of this
         if (jsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             return;
         }
@@ -155,7 +155,7 @@ public class PopularMoviesService extends IntentService{
 
 
     // LJG ZZZ see if I can use the static method identical to this in ApiUtilities instead!
-   /* private String doApiCall(URL apiQueryUrl) {
+   /* private String fetchJsonFromApi(URL apiQueryUrl) {
         //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
         String movieJsonStr = null; // Will contain the raw JSON response as a string.
 

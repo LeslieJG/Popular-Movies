@@ -77,13 +77,13 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         URL trailerApiQueryUrl = ApiUtility.makeTrailersAPIQueryURL(mContext, apiMovieID);
 
         //start with Reviews - arbitrary choice, but you have to start somewhere
-        String reviewJsonFromApi = ApiUtility.doApiCall(reviewApiQueryUrl); //do API call and get JSON
+        String reviewJsonFromApi = ApiUtility.fetchJsonFromApi(reviewApiQueryUrl); //do API call and get JSON
         if (reviewJsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             Log.v(LOG_TAG, "Nothing returned from API call to Reviews");
            // return; //stop the service  --is this a good idea? - better way?
         } //otherwise valid incoming JSON
 
-        String trailerJsonFromApi = ApiUtility.doApiCall(trailerApiQueryUrl);
+        String trailerJsonFromApi = ApiUtility.fetchJsonFromApi(trailerApiQueryUrl);
         if (trailerJsonFromApi == null) {
             Log.v(LOG_TAG, "Nothing returned from API call to Trailers");
             // return; //stop the service

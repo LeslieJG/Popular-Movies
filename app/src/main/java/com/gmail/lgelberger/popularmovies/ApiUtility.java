@@ -52,8 +52,15 @@ public class ApiUtility {
   Trying to put doAPI Call here - It should ALWAYS be called from within a separate Service or AsyncTask
   i.e. OFF the main thread
    */
-    public static String doApiCall(URL apiQueryUrl) {
-        Log.v(LOG_TAG, "doApiCall - doing it now");
+
+    /**
+     *  To connect to network and fetch JSON results from API
+     *
+     * @param apiQueryUrl URL needed for Sepecific API call
+     * @return JSON result of API call
+     */
+    public static String fetchJsonFromApi(URL apiQueryUrl) {
+        Log.v(LOG_TAG, "fetchJsonFromApi - doing it now");
         //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
         String movieJsonStr = null; // Will contain the raw JSON response as a string.
 
