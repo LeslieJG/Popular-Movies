@@ -61,13 +61,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         });
         */
 
+        //update sort order from shared Pref and do API call to get movie data from database if needed
         if (savedInstanceState == null) { //if app is being run for the first time this session
             String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //get the sort order from preferences
             String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
+            updateDatabaseFromApiIfNeeded(this, movieSortOrder); //update the database with new API call if needed
             Log.v(LOG_TAG, "savedInstanceState is NULL - Doing API call!!!! SHould I really be doing this?");
-            //create a API query URL and pass to updateDatabase from API if needed
-            updateDatabaseFromApi(this, movieSortOrder); //update the database with new API call
         } else {
             Log.v(LOG_TAG, "savedInstanceState is Not null - No API call");
         }
@@ -109,7 +109,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
             if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
                 String movieSortOrder = prefs.getString(key, "");
-                updateDatabaseFromApi(getApplicationContext(), movieSortOrder);
+
+                //update database if sort order is  "popular" or "top rated" and NOT Favourites
+                updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
             }
         }
     }
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      */
     @Override
     public void OnMovieSelected(Uri movieDetailDbUri) {
-        //Movie Selected from grid ensure that the detail fragement has the information it needs
+        //Movie Selected from grid ensure that the detail fragment has the information it needs
 
         // update database with this movie's Trailers and Reviews - so they will be there to display
         updateOneMovieReviewsAndTrailersFromApi(this, movieDetailDbUri);  //ONLY IF NOT FAVOURITES SORT ORDER!!!!! LJG ZZZ
@@ -188,17 +190,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      * Checks to see if network connectivity exists
      * If yes, calls
      * <p/>
-     *
      */
-    private void updateDatabaseFromApi(Context context, String movieSortOrderOrMovieApiID) {
+    private void updateDatabaseFromApiIfNeeded(Context context, String movieSortOrder) {
 
-       //check internet connectivity
+        //Check to see if we need to do API call
+        if (movieSortOrder == (getString(R.string.movie_query_favourites))) { //if sort order is favourites
+            //No need to do api call as favourites are stored locally
+            Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder + " so NOT doing API call");
+            return;
+        }
+
+
+        //check internet connectivity
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         if (isConnected) {
-            URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
+            URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrder); //make the API url
             String movieQueryURLAsString = movieQueryURL.toString();
 
             //Start the PopularMoviesService to update entre MovieEntry Database from API
@@ -212,7 +221,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
         }
     }
-
 
 
     /**
@@ -255,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      */
     public static void updateOneMovieReviewsAndTrailersFromApi(Context context, Uri movieDetailDbUri) {
         //For making good use of database Projections specify the columns we need
-        final String[] MOVIE_COLUMNS = {    MovieContract.MovieEntry.COLUMN_API_MOVIE_ID  };
+        final String[] MOVIE_COLUMNS = {MovieContract.MovieEntry.COLUMN_API_MOVIE_ID};
         // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
         final int COL_API_MOVIE_ID = 0;
 
