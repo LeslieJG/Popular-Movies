@@ -1,7 +1,11 @@
 package com.gmail.lgelberger.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -10,6 +14,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.gmail.lgelberger.popularmovies.data.MovieContract;
+import com.gmail.lgelberger.popularmovies.service.PopularMoviesService;
+import com.gmail.lgelberger.popularmovies.service.ReviewAndTrailerUpdateService;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.OnMovieSelectedListener {
 
@@ -18,20 +30,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     private Boolean mTwoPane; //used to indicate if we are using a two pane main layout (i.e. if it is a tablet)
 
-
-
-
-
-
-
-    //testing this for deciding to do API call if activity recreated
-   /* private Boolean apiCallDone = false;
-    private static final String API_CALL_DONE_KEY = "apiCallKey"; //key for stored instance state*/
-
-    //adding stuff needed for initial API call here
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here, to be able
-    //to do new API calls if needed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //initializing sharedPref
-        //get default shared pref doesn't require a file name - it goes for the defulat file name
+        //get default shared pref doesn't require a file name - it goes for the default file name
         prefListener = new MyPreferenceChangeListener();
         sharedPref.registerOnSharedPreferenceChangeListener(prefListener); //registering the listener to allow for API calls when sort order changes
 
@@ -61,28 +61,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         });
         */
 
-
-       /* Fragment testFragment = getSupportFragmentManager().findFragmentByTag(DETAIL_FRAGMENT_TAG);
-        if (testFragment != null){
-            Log.v(LOG_TAG, "in MainActiivy, the detail fragments exists");
-        } else {
-            Log.v(LOG_TAG, "inMain Activity, the detail fragment is gone");
-        }*/
-
-        //if app hasn't been running before - Do a new API call to update the local database
-
-
-
-
         if (savedInstanceState == null) { //if app is being run for the first time this session
-            //get the sort order from preferences
-
-            String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
+            String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //get the sort order from preferences
             String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
             Log.v(LOG_TAG, "savedInstanceState is NULL - Doing API call!!!! SHould I really be doing this?");
             //create a API query URL and pass to updateDatabase from API if needed
-            ApiUtility.updateDatabaseFromApi(this, movieSortOrder); //update the database with new API call
+            updateDatabaseFromApi(this, movieSortOrder); //update the database with new API call
         } else {
             Log.v(LOG_TAG, "savedInstanceState is Not null - No API call");
         }
@@ -98,12 +83,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            if (savedInstanceState == null ) { //if first time running app
+            if (savedInstanceState == null) { //if first time running app
                 Log.v(LOG_TAG, " in OnCreate - savedInstanceState == null - MAKING A NEW DETAIL FRAGMENT");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.movie_detail_container, new DetailActivityFragment(), DETAIL_FRAGMENT_TAG)
                         .commit();
-            } else {//for dubgging
+            } else {//for debugging
                 Log.v(LOG_TAG, " in OnCreate - savedInstanceState is NOT null - NOT making a new fragment - just leaving it alone");
             }
 
@@ -122,13 +107,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
-            if (key.equals(getString(R.string.movie_sort_order_key))) {
+            if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
                 String movieSortOrder = prefs.getString(key, "");
-                //update entire Database with new sort Order
-
-                //make a new MovieQueryURL then pass it to updateDatabasefromAPI
-
-                ApiUtility.updateDatabaseFromApi(getApplicationContext(), movieSortOrder);
+                updateDatabaseFromApi(getApplicationContext(), movieSortOrder);
             }
         }
     }
@@ -156,27 +137,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         return super.onOptionsItemSelected(item);
     }
 
-    /*
-
-     */
 
     /**
      * Call back from MainActivityFragment with detail Movie Uri when Movie Grid has been clicked
-     * Need to launch the Detail Fragement with this information.
-     *  Will pass the information to Detail Movie Fragment
+     * Need to launch the Detail Fragment with this information.
+     * Will pass the information to Detail Movie Fragment
      * Either with intent (if one pane view)
      * Or pass it directly to the fragment (if two pane view)
-     *
      *
      * @param movieDetailDbUri ContentProvider query URI for one movie to get details
      */
     @Override
     public void OnMovieSelected(Uri movieDetailDbUri) {
-        //Movie Selected from grid
-        //ensure that the detail fragement has the informataion it needs
+        //Movie Selected from grid ensure that the detail fragement has the information it needs
 
         // update database with this movie's Trailers and Reviews - so they will be there to display
-        ApiUtility.updateOneMovieReviewsAndTrailersFromApi(this, movieDetailDbUri);
+        updateOneMovieReviewsAndTrailersFromApi(this, movieDetailDbUri);  //ONLY IF NOT FAVOURITES SORT ORDER!!!!! LJG ZZZ
 
         //do different things for phone or tablet
         if (mTwoPane == false) { //Just one pane, start DetailActivity and send the Query Uri with an intent
@@ -200,41 +176,116 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
 
-    // Need to make sure that the API doesn't get called again when coming back from the detailActivity (on a phone)
-    //save that I've already made API call
-    //see http://stackoverflow.com/questions/151777/saving-android-activity-state
-   /* @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        Log.v(LOG_TAG, "in onSaveInstanceState");
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(API_CALL_DONE_KEY, true); //perhaps change this from true to a variable name?
+    ////////////////////////////////////////Private Helper Methods/////////////////////////////////
 
 
+    /**
+     * Used in onCreate and onSharedPreferenceListener
+     * <p/>
+     * to connect to network update the local database of movies
+     * <p/>
+     * Makes the API query URL from movieSortOrder
+     * Checks to see if network connectivity exists
+     * If yes, calls
+     * <p/>
+     *
+     */
+    private void updateDatabaseFromApi(Context context, String movieSortOrderOrMovieApiID) {
+
+       //check internet connectivity
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if (isConnected) {
+            URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
+            String movieQueryURLAsString = movieQueryURL.toString();
+
+            //Start the PopularMoviesService to update entre MovieEntry Database from API
+            Intent intent = new Intent(context, PopularMoviesService.class);  //make explicit intent for my service
+            intent.putExtra(PopularMoviesService.MOVIE_API_QUERY_EXTRA_KEY, //put extra with key MOVIE_API_QUERY_EXTRA_KEY
+                    movieQueryURLAsString); //put in the movieQueryURL -
+            context.startService(intent);
+
+            //Log.v(LOG_TAG, "starting Sort Order API call");
+        } else { //no internet connection
+            Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
+        }
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.v(LOG_TAG, "in onRestoreInstanceState");
-        super.onRestoreInstanceState(savedInstanceState);
 
+
+    /**
+     * Private Helper Method
+     * Makes URL to access API to get movie info
+     * <p/>
+     * movie should now look like this
+     * http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
+     *
+     * @param context   Context of Application for String id references
+     * @param sortOrder Sort Order required to be constructed into API call
+     * @return URL for themoviedb.org
+     */
+    private static URL makeMovieApiQueryURL(Context context, String sortOrder) {
+        URL url = null; //url to be built
+
+        Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
+                .appendPath(context.getString(R.string.movie_query_movie))
+                .appendPath(sortOrder)
+                .appendQueryParameter(context.getString(R.string.movie_query_key_api_key), context.getString(R.string.api_key))
+                .build();
+
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is " + url);
+        return url;
     }
 
-    @Override
-    protected void onPause() {
-        Log.v(LOG_TAG, "in onPause");
-        super.onPause();
 
+    /**
+     * Used by MainActivityONLY
+     * <p/>
+     * Gets the information needed to start the ReviewAndTrailerUpdateService
+     *
+     * @param context          Application context for accessing Strings
+     * @param movieDetailDbUri The database Uri for one movie
+     */
+    public static void updateOneMovieReviewsAndTrailersFromApi(Context context, Uri movieDetailDbUri) {
+        //For making good use of database Projections specify the columns we need
+        final String[] MOVIE_COLUMNS = {    MovieContract.MovieEntry.COLUMN_API_MOVIE_ID  };
+        // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
+        final int COL_API_MOVIE_ID = 0;
+
+        //Do a database lookup to get the API Id
+        //get cursor for entire database
+        Cursor oneMovieCursor = context.getContentResolver().query(movieDetailDbUri, //get just one row back
+                MOVIE_COLUMNS, //the projection - just the API movie ID in projections
+                null, //selection - select the entire database
+                null, //selection Args
+                null); //sort order (doesn't matter since we're going to go through them all anyway  - order doesn't matter to us
+
+        try {
+            String movieDatabaseId = MovieContract.MovieEntry.getIdFromUri(movieDetailDbUri);//get the movieDatabaseId
+
+            if (oneMovieCursor.moveToFirst()) { //move cursor to first  - if no cursor, don't do API call
+
+                String movieApiId = oneMovieCursor.getString(COL_API_MOVIE_ID); //get the API id of movie
+
+                //now start the ReviewandTrailerUpdateService for the movie returned from cursor
+                Intent intent = new Intent(context, ReviewAndTrailerUpdateService.class);  //make explicit intent for service
+                intent.putExtra(ReviewAndTrailerUpdateService.REVIEW_TRAILER_DB_ID_EXTRA, movieDatabaseId); //put the _ID of local database in
+                intent.putExtra(ReviewAndTrailerUpdateService.REVIEW_TRAILER_API_ID_EXTRA, movieApiId);
+                context.startService(intent);
+            } else {
+                Log.v(LOG_TAG, "updateOneMovieReviewsAndTrailersFromApi - no valid cursor from database");
+            }
+        } finally {
+            oneMovieCursor.close(); //close cursor at the end
+        }
     }
 
-
-    @Override
-    protected void onResume() {
-        Log.v(LOG_TAG, "in onResume");
-        super.onResume();
-    }
-
-
-*/
 
 }

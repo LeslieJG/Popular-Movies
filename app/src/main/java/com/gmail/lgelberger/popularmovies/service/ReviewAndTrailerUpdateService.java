@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import com.gmail.lgelberger.popularmovies.ApiUtility;
 import com.gmail.lgelberger.popularmovies.R;
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
@@ -77,19 +76,19 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         //skip for now - add later
 
         //get URLs for API query
-       /* URL reviewApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, true);
-        URL trailerApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, false);*/
+       /* URL reviewApiQueryUrl = ServiceApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, true);
+        URL trailerApiQueryUrl = ServiceApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, false);*/
         URL reviewApiQueryUrl = makeReviewsAndTrailerAPIQueryURL( apiMovieID, true);
         URL trailerApiQueryUrl = makeReviewsAndTrailerAPIQueryURL(apiMovieID, false);
 
         //start with Reviews - arbitrary choice, but you have to start somewhere
-        String reviewJsonFromApi = ApiUtility.fetchJsonFromApi(reviewApiQueryUrl); //do API call and get JSON
+        String reviewJsonFromApi = ServiceApiUtility.fetchJsonFromApi(reviewApiQueryUrl); //do API call and get JSON
         if (reviewJsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             Log.v(LOG_TAG, "Nothing returned from API call to Reviews");
             // return; //stop the service  --is this a good idea? - better way?
         } //otherwise valid incoming JSON
 
-        String trailerJsonFromApi = ApiUtility.fetchJsonFromApi(trailerApiQueryUrl);
+        String trailerJsonFromApi = ServiceApiUtility.fetchJsonFromApi(trailerApiQueryUrl);
         if (trailerJsonFromApi == null) {
             Log.v(LOG_TAG, "Nothing returned from API call to Trailers");
             // return; //stop the service

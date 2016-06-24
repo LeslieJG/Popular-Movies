@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import com.gmail.lgelberger.popularmovies.ApiUtility;
 import com.gmail.lgelberger.popularmovies.R;
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
@@ -105,7 +104,7 @@ public class PopularMoviesService extends IntentService {
         //   http://api.themoviedb.org/3/movie/top_rated?api_key=[My API Key]
 
         // do API call and load into database*/
-        jsonFromApi = ApiUtility.fetchJsonFromApi(url); //do API call and get JSON
+        jsonFromApi = ServiceApiUtility.fetchJsonFromApi(url); //do API call and get JSON
         if (jsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             return;
         }
