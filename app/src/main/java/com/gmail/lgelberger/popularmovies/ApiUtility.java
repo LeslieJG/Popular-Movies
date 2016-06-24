@@ -136,6 +136,7 @@ public class ApiUtility {
 
 //////////////////////////Used by Review and Trailer Update Service ONLY ////////////////////////////////////////
 
+    //Just moved it over there for now
 
     /**
      * Examples of URL built
@@ -147,7 +148,7 @@ public class ApiUtility {
      * @param makeReviewURL true - make review URL, false - make trailer URL
      * @return URL for Review or Trailer API call based on API MovieID passed in
      */
-    public static URL makeReviewsAndTrailerAPIQueryURL(Context context, String ApiMovieID, Boolean makeReviewURL) {
+   /* public static URL makeReviewsAndTrailerAPIQueryURL(Context context, String ApiMovieID, Boolean makeReviewURL) {
 
         //boolean statement ? true result : false result;
         String reviewOrTrailer = makeReviewURL == true ?
@@ -171,7 +172,7 @@ public class ApiUtility {
         Log.v(LOG_TAG, "In makeReviewsAndTrailerAPIQueryURL, The Query url is " + url);
 
         return url;
-    }
+    }*/
 
 
 
@@ -192,11 +193,7 @@ public class ApiUtility {
      *
      */
     public static void updateDatabaseFromApi(Context context, String movieSortOrderOrMovieApiID) {
-
-        //figure out whether looking at sort order or API movie ID
-        //to do this check to see if it is a number, if yes, then it is API movie ID - get Revies and trailers
         Boolean isConnected = isConnectedToInternet(context);
-
 
         if (isConnected) {
             URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
@@ -206,32 +203,6 @@ public class ApiUtility {
         } else { //no internet connection
             Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
         }
-
-        //check type whether input String is movieSortOrder or MovieAPI ID
-            /*if (TextUtils.isDigitsOnly(movieSortOrderOrMovieApiID)) {  //return digits only - IE it is an API movie ID
-
-
-
-
-                URL reviewsApiQueryUrl = makeReviewsAPIQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
-                startPopularMoviesService(context, reviewsApiQueryUrl);// start downloading the reviews for the desired movie
-                Log.v(LOG_TAG, "starting Reviews API call");
-
-                URL trailersApiQueryUrl = makeTrailersAPIQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
-                startPopularMoviesService(context, trailersApiQueryUrl);// start downloading the trailers for the desired movie
-                Log.v(LOG_TAG, "starting Trailers API call");
-
-*/
-
-/*
-            } else { //it is a sort order URI - update the entire database
-                URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrderOrMovieApiID); //make the API url
-                startPopularMoviesService(context, movieQueryURL);
-                Log.v(LOG_TAG, "starting Sort Order API call");
-            }
-        }else { //no internet connection
-            Toast.makeText(context, "No Internet Connection. Connect to internet and restart app", Toast.LENGTH_LONG).show();
-        }*/
     }
 
 
@@ -329,9 +300,6 @@ public class ApiUtility {
             oneMovieCursor.close(); //close cursor at the end
         }
     }
-
-
-
 
 
 }

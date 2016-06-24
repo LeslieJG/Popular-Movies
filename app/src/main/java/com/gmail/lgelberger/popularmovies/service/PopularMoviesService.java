@@ -20,37 +20,36 @@ import java.net.URL;
 
 /**
  * Created by Leslie on 2016-06-16.
- *
- *
+ * <p/>
+ * <p/>
  * Intent Service doesn't use main thread for task
  * This fetches data from API and loads it into the local database if needed.
  * Service is a context! So can use Context context = this;
- *
+ * <p/>
  * This service is an Android component and MUST be registered in AndroidManifest
- *  <service android:name=".service.PopularMoviesService"/> as a child of the <application> element
+ * <service android:name=".service.PopularMoviesService"/> as a child of the <application> element
  * Over ride Constructor to pass in a Thread name to superclass constructor
  * OverRide onHandleIntent
- *
- *
- *Start the Service with explicit intent using StartService method
+ * <p/>
+ * <p/>
+ * Start the Service with explicit intent using StartService method
  * For more info see:
  * https://developer.android.com/guide/components/services.html
  * https://developer.android.com/guide/topics/manifest/service-element.html
  * https://www.udacity.com/course/viewer#!/c-ud853-nd/l-1614738811/e-1664298683/m-1664298684
- *
- *
- *
+ * <p/>
+ * <p/>
+ * <p/>
  * Get ALL Reviews and Trailers when database updated
  * Will ONlY be called with API Query url
  * http://api.themoviedb.org/3/movie/top_rated?api_key=[My API Key]
  * http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
- *
+ * <p/>
  * WIll need to call API and load data into database.
  * Then it will need to loop through each movie and get it's own list of API movie ID's needed for all 20 movies
  * THen for EACH movie, it will have to make a new intent call (to get a
- *
  */
-public class PopularMoviesService extends IntentService{
+public class PopularMoviesService extends IntentService {
     private final String LOG_TAG = PopularMoviesService.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
     public static final String MOVIE_API_QUERY_EXTRA_KEY = "movie_extra"; //key to retrieve movie query URL from intent
     // - make public static final so that the activity starting intent can use this as extra key for intent.
@@ -73,31 +72,30 @@ public class PopularMoviesService extends IntentService{
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
+     * <p/>
      * //@param name Used to name the worker thread, important only for debugging.
      */
     public PopularMoviesService() { //removed from brackets --> String name
         super("PopularMoviesService"); //pass the name of the worker thread - This must be done when implementing IntentService
         // to the superclass Service - I've named it the same as this class to make debugging easier
-
-       // super(name);
+        // super(name);
     }
 
 
     @Override
-    protected void onHandleIntent(Intent intent) { //Do all your off Thread stuff here - It is the only other thing (other than making constructo)
-        //that is needed for IntentService
+    protected void onHandleIntent(Intent intent) { //Do all your off Thread stuff here -
+        // It is the only other thing (other than making constructor) that is needed for IntentService
 
         String urlAsString = intent.getStringExtra(MOVIE_API_QUERY_EXTRA_KEY);//get the incoming URL as string
         URL url = null;
         try {
-           url = new URL(urlAsString);
+            url = new URL(urlAsString);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         //check to make sure URL passed in, if no URL, no need to do API call
-        if (url == null){
+        if (url == null) {
             Log.e(LOG_TAG, "No URL passed in");
             return; //nothing to do - just exit
         }
@@ -106,125 +104,35 @@ public class PopularMoviesService extends IntentService{
         //   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
         //   http://api.themoviedb.org/3/movie/top_rated?api_key=[My API Key]
 
-
-       // do API call and load into database*/
-        jsonFromApi = ApiUtility.fetchJsonFromApi(url); //do API call and get JSON  LJG -- see if we can use the ApiUtility version of this
+        // do API call and load into database*/
+        jsonFromApi = ApiUtility.fetchJsonFromApi(url); //do API call and get JSON
         if (jsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             return;
         }
 
-
         int rowsDeleted = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null); //delete entire database
         Log.v(LOG_TAG, " - Database deleted after API call"); //for debugging tablet rotated twice
 
-        //ContentValues[] myTempContentValues = new ContentValues[0]; //this is my ContentValues[] with all the movie data in it
         try {
-             ContentValues[] myTempContentValues = getMovieDataFromJson(jsonFromApi);
+            ContentValues[] myTempContentValues = getMovieDataFromJson(jsonFromApi);
             //bulk insert all new stuff
             int numberOfRowsInserted = mContext.getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI,
                     myTempContentValues);
-
 
 
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
 
-
-
-        //now go through the database and get each movie API uri AND each movie _ID and start new intentService calls to ReviewAndTrailerUpdateService
-
-        //stopping this for now. Just going to do it from Detail Fragment
-        // startReviewandTrailerUpdates();
-
-
-
-
-
-    return; //all done nothing more to do in service
+        return; //all done nothing more to do in service
     }
 
-
-
-
-
-
-
-    // LJG ZZZ see if I can use the static method identical to this in ApiUtilities instead!
-   /* private String fetchJsonFromApi(URL apiQueryUrl) {
-        //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
-        String movieJsonStr = null; // Will contain the raw JSON response as a string.
-
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-
-        try {
-            // Create the request to themoviedb.org, and open the connection
-            urlConnection = (HttpURLConnection) apiQueryUrl.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            // Read the input stream into a String
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                buffer.append(line + "\n");
-            }
-
-            if (buffer.length() == 0) {
-                // Stream was empty.  No point in parsing.
-                return null;
-            }
-            movieJsonStr = buffer.toString();
-
-            //return the movie JSON info as String
-            return movieJsonStr; // successful, done here (except for finally block)
-
-        } catch (MalformedURLException e) {
-            //  Toast.makeText(mContext, "Got invalid data from server", Toast.LENGTH_LONG).show();
-            e.printStackTrace(); //the URL was malformed
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the movie data, there's no point in attempting
-            // to parse it.
-            return null;
-        } finally { //disconnect the URL connection and close reader
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
-                }
-            }
-        }
-        // This will only happen if there was an error getting or parsing the movie data. or API delivers nothing
-        return null;
-    }
-
-
-
-*/
 
 
     /**
      * Take the complete string representing the entire initial movie call to themoviedb.org
      * and pull out the data needed for the grid view
-     * <p>
+     * <p/>
      * Put data directly into database
      * (for now, do not check it if is already in database
      * just wipe database first,

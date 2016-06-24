@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -25,6 +26,10 @@ import java.net.URL;
  * <p/>
  * I am assuming that the majority of the data is ALREADY in the database and I can just update entries
  * Make sure this is the case!!!!!
+ * <p/>
+ * Called From MainActivity Just before DetailActivity is created to display the details of ONE movie
+ * This will get the reviews and Trailers (which are separate API calls)
+ * and load the information into the MovieEntry Database
  * <p/>
  * In The Future it might be good to just do the API calls and not load the reviews
  * into the database, but instead using a ResultReciever call-back to the calling Fragment
@@ -72,8 +77,10 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         //skip for now - add later
 
         //get URLs for API query
-        URL reviewApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, true);
-        URL trailerApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, false);
+       /* URL reviewApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, true);
+        URL trailerApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, false);*/
+        URL reviewApiQueryUrl = makeReviewsAndTrailerAPIQueryURL( apiMovieID, true);
+        URL trailerApiQueryUrl = makeReviewsAndTrailerAPIQueryURL(apiMovieID, false);
 
         //start with Reviews - arbitrary choice, but you have to start somewhere
         String reviewJsonFromApi = ApiUtility.fetchJsonFromApi(reviewApiQueryUrl); //do API call and get JSON
@@ -122,6 +129,8 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         return;
     }
 
+
+    //////////////////////////////////Private Helper Methods ////////////////////////////////
 
     // This is tied specifically to the JSON output from our API
     //If TheMovieDB.COM changes its JSON output, this method must change to reflect that.
@@ -205,5 +214,47 @@ public class ReviewAndTrailerUpdateService extends IntentService {
 
         return movieReviewCVFromJSON;
     }
+
+
+    /**
+     * Examples of URL built
+     * http://api.themoviedb.org/3/movie/293660/videos?api_key=[API Key]
+     * http://api.themoviedb.org/3/movie/293660/reviews?api_key=[API Key]
+     *
+     * //@param context Needed for accessing App Strings
+     * @param ApiMovieID API Id of movie
+     * @param makeReviewURL true - make review URL, false - make trailer URL
+     * @return URL for Review or Trailer API call based on API MovieID passed in
+     */
+  //  public static URL makeReviewsAndTrailerAPIQueryURL(Context context, String ApiMovieID, Boolean makeReviewURL) {
+       private URL makeReviewsAndTrailerAPIQueryURL(String ApiMovieID, Boolean makeReviewURL) {
+
+        //boolean statement ? true result : false result;
+        String reviewOrTrailer = makeReviewURL == true ?
+                mContext.getString(R.string.movie_query_reviews) : //if true then  reviews URL string
+                mContext.getString(R.string.movie_query_traliers);//if false then  trailers URL string
+
+        URL url = null; //url to be built
+
+        Uri builtUri = Uri.parse(mContext.getString(R.string.movie_query_url_base)).buildUpon()
+                .appendPath(mContext.getString(R.string.movie_query_movie))
+                .appendPath(ApiMovieID)
+                .appendPath(reviewOrTrailer)
+                .appendQueryParameter(mContext.getString(R.string.movie_query_key_api_key), mContext.getString(R.string.api_key))
+                .build();
+
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.v(LOG_TAG, "In makeReviewsAndTrailerAPIQueryURL, The Query url is " + url);
+
+        return url;
+    }
+
+
+
+
 
 }
