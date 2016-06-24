@@ -25,18 +25,17 @@ import java.net.URL;
  * <p/>
  * I am assuming that the majority of the data is ALREADY in the database and I can just update entries
  * Make sure this is the case!!!!!
- *
+ * <p/>
  * In The Future it might be good to just do the API calls and not load the reviews
  * into the database, but instead using a ResultReciever call-back to the calling Fragment
  * and just load the data directly into the views from API call. This would allow for more than the 3 reviews
  * and 3 trailers currently in the database.
- *
  * <p/>
- *
+ * <p/>
+ * <p/>
  * params
  * Intent comes in with API Id to update
  * Intent comes in with local database _ID column value of movie to update
- *
  */
 public class ReviewAndTrailerUpdateService extends IntentService {
     private final String LOG_TAG = ReviewAndTrailerUpdateService.class.getSimpleName(); //used for logging - to keep the log tag the same as the class name
@@ -60,8 +59,8 @@ public class ReviewAndTrailerUpdateService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         //Get the API movie ID
-        apiMovieID = intent.getStringExtra(REVIEW_TRAILER_API_ID_EXTRA);//get the incoming API movie ID
-        databaseMovieID = intent.getStringExtra(REVIEW_TRAILER_DB_ID_EXTRA); //get the incoming movies _ID in local database
+        apiMovieID = intent.getStringExtra(REVIEW_TRAILER_API_ID_EXTRA);//get the incoming API movie ID - to get the data from API
+        databaseMovieID = intent.getStringExtra(REVIEW_TRAILER_DB_ID_EXTRA); //get the incoming movies _ID in local database to allow for easier updating databse
 
         //check to make sure we have valid data
         if (apiMovieID == null || databaseMovieID == null) {
@@ -73,14 +72,14 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         //skip for now - add later
 
         //get URLs for API query
-        URL reviewApiQueryUrl = ApiUtility.makeReviewsAPIQueryURL(mContext, apiMovieID);
-        URL trailerApiQueryUrl = ApiUtility.makeTrailersAPIQueryURL(mContext, apiMovieID);
+        URL reviewApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, true);
+        URL trailerApiQueryUrl = ApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, false);
 
         //start with Reviews - arbitrary choice, but you have to start somewhere
         String reviewJsonFromApi = ApiUtility.fetchJsonFromApi(reviewApiQueryUrl); //do API call and get JSON
         if (reviewJsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             Log.v(LOG_TAG, "Nothing returned from API call to Reviews");
-           // return; //stop the service  --is this a good idea? - better way?
+            // return; //stop the service  --is this a good idea? - better way?
         } //otherwise valid incoming JSON
 
         String trailerJsonFromApi = ApiUtility.fetchJsonFromApi(trailerApiQueryUrl);
@@ -107,7 +106,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         }
 
         //now we have content values
-        //make one big content values to database update
+        // combine the trailer and review content values together
         ContentValues movieTotalContentValues = reviewContentValues;
         movieTotalContentValues.putAll(trailerContentValues);// add the trailer content values
 
@@ -124,21 +123,21 @@ public class ReviewAndTrailerUpdateService extends IntentService {
     }
 
 
-    // This is tied specidifically to the JSON output from our API
+    // This is tied specifically to the JSON output from our API
     //If TheMovieDB.COM changes its JSON output, this method must change to reflect that.
     private ContentValues getTrailersFromJson(String movieTrailerJsonStr) throws JSONException {
         // These are the names of the JSON objects that need to be extracted.
         final String TMBD_RESULTS = mContext.getString(R.string.movie_json_key_results);
         final String TMDB_TRAILER = mContext.getString(R.string.movie_json_key_youtube_key);
 
-        Log.v(LOG_TAG, "The Trailers JSON is "+ movieTrailerJsonStr);
+        Log.v(LOG_TAG, "The Trailers JSON is " + movieTrailerJsonStr);
 
         ContentValues movieTrailersCVFromJSON = new ContentValues(); // Make the Content Values that will be updating database rows
         //assume no Reviews - so load up with NoReviews for all
         // String noTrailers = "No Reviews Yet";
         movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, (String) null);
-        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2,(String) null);
-        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3,(String) null);
+        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, (String) null);
+        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, (String) null);
 
 
         //check to see if anything came in as a JSON string
@@ -163,24 +162,10 @@ public class ReviewAndTrailerUpdateService extends IntentService {
                     break;
             }
         }
-
-
-
-
-
-            //I will manually put in the content values without a FOR loop for now
-      /*  JSONObject movieTrailer1 = movieTrailerArray.getJSONObject(0);
-        JSONObject movieTrailer2 = movieTrailerArray.getJSONObject(1);
-        JSONObject movieTrailer3 = movieTrailerArray.getJSONObject(2);
-
-        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, movieTrailer1.getString(TMDB_TRAILER));
-        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, movieTrailer2.getString(TMDB_TRAILER));
-        movieTrailersCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, movieTrailer3.getString(TMDB_TRAILER));
-*/
         return movieTrailersCVFromJSON;
     }
 
-    // This is tied specidifically to the JSON output from our API
+    // This is tied specifically to the JSON output from our API
     //If TheMovieDB.COM changes its JSON output, this method must change to reflect that.
     private ContentValues getReviewsFromJson(String movieReviewJsonStr) throws JSONException {
         // These are the names of the JSON objects that need to be extracted.
@@ -188,22 +173,12 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         final String TMDB_AUTHOR = mContext.getString(R.string.movie_json_key_review_author);
         final String TMDB_CONTENT = mContext.getString(R.string.movie_json_key_review_content);
 
-        Log.v(LOG_TAG, "The Reviews JSON is "+ movieReviewJsonStr);
+        Log.v(LOG_TAG, "The Reviews JSON is " + movieReviewJsonStr);
 
         ContentValues movieReviewCVFromJSON = new ContentValues(); // Make the Content Values that will be updating database rows
-       /* //assume no Reviews - so load up with NoReviews for all
-        String noReviews = "No Reviews Yet";
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, noReviews);
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, noReviews);
 
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR,noReviews);
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, noReviews);
-
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR,noReviews);
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, noReviews);
-*/
         //only load up the reviews if the incoming ReviewJSON string is valid
-        if (movieReviewJsonStr != null){
+        if (movieReviewJsonStr != null) {
             JSONObject movieJSON = new JSONObject(movieReviewJsonStr); //create JSON object from input string
             JSONArray movieReviewArray = movieJSON.getJSONArray(TMBD_RESULTS); //create JSON array of reviews
             //NB Some arrays may be zero in size
@@ -228,42 +203,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
             }
         }
 
-
-
-
-           /* case 0: //no reviews - make all Content Values say "no Reviews)
-                break;
-            case 1: //overwrite just the first review
-                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, movieReviewArray.getJSONObject(0).getString(TMDB_AUTHOR));
-                movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, movieReviewArray.getJSONObject(0).getString(TMDB_CONTENT));
-                break;
-            case 2: //overwrite the second review AND the first review
-
-
-                break;*/
-
-
-
-        //below commented out - wasn't able to deal with different review sizes
-
-
-        //I will manually put in the content values without a FOR loop for now
-        /*JSONObject movieReview1 = movieReviewArray.getJSONObject(0);
-        JSONObject movieReview2 = movieReviewArray.getJSONObject(1);
-        JSONObject movieReview3 = movieReviewArray.getJSONObject(2);
-
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, movieReview1.getString(TMDB_AUTHOR));
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, movieReview1.getString(TMDB_CONTENT));
-
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR, movieReview2.getString(TMDB_AUTHOR));
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, movieReview2.getString(TMDB_CONTENT));
-
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR, movieReview3.getString(TMDB_AUTHOR));
-        movieReviewCVFromJSON.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, movieReview3.getString(TMDB_CONTENT));
-
-*/
-
-
         return movieReviewCVFromJSON;
     }
+
 }

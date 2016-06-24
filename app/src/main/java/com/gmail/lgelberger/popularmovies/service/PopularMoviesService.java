@@ -55,10 +55,8 @@ public class PopularMoviesService extends IntentService{
     public static final String MOVIE_API_QUERY_EXTRA_KEY = "movie_extra"; //key to retrieve movie query URL from intent
     // - make public static final so that the activity starting intent can use this as extra key for intent.
 
-
     Context mContext = this; //explicitly state context - allows for easier porting from AsyncTask to Service
     String jsonFromApi; //just adding this to hold JSON string returned from API call - perhaps it will be changed on refactoring
-
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections specify the columns we need
@@ -71,8 +69,6 @@ public class PopularMoviesService extends IntentService{
     static final int COL_MOVIE_ID = 0;
     static final int COL_API_MOVIE_ID = 1;
     /////////////////////////////////////////////////////////
-
-
 
 
     /**

@@ -136,31 +136,30 @@ public class ApiUtility {
 
 //////////////////////////Used by Review and Trailer Update Service ONLY ////////////////////////////////////////
 
-//   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
-    //   http://api.themoviedb.org/3/movie/top_rated?api_key=547bc9d14e2d25a3e3429d2f7c8292db
-    // OR the other types
-    //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=547bc9d14e2d25a3e3429d2f7c8292db
-    //
-    //  http://api.themoviedb.org/3/movie/293660/videos?api_key=547bc9d14e2d25a3e3429d2f7c8292db
-    //
-
-
-    //  http://api.themoviedb.org/3/movie/293660/reviews?api_key=547bc9d14e2d25a3e3429d2f7c8292db
 
     /**
-     * Used by Review and Trailer Update Service ONLY
-     * @param context
-     * @param movieID
-     * @return
+     * Examples of URL built
+     * http://api.themoviedb.org/3/movie/293660/videos?api_key=[API Key]
+     * http://api.themoviedb.org/3/movie/293660/reviews?api_key=[API Key]
+     *
+     * @param context Needed for accessing App Strings
+     * @param ApiMovieID API Id of movie
+     * @param makeReviewURL true - make review URL, false - make trailer URL
+     * @return URL for Review or Trailer API call based on API MovieID passed in
      */
-    public static URL makeReviewsAPIQueryURL(Context context, String movieID) {
-        // public static URL makeReviewsAPIQueryURL(String movieID){
+    public static URL makeReviewsAndTrailerAPIQueryURL(Context context, String ApiMovieID, Boolean makeReviewURL) {
+
+        //boolean statement ? true result : false result;
+        String reviewOrTrailer = makeReviewURL == true ?
+                context.getString(R.string.movie_query_reviews) : //if true then  reviews URL string
+                context.getString(R.string.movie_query_traliers);//if false then  trailers URL string
+
         URL url = null; //url to be built
 
         Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
                 .appendPath(context.getString(R.string.movie_query_movie))
-                .appendPath(movieID)
-                .appendPath(context.getString(R.string.movie_query_reviews))
+                .appendPath(ApiMovieID)
+                .appendPath(reviewOrTrailer)
                 .appendQueryParameter(context.getString(R.string.movie_query_key_api_key), context.getString(R.string.api_key))
                 .build();
 
@@ -169,39 +168,11 @@ public class ApiUtility {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.v(LOG_TAG + "MakeReviewsAPIQueryURL", "The Query url is " + url);
+        Log.v(LOG_TAG, "In makeReviewsAndTrailerAPIQueryURL, The Query url is " + url);
 
         return url;
     }
 
-
-    //  http://api.themoviedb.org/3/movie/293660/videos?api_key=547bc9d14e2d25a3e3429d2f7c8292db
-
-    /**
-     * Used by ReviewAndTrailerUpdateService ONLY
-     * @param context
-     * @param movieID
-     * @return
-     */
-    public static URL makeTrailersAPIQueryURL(Context context, String movieID) {
-        URL url = null; //url to be built
-
-        Uri builtUri = Uri.parse(context.getString(R.string.movie_query_url_base)).buildUpon()
-                .appendPath(context.getString(R.string.movie_query_movie))
-                .appendPath(movieID)
-                .appendPath(context.getString(R.string.movie_query_traliers))
-                .appendQueryParameter(context.getString(R.string.movie_query_key_api_key), context.getString(R.string.api_key))
-                .build();
-
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        Log.v(LOG_TAG + "MakeTrailersAPIQueryURL", "The Query url is " + url);
-
-        return url;
-    }
 
 
 /////////////////////////////Used by Main Activity ONLY //////////////////////////////////////////////////////////
