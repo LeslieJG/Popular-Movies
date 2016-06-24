@@ -4,10 +4,10 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.gmail.lgelberger.popularmovies.ApiUtility;
 import com.gmail.lgelberger.popularmovies.R;
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
@@ -15,11 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -117,7 +112,7 @@ public class PopularMoviesService extends IntentService{
 
 
        // do API call and load into database*/
-        jsonFromApi = doApiCall(url); //do API call and get JSON  LJG -- see if we can use the ApiUtility version of this
+        jsonFromApi = ApiUtility.doApiCall(url); //do API call and get JSON  LJG -- see if we can use the ApiUtility version of this
         if (jsonFromApi == null) { //do nothing - nothing returned from API call - no database loading needed
             return;
         }
@@ -154,71 +149,13 @@ public class PopularMoviesService extends IntentService{
     }
 
 
-/*
-WIll be deleting this from here
-running it just from Api Utitilies (called from Main Activity)
-That way only updating reviews/trailers as needed
- */
-    //now go through the database and get each movie API uri AND each movie _ID and start new intentService calls to ReviewAndTrailerUpdateService
-    private void startReviewandTrailerUpdates() {
-
-        String[] projection = MOVIE_COLUMNS;
-
-
-        String selection = null;
-
-        //get cursor for entire database
-        Cursor entireDatabaseCursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, //get entire table back
-                MOVIE_COLUMNS, //the projection - very important to have this!
-                null, //selection - select the entire database
-                null, //selection Args
-                null); //sort order (doesn't matter since we're going to go through them all anyway  - order doesn't matter to us
-
-
-      /* if (entireDatabaseCursor.moveToFirst() == false){
-           Log.v(LOG_TAG, "start ReviewandTrailerUpdates, nothing returned from database");
-       }*/
-
-        try {
-            while (entireDatabaseCursor.moveToNext()) { //iterate through entire cursor
-
-                String movieDatabaseId = entireDatabaseCursor.getString(COL_MOVIE_ID);
-                String movieApiId = entireDatabaseCursor.getString(COL_API_MOVIE_ID);
-
-                //now start the ReviewandTrailerUpdateService for EACH movie returned from cursor
-                Intent intent = new Intent(mContext, ReviewAndTrailerUpdateService.class);  //make explicit intent for service
-                intent.putExtra(ReviewAndTrailerUpdateService.REVIEW_TRAILER_DB_ID_EXTRA, movieDatabaseId); //put the _ID of local database in
-                intent.putExtra(ReviewAndTrailerUpdateService.REVIEW_TRAILER_API_ID_EXTRA, movieApiId);
-                mContext.startService(intent);
-            }
-        } finally {
-            entireDatabaseCursor.close(); //close cursor at the end
-        }
-
-        //go through each row
-        //in each row extrac _ID and Api_Id and start a new ReviewAndTrailerUpdateService
-
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
 
 
 
 
 
     // LJG ZZZ see if I can use the static method identical to this in ApiUtilities instead!
-    private String doApiCall(URL apiQueryUrl) {
+   /* private String doApiCall(URL apiQueryUrl) {
         //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
         String movieJsonStr = null; // Will contain the raw JSON response as a string.
 
@@ -285,7 +222,7 @@ That way only updating reviews/trailers as needed
 
 
 
-
+*/
 
 
     /**

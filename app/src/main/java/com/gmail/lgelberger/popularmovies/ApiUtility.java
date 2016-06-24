@@ -45,8 +45,89 @@ public class ApiUtility {
     /////////////////////////////////////////////////////////
 
 
+////////////////////////Only Method Used by Two Classes//////////////////////////
+    /*
+  USed by ReviewAndTrailerUpdateService and PopularMoviesService
+
+  Trying to put doAPI Call here - It should ALWAYS be called from within a separate Service or AsyncTask
+  i.e. OFF the main thread
+   */
+    public static String doApiCall(URL apiQueryUrl) {
+        Log.v(LOG_TAG, "doApiCall - doing it now");
+        //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
+        String movieJsonStr = null; // Will contain the raw JSON response as a string.
+
+        // These two need to be declared outside the try/catch
+        // so that they can be closed in the finally block.
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        try {
+            // Create the request to themoviedb.org, and open the connection
+            urlConnection = (HttpURLConnection) apiQueryUrl.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            // Read the input stream into a String
+            InputStream inputStream = urlConnection.getInputStream();
+            StringBuffer buffer = new StringBuffer();
+            if (inputStream == null) {
+                // Nothing to do.
+                return null;
+            }
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                // But it does make debugging a *lot* easier if you print out the completed
+                // buffer for debugging.
+                buffer.append(line + "\n");
+            }
+
+            if (buffer.length() == 0) {
+                // Stream was empty.  No point in parsing.
+                return null;
+            }
+            movieJsonStr = buffer.toString();
+
+            //return the movie JSON info as String
+            return movieJsonStr; // successful, done here (except for finally block)
+
+        } catch (MalformedURLException e) {
+            //  Toast.makeText(mContext, "Got invalid data from server", Toast.LENGTH_LONG).show();
+            e.printStackTrace(); //the URL was malformed
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error ", e);
+            // If the code didn't successfully get the movie data, there's no point in attempting
+            // to parse it.
+            return null;
+        } finally { //disconnect the URL connection and close reader
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e(LOG_TAG, "Error closing stream", e);
+                }
+            }
+        }
+        // This will only happen if there was an error getting or parsing the movie data. or API delivers nothing
+        return null;
+    }
 
 
+
+
+
+
+
+
+
+
+//////////////////////////Used by Review and Trailer Update Service ONLY ////////////////////////////////////////
 
 //   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
     //   http://api.themoviedb.org/3/movie/top_rated?api_key=547bc9d14e2d25a3e3429d2f7c8292db
@@ -116,6 +197,7 @@ public class ApiUtility {
     }
 
 
+/////////////////////////////Used by Main Activity ONLY //////////////////////////////////////////////////////////
 
 
     /**
@@ -272,86 +354,6 @@ public class ApiUtility {
 
 
 
-
-/*
-
-    public static int getTypeOfApiQuery(URL url){
-
-    }
-*/
-
-
-    /*
-    USed ONLY by ReviewAndTrailerUpdateService
-    BUT!!!!!! PopularMoviesService used an IDENTICAL method - it should use this one instead!!!!
-    Trying to put doAPI Call here - It should ALWAYS be called from within a separate Service or AsyncTask
-    i.e. OFF the main thread
-     */
-    public static String doApiCall(URL apiQueryUrl) {
-        Log.v(LOG_TAG, "doApiCall - doing it now");
-        //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
-        String movieJsonStr = null; // Will contain the raw JSON response as a string.
-
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-
-        try {
-            // Create the request to themoviedb.org, and open the connection
-            urlConnection = (HttpURLConnection) apiQueryUrl.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            // Read the input stream into a String
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                buffer.append(line + "\n");
-            }
-
-            if (buffer.length() == 0) {
-                // Stream was empty.  No point in parsing.
-                return null;
-            }
-            movieJsonStr = buffer.toString();
-
-            //return the movie JSON info as String
-            return movieJsonStr; // successful, done here (except for finally block)
-
-        } catch (MalformedURLException e) {
-            //  Toast.makeText(mContext, "Got invalid data from server", Toast.LENGTH_LONG).show();
-            e.printStackTrace(); //the URL was malformed
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the movie data, there's no point in attempting
-            // to parse it.
-            return null;
-        } finally { //disconnect the URL connection and close reader
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
-                }
-            }
-        }
-        // This will only happen if there was an error getting or parsing the movie data. or API delivers nothing
-        return null;
-    }
 
 
 }
