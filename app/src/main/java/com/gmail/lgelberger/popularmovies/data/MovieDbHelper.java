@@ -96,28 +96,36 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 // forecasting, it's reasonable to assume the user will want information
                 // for a certain date and all dates *following*, so the forecast data
                 // should be sorted accordingly.
-                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //don't think I need AUTOINCREMENT ? It just limits the number of movies stored in database - but that limit is huge 10^19
-                MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
+                MovieContract.FavouriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //don't think I need AUTOINCREMENT ? It just limits the number of movies stored in database - but that limit is huge 10^19
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
                 //  MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + "  INTEGER NOT NULL UNIQUE, " + //ensuring I only have one row for each single movie
-                MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_URL + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
-                //figure out how to store the damn poster image itself
-                MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_PLOT_SYNOPSIS + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " TEXT NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
 
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2 + " TEXT , " +
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3 + " TEXT , " +
-                MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
-                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
-                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2 + " TEXT , " +
-                MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3 + " TEXT  " +
-                ");";
+                // MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID + "  INTEGER NOT NULL UNIQUE, " + //ensuring I only have one row for each single movie
+              //  MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID + "  INTEGER NOT NULL , " + //ensuring I only have one row for each single movie
+                MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID + "  INTEGER UNIQUE ON CONFLICT REPLACE , " + //ensuring I only have one row for each single movie
+
+
+
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_URL + " TEXT NOT NULL, " +
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
+                //figure out how to store the damn poster image itself
+                MovieContract.FavouriteEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, " +
+                MovieContract.FavouriteEntry.COLUMN_PLOT_SYNOPSIS + " TEXT NOT NULL, " +
+                MovieContract.FavouriteEntry.COLUMN_VOTE_AVERAGE + " TEXT NOT NULL, " +
+                MovieContract.FavouriteEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2 + " TEXT , " +
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3 + " TEXT , " +
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR + " TEXT , " +  //I'm allowing this to be null if needed
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_2 + " TEXT , " +
+                MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3 + " TEXT  " +
+
+               // " UNIQUE (" + MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID  + ") ON CONFLICT REPLACE);";
+               ");";
 
 
 

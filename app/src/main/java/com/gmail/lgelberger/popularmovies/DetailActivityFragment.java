@@ -561,6 +561,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                     //can delete above, just remember to move mCursor to first.
                     DatabaseUtils.cursorRowToContentValues(mCursor, movieTotalContentValues); //LJG ZZZ currently erroring off find out why!
 
+                    //LJG ZZZ  do I need to strip out the _id tag too???? probabaly
+                    //strip out the _ID tag so that the _ID tag will be created by favourites database
+                    movieTotalContentValues.remove(MovieContract.FavouriteEntry._ID);
+
+
                     //then insert the row
 
                     if (movieTotalContentValues != null){
