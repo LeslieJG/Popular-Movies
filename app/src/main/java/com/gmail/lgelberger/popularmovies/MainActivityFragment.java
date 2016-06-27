@@ -225,12 +225,29 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 // if it cannot seek to that position.
                 Cursor selectedMoviecursor = (Cursor) adapterView.getItemAtPosition(gridItemClicked);
 
+                Uri detailMovieUri;
+
+
                 if (selectedMoviecursor != null) {
                     Long detailMovieDatabaseID = selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
 
                     //LJG BUILD the detail URI from the correct Table depending on current sort order!
+                    switch (sortOrder){
+                        case FAVOURITES:
+                            detailMovieUri = MovieContract.FavouriteEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
+                            break;
+                        case MOST_POPULAR:
+                        case HIGHEST_RATED:
+                            detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
+                            break;
+                        default:
+                            Log.v(LOG_TAG, "in Onclick  - there is a big problem! Sort order is not valid, it is " + sortOrder);
+                            return;
+                    }
 
-                    Uri detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
+
+
+
 
                     movieListener.OnMovieSelected(detailMovieUri);//pass the URI to containing activity
                     // which will then pass it on to the detail activity or fragment depending on the layout
@@ -314,7 +331,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
-            if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
+            if (key.equals(getContext().getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
                 String movieSortOrder = prefs.getString(key, "");
 
                 Log.v(LOG_TAG, "in MainActivityFragment PrefChangeListener - sort order is now " + movieSortOrder);
