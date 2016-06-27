@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +32,23 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     OnMovieSelectedListener movieListener; //refers to the containing activity of this fragment.
     // We will pass the selected movie Uri through this listener to the containing activity to deal with
 
+    ///////////////////////////
+    //need to access shared pref to look at sort order
+    // String MOVE_SORT_ORDER_KEY = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
+
+    //store sort order as local variable
+    //String sortOrder = null; // for storing sort order from changed preferences. Needed to decided which database to use
+    int sortOrder = 0; //default value
+    final static int MOST_POPULAR = 1;
+    final static int HIGHEST_RATED = 2;
+    final static int FAVOURITES = 3;
+
+    // do switch statements when needed off sort order
+
+
+    ////////////////////////////////////
+
+
     int mGridItemSelected = GridView.INVALID_POSITION; //to hold current position to place grid at proper position after rotation
     private final String SELECTED_KEY = "selected_position"; //key for storing mGridItemSelected into savedInstanceState
     GridView gridView = null; //making a reference to the GridView
@@ -40,8 +58,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
+    SharedPreferences sharedPref; //declaring shared pref here
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here,
+
+
     //Step 1/3 of making Cursor Loader - Create Loader ID
     private static final int MOVIE_LOADER = 0;
+
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections specify the columns we need
@@ -66,7 +89,31 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3,
     };
 
-    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
+    //identical to above just with FavouriteEntry column names
+    //prehaps make this a part of a projection map at some point?
+    private static final String[] FAVOURITE_COLUMNS = {
+            MovieContract.FavouriteEntry._ID,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE,
+            MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_URL,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER,
+            MovieContract.FavouriteEntry.COLUMN_ORIGINAL_TITLE,
+            MovieContract.FavouriteEntry.COLUMN_PLOT_SYNOPSIS,
+            MovieContract.FavouriteEntry.COLUMN_VOTE_AVERAGE,
+            MovieContract.FavouriteEntry.COLUMN_RELEASE_DATE,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_1,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_2,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3,
+    };
+
+    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS or FAVOURITE COLUMNS changes, these must change.
+    //I'm using the same Indices for both projection string arrays above
     static final int COL_MOVIE_ID = 0;
     static final int COL_MOVIE_TITLE = 1;
     static final int COL_API_MOVIE_ID = 2;
@@ -81,7 +128,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     static final int COL_MOVIE_REVIEW_2 = 11;
     static final int COL_MOVIE_REVIEW_2_AUTHOR = 12;
     static final int COL_MOVIE_REVIEW_3 = 13;
-    static final int COL_MOVIE_REVIEW_3_AUTHOR =14;
+    static final int COL_MOVIE_REVIEW_3_AUTHOR = 14;
     static final int COL_MOVIE_VIDEO_1 = 15;
     static final int COL_MOVIE_VIDEO_2 = 16;
     static final int COL_MOVIE_VIDEO_3 = 17;
@@ -149,6 +196,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -179,6 +227,9 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
                 if (selectedMoviecursor != null) {
                     Long detailMovieDatabaseID = selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
+
+                    //LJG BUILD the detail URI from the correct Table depending on current sort order!
+
                     Uri detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
 
                     movieListener.OnMovieSelected(detailMovieUri);//pass the URI to containing activity
@@ -210,8 +261,107 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
             Log.v(LOG_TAG, "Retrieved mGridItemFirstVisiblePosition - it is " + mGridItemFirstVisiblePosition);
         }
 
+
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext()); //initializing sharedPref
+        //get default shared pref doesn't require a file name - it goes for the default file name
+
+        //registering a shared Pref listener
+        //get default shared pref doesn't require a file name - it goes for the default file name
+        // prefListener = new MyPreferenceChangeListener();
+
+
+        /*sharedPref.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+                String movieSortOrderKey = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
+              //  SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+              //  String sortOrderFromPref = preferences.getString(movieSortOrderKey, null); //optional default value set to null
+                Log.v(LOG_TAG, "Shared Preferences changed - they are now " + sharedPreferences.getString(movieSortOrderKey, null));
+
+                sortOrder = getSortOrderFromPreferences(); //set the sort order from preferences to one of the final int values
+                restartTheCursorLoader(); //restarts the loader to do a new content provider query
+
+            }
+        }); //registering the listener to allow for API calls when sort order changes
+*/
+        prefListener = new MyPreferenceChangeListener();
+        // sharedPref.registerOnSharedPreferenceChangeListener(new MyPreferenceChangeListener());
+        sharedPref.registerOnSharedPreferenceChangeListener(prefListener);
+
+
+        sortOrder = getSortOrderFromPreferences(); //set the sort order from preferrences to one of the final int values
+
+
         return rootView;
     }
+
+
+    //Helper method to restart the cursor loader if sort order has changed
+    private void restartTheCursorLoader() {
+        //if preferences change restart the cursorloader so it can point to the correct database table
+        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);  //Loader ID, optional Bundle, Object that implements the loader callbacks
+
+    }
+
+
+    /**
+     * My Own OnSharedPreferenceChangeListener
+     * Put on it's own for easier debugging
+     * updates Movie Images if movie sort order is changed in settings
+     */
+    private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
+            if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
+                String movieSortOrder = prefs.getString(key, "");
+
+                Log.v(LOG_TAG, "in MainActivityFragment PrefChangeListener - sort order is now " + movieSortOrder);
+                //update database if sort order is  "popular" or "top rated" and NOT Favourites
+                // updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
+
+                sortOrder = getSortOrderFromPreferences(); //set the sort order from preferences to one of the final int values
+                restartTheCursorLoader(); //restarts the loader to do a new content provider query
+
+            }
+        }
+    }
+
+
+    /*
+    Private helper method to get the sort order constants from Shared Preferences
+
+     */
+    private int getSortOrderFromPreferences() {
+
+
+        // Find out shared preferences for movie sort order - to decided which URI to use to query content provider
+        String movieSortOrderKey = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String sortOrderFromPref = preferences.getString(movieSortOrderKey, null); //optional default value set to null
+
+        int sortOrder;
+
+        if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_popular))) {
+            sortOrder = this.MOST_POPULAR;
+        } else if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_top_rated))) {
+            sortOrder = this.HIGHEST_RATED;
+        } else if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_favourites))) {
+            sortOrder = this.FAVOURITES;
+        } else {
+            //  Log.v(LOG_TAG, "sort order from Prefs not valid. It is "+ sortOrderFromPref);
+            sortOrder = 0;
+        }
+        Log.v(LOG_TAG, "in getSortOrderFromPreferences - sort order from Prefs is " + sortOrderFromPref + " --> and the sortOrder is set to " + sortOrder);
+
+
+        return sortOrder;
+
+    }
+
+    ;
+
 
     /*
     need to store grid position that is selected so can recover to that location in the grid after rotation
@@ -239,6 +389,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     // Must be in onCreate in Activity or onActivityCreated in Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.v(LOG_TAG, "in onActivityCreated - should I look for and update the sort order here?");
         getLoaderManager().initLoader(MOVIE_LOADER, null, this);  //Loader ID, optional Bundle, Object that implements the loader callbacks
         super.onActivityCreated(savedInstanceState);
     }
@@ -250,15 +401,37 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     //Returns a cursor Loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Sort order:  Ascending, by _ID - the order they were put into database.
-        String sortOrder = MovieContract.MovieEntry._ID + " ASC";
+        String dbSortOrder; //to store the sort order of the cursor
 
-        return new CursorLoader(getActivity(),
-                MovieContract.MovieEntry.CONTENT_URI, //get entire table back
-                MOVIE_COLUMNS, //the projection - very important to have this!
-                null,
-                null,
-                sortOrder);
+        //create the loader depending on what the sort order is currently set to.
+        switch (sortOrder) {
+            case FAVOURITES: //if Favourites, make cursor from Favourites
+                // Sort order:  Ascending, by _ID - the order they were put into database.
+                dbSortOrder = MovieContract.FavouriteEntry._ID + " ASC";
+                return new CursorLoader(getActivity(),
+                        MovieContract.FavouriteEntry.CONTENT_URI, //get entire table back
+                        FAVOURITE_COLUMNS, //the projection - very important to have this!
+                        null,
+                        null,
+                        dbSortOrder);
+
+            case MOST_POPULAR: //if either most popular OR Highest Rated - make cursor from MovieEntry
+            case HIGHEST_RATED:
+                // Sort order:  Ascending, by _ID - the order they were put into database.
+                dbSortOrder = MovieContract.MovieEntry._ID + " ASC";
+
+                return new CursorLoader(getActivity(),
+                        MovieContract.MovieEntry.CONTENT_URI, //get entire table back
+                        MOVIE_COLUMNS, //the projection - very important to have this!
+                        null,
+                        null,
+                        dbSortOrder);
+
+        }
+
+        Log.v(LOG_TAG, "In onCreateLoader - sortOrder can't be determined. It is " + sortOrder);
+        return null; //if this happens something went wrong
+
     }
 
     //update UI once data is ready
@@ -305,6 +478,27 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         movieAdapter.swapCursor(null);
     }
 
+
+
+
+   /* *//**
+     * My Own OnSharedPreferenceChangeListener
+     * Put on it's own for easier debugging
+     * updates Movie Images if movie sort order is changed in settings
+     *//*
+    private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
+            if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
+                movieSortOrder = prefs.getString(key, "");
+
+                //update database if sort order is  "popular" or "top rated" and NOT Favourites
+                updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
+            }
+        }
+    }
+    */
 
 }
 

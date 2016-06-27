@@ -22,6 +22,7 @@ import com.gmail.lgelberger.popularmovies.service.ReviewAndTrailerUpdateService;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.OnMovieSelectedListener {
 
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here, to be able
+
+    private String movieSortOrder; //to hold a reference to current sort order preferrence
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         //update sort order from shared Pref and do API call to get movie data from database if needed
         if (savedInstanceState == null) { //if app is being run for the first time this session
             String MOVIE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key); //get the sort order from preferences
-            String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
+          //  String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
+            movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
+
 
             updateDatabaseFromApiIfNeeded(this, movieSortOrder); //update the database with new API call if needed
             Log.v(LOG_TAG, "savedInstanceState is NULL - Doing API call!!!! SHould I really be doing this?");
@@ -108,8 +113,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
             if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
-                String movieSortOrder = prefs.getString(key, "");
+                movieSortOrder = prefs.getString(key, "");
 
+                Log.v(LOG_TAG, "in MainActivity PrefChangeListener - sort order is now " + movieSortOrder);
                 //update database if sort order is  "popular" or "top rated" and NOT Favourites
                 updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
             }
@@ -194,12 +200,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     private void updateDatabaseFromApiIfNeeded(Context context, String movieSortOrder) {
 
         //Check to see if we need to do API call
-        if (movieSortOrder == (getString(R.string.movie_query_favourites))) { //if sort order is favourites
+       // if (movieSortOrder == (getString(R.string.movie_query_favourites))) { //if sort order is favourites
+        if (movieSortOrder.equals(getString(R.string.movie_query_favourites))) { //if sort order is favourites
+
+
             //No need to do api call as favourites are stored locally
             Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder + " so NOT doing API call");
             return;
         }
 
+        Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder);
 
         //check internet connectivity
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -215,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             intent.putExtra(PopularMoviesService.MOVIE_API_QUERY_EXTRA_KEY, //put extra with key MOVIE_API_QUERY_EXTRA_KEY
                     movieQueryURLAsString); //put in the movieQueryURL -
             context.startService(intent);
+            Log.v(LOG_TAG, "in updateDatabaseFromApiIfNeeded, starting PopularMoviesService");
 
             //Log.v(LOG_TAG, "starting Sort Order API call");
         } else { //no internet connection
@@ -248,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.v(LOG_TAG + "POP MakeMovieQueryURL", "The Query url is " + url);
+        Log.v(LOG_TAG, "In makeMovieApiQueryURL, The Query url is " + url);
         return url;
     }
 
@@ -262,6 +273,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      * @param movieDetailDbUri The database Uri for one movie
      */
     public static void updateOneMovieReviewsAndTrailersFromApi(Context context, Uri movieDetailDbUri) {
+
+      //only update Reviews and Movies if the movieDetailDbUri is from MovieEntry table (which is the API called table)
+        //and NOT the favouriteEntry Table URI
+        //if it is the Favourite entry, then do nothing - do NOT procede any further
+        List<String> uriPathSegments = movieDetailDbUri.getPathSegments();
+        if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)){ //don't need to update favourites
+           Log.v(LOG_TAG, "in updateOneMovieReviewsAndTrailersFromApi - NOT doing api call as movieDetailDbUri is "+ movieDetailDbUri.toString());
+            return; //don't do API call
+
+        }
+
+
         //For making good use of database Projections specify the columns we need
         final String[] MOVIE_COLUMNS = {MovieContract.MovieEntry.COLUMN_API_MOVIE_ID};
         // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.

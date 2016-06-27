@@ -122,7 +122,31 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3,
     };
 
-    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
+    //identical to above just with FavouriteEntry column names
+    //prehaps make this a part of a projection map at some point?
+    private static final String[] FAVOURITE_COLUMNS = {
+            MovieContract.FavouriteEntry._ID,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE,
+            MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_URL,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER,
+            MovieContract.FavouriteEntry.COLUMN_ORIGINAL_TITLE,
+            MovieContract.FavouriteEntry.COLUMN_PLOT_SYNOPSIS,
+            MovieContract.FavouriteEntry.COLUMN_VOTE_AVERAGE,
+            MovieContract.FavouriteEntry.COLUMN_RELEASE_DATE,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2_AUTHOR,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3_AUTHOR,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_1,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_2,
+            MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3,
+    };
+
+    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS or FAVOURITE COLUMNS changes, these must change.
+    //I'm using the same Indices for both projection string arrays above
     static final int COL_MOVIE_ID = 0;
     static final int COL_MOVIE_TITLE = 1;
     static final int COL_API_MOVIE_ID = 2;
