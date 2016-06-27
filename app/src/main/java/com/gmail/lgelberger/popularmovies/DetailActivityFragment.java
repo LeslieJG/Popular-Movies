@@ -1,8 +1,10 @@
 package com.gmail.lgelberger.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +26,8 @@ import android.widget.TextView;
 
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 /**
  * This Displays the movie details including a poster and other text details
@@ -48,6 +52,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     static final String MOVIE_DETAIL_URI = "MOVIE_DETAIL_URI"; // Movie Detail URI key (for getting arguments from fragment)
     private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
 
+    private Cursor mCursor;
+
+
     // private static final int BUTTON_1_ID = 1;
 
     //////Adding the views
@@ -57,6 +64,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView mPlotSynopsisView;
     private TextView mVoteAverageView;
     private TextView mReleaseDateView;
+
+    private Button mAddToFavouritesButton;
+    final static int BUTTON_ADD_TO_REVIEWS = 200;
 
     //Review views
     LinearLayout mReviewsContainer;
@@ -88,6 +98,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     final static int BUTTON_2_ID = 401;
     final static int BUTTON_3_ID = 402;
 
+
+
     //For YouTube movie Id keys - to play trailers
     private String mTrailerYoutubeKey1;
     private String mTrailerYoutubeKey2;
@@ -98,6 +110,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     final static int TRAILERS_TITLE_ID = 500;
     private TextView mReviewsTitle;
     final static int REVIEWS_TITLE_ID = 501;
+
+    String[] projection; //to store the appropriate content provider projection, either MOVIE_COLUMNS or FAVOURITE_COLUMNS
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections specify the columns we need
@@ -184,7 +198,23 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             //the movieQueryUri of the form content://com.gmail.lgelberger.popularmovies/movie/182
             //and is the Uri to our local content provider to look up movie details in the local database
             //need to make this an API call, so we need to use this URI to look up in the database what the API call ID is!
+
+
+            //decide which content provider URI we are using and set the projections accordingly
+            List<String> uriPathSegments = movieQueryUri.getPathSegments();
+            if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)){ //don't need to update favourites
+                projection = FAVOURITE_COLUMNS;
+            } else if (uriPathSegments.contains(MovieContract.PATH_MOVIE)) {
+                projection = MOVIE_COLUMNS;
+            } else {
+                Log.e(LOG_TAG, "invalid Detail URI passed in as argument");
+            }
+
         }
+
+
+
+
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragement
 
@@ -194,6 +224,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mPlotSynopsisView = ((TextView) rootView.findViewById(R.id.textview_plot_synopsis));
         mVoteAverageView = ((TextView) rootView.findViewById(R.id.textview_user_rating));
         mReleaseDateView = ((TextView) rootView.findViewById(R.id.textview_release_date));
+
+        mAddToFavouritesButton = ((Button) rootView.findViewById(R.id.favourites_button) );
+        mAddToFavouritesButton.setOnClickListener(this);
+        mAddToFavouritesButton.setId(BUTTON_ADD_TO_REVIEWS);
 
         //Trailer and Reviews Containers
         mButtonContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_video_button_container);
@@ -308,7 +342,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                     getActivity(), //context
                     // intent.getData(),  // Query URI
                     movieQueryUri, //Uri retrieved from fragment argument
-                    MOVIE_COLUMNS, //projection
+                  //  MOVIE_COLUMNS, //projection
+                    projection,
                     null,
                     null,
                     null //sort order - just one movie, so no need to sort
@@ -326,6 +361,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         if (movieDetailCursor != null && movieDetailCursor.moveToFirst()) { //if  is not empty and exists
             //  if(movieDetailCursor != null ){ //if  is not empty and exists
             Log.v(LOG_TAG, "In OnLoadFinished - updating UI from Cursor");
+
+
+            //also get a copy of the cursor for making Content Values later on
+            //perhaps make the content values here?
+            mCursor = movieDetailCursor;
+
 
             ///////////////////////////////////////////////////////////////////
             //Update UI
@@ -427,6 +468,9 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 mReviewsContainer.addView(mReview_3); //added the actual review
             }
 
+
+
+
         }
     }
 
@@ -480,6 +524,59 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 startActivity(youTubeIntent3);
                 break;
 
+            case BUTTON_ADD_TO_REVIEWS:
+               // Toast.makeText(getContext(), "Pressed Add to reviews Button", Toast.LENGTH_LONG).show();
+
+               //for now check to make sure that sort order (i.e. MovieURI is not favourites
+                //if not add movie
+                //later should just add movie and make database replace duplicate movies so that I can't duplicate movies
+                // - I think it is just a condition set when first making the database
+                if (!isFavouriteDetailMovieDisplayed(movieQueryUri)){ //if the movie is not from favourites
+                    //add it to favourites database
+
+                    //change the detailURI from MovieEntry to Favourites Entry
+                    //make this it's own method at some point
+                   /* String movieID = MovieContract.MovieEntry.getIdFromUri(movieQueryUri);
+                    Uri movieUriChangedToFavourites = MovieContract.FavouriteEntry.buildMovieUriWithAppendedID(Long.valueOf(movieID));
+
+*/
+
+
+
+
+                    //make content values from Cursor that came in
+                    //perhaps just get a copy of the cursor that came in with onLoadFinished
+                    //then convert cursor to content values with
+                    //DatabaseUtils.cursorRowToContentValues(cursor, contentValues);
+                    //just use the above line and it will put the contents of the above cursor into the given content values
+
+                    ContentValues movieTotalContentValues = new ContentValues();
+                   if ( mCursor.moveToFirst()){
+                        Log.v(LOG_TAG, "converting cursor to content values soon ---- cursor is valid");
+
+                    } else {
+                       Log.v(LOG_TAG, "cursor is not valid, can't be converted to content values");
+                   }
+
+                    //can delete above, just remember to move mCursor to first.
+                    DatabaseUtils.cursorRowToContentValues(mCursor, movieTotalContentValues); //LJG ZZZ currently erroring off find out why!
+
+                    //then insert the row
+
+                    if (movieTotalContentValues != null){
+
+                         getContext().getContentResolver().insert(MovieContract.FavouriteEntry.CONTENT_URI,
+                                movieTotalContentValues);
+
+                        Log.v(LOG_TAG, "Review Button Pressed and added to Favourites");
+                    }
+
+
+
+                }
+
+
+                break;
             default:
                 break;
         }
@@ -527,6 +624,18 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         TextView authorTextView = new TextView(getContext());
         authorTextView.setText("Author:    ");
         return authorTextView;
+    }
+
+
+    //Temperary helper method
+    //will be deleted when database conditions for how to deal with duplicated in favourite table
+    //is set up
+    private boolean isFavouriteDetailMovieDisplayed (Uri movieQueryUriPassedIn) {
+        List<String> uriPathSegments = movieQueryUriPassedIn.getPathSegments();
+        if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)){ //don't need to update favourites
+            return true;
+        }
+        return false;  //otherwise return false
     }
 
 }

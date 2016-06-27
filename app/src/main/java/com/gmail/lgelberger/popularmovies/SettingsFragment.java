@@ -9,6 +9,8 @@ import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.gmail.lgelberger.popularmovies.data.MovieContract;
+
 /**
  * Created by Leslie on 2016-03-10.
  * <p/>
@@ -52,6 +54,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 //code for what you want it to do
                 Toast.makeText(getActivity().getApplicationContext(), "Pressed the Delete Favourites Button", Toast.LENGTH_LONG).show();
                 Log.v(LOG_TAG, "Pressed the Delete Favourites Button");
+
+                getActivity().getApplicationContext().getContentResolver().delete(MovieContract.FavouriteEntry.CONTENT_URI,
+                        null, null);
 
               ///LJG Add delete the entire Favourites Database here!
 
