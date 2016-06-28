@@ -62,9 +62,6 @@ public class TestUtilities extends AndroidTestCase {
     }
 
 
-
-
-
     /*
         The functions inside of TestMovieContentProvider use this utility class to test
         the ContentObserver callbacks using the PollingCheck class that was grabbed from the Android
@@ -205,21 +202,20 @@ public class TestUtilities extends AndroidTestCase {
 
             movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1, "Movie Review: It was " + i + "thumbs up");
             //The reviews may end up being a URL - this may also need to change
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review Author It was Buddy" + i );
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review Author It was Buddy" + i);
             movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_2, "Movie Review 2: It was " + i + "thumbs up");
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 2 Author It was Buddy" + i );
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 2 Author It was Buddy" + i);
             movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_3, "Movie Review 3: It was " + i + "thumbs up");
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 3 Author It was Buddy" + i );
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 3 Author It was Buddy" + i);
             movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1, "Here is video number " + i);
             movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_2, "Here is video number " + i + "Second Trailer");
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, "Here is video number " + i  + "Third Trailer");
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3, "Here is video number " + i + "Third Trailer");
             //the Video may also change format
 
             returnContentValues[i] = movieValues;
         }
         return returnContentValues;
     }
-
 
 
     /**
@@ -242,7 +238,6 @@ public class TestUtilities extends AndroidTestCase {
 
         return movieRowId;
     }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -333,21 +328,20 @@ public class TestUtilities extends AndroidTestCase {
 
             movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1, "Movie Review: It was " + i + "thumbs up");
             //The reviews may end up being a URL - this may also need to change
-            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review Author It was Buddy" + i );
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review Author It was Buddy" + i);
             movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_2, "Movie Review 2: It was " + i + "thumbs up");
-            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 2 Author It was Buddy" + i );
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 2 Author It was Buddy" + i);
             movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_3, "Movie Review 3: It was " + i + "thumbs up");
-            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 3 Author It was Buddy" + i );
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_REVIEW_1_AUTHOR, "Movie Review 3 Author It was Buddy" + i);
             movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_1, "Here is video number " + i);
             movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_2, "Here is video number " + i + "Second Trailer");
-            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3, "Here is video number " + i  + "Third Trailer");
+            movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_VIDEO_3, "Here is video number " + i + "Third Trailer");
             //the Video may also change format
 
             returnContentValues[i] = movieValues;
         }
         return returnContentValues;
     }
-
 
 
     /**
@@ -370,9 +364,4 @@ public class TestUtilities extends AndroidTestCase {
 
         return movieRowId;
     }
-
-
-
-
-
 }

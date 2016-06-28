@@ -24,17 +24,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * Main Activity
+ * implements onMovieSelectedListener which is defined in the MainActivityFragment as
+ * a callback for the fragment to pass the detail Movie ContentProvider URI of the movie that was clicked
+ * That way , the MainActivity can pass that URI off to the detail fragment via an intent (in 1-pane mode)
+ * or as a fragment argument (in 2 pane mode)
+ *
+ *
+ */
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.OnMovieSelectedListener {
 
     private static final String DETAIL_FRAGMENT_TAG = "DFTAG";// Create a Tag to identify the Detail Fragment
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainActivity.class.getSimpleName(); //for debugging
 
     private Boolean mTwoPane; //used to indicate if we are using a two pane main layout (i.e. if it is a tablet)
 
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here, to be able
 
-    private String movieSortOrder; //to hold a reference to current sort order preferrence
+    private String movieSortOrder; //to hold a reference to current sort order preference - retireved from Preferences
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +79,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
           //  String movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
             movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
-
             updateDatabaseFromApiIfNeeded(this, movieSortOrder); //update the database with new API call if needed
-            Log.v(LOG_TAG, "savedInstanceState is NULL - Doing API call!!!! SHould I really be doing this?");
+          //  Log.v(LOG_TAG, "savedInstanceState is NULL - Doing API call!!!! SHould I really be doing this?");
         } else {
-            Log.v(LOG_TAG, "savedInstanceState is Not null - No API call");
+          //  Log.v(LOG_TAG, "savedInstanceState is Not null - No API call");
         }
 
 
@@ -89,12 +97,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             // adding or replacing the detail fragment using a
             // fragment transaction.
             if (savedInstanceState == null) { //if first time running app
-                Log.v(LOG_TAG, " in OnCreate - savedInstanceState == null - MAKING A NEW DETAIL FRAGMENT");
+               // Log.v(LOG_TAG, " in OnCreate - savedInstanceState == null - MAKING A NEW DETAIL FRAGMENT");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.movie_detail_container, new DetailActivityFragment(), DETAIL_FRAGMENT_TAG)
                         .commit();
             } else {//for debugging
-                Log.v(LOG_TAG, " in OnCreate - savedInstanceState is NOT null - NOT making a new fragment - just leaving it alone");
+              //  Log.v(LOG_TAG, " in OnCreate - savedInstanceState is NOT null - NOT making a new fragment - just leaving it alone");
             }
 
         } else { //In one pane layout - don't make a detail_fragment
@@ -112,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
-            if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
+            if (key.equals(getString(R.string.movie_sort_order_key))) { //should only do API call if sort order is NOT Favourites
                 movieSortOrder = prefs.getString(key, "");
 
                 Log.v(LOG_TAG, "in MainActivity PrefChangeListener - sort order is now " + movieSortOrder);
@@ -202,8 +210,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         //Check to see if we need to do API call
        // if (movieSortOrder == (getString(R.string.movie_query_favourites))) { //if sort order is favourites
         if (movieSortOrder.equals(getString(R.string.movie_query_favourites))) { //if sort order is favourites
-
-
             //No need to do api call as favourites are stored locally
             Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder + " so NOT doing API call");
             return;
@@ -274,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      */
     public static void updateOneMovieReviewsAndTrailersFromApi(Context context, Uri movieDetailDbUri) {
 
-      //only update Reviews and Movies if the movieDetailDbUri is from MovieEntry table (which is the API called table)
+        //only update Reviews and Movies if the movieDetailDbUri is from MovieEntry table (which is the API called table)
         //and NOT the favouriteEntry Table URI
         //if it is the Favourite entry, then do nothing - do NOT procede any further
         List<String> uriPathSegments = movieDetailDbUri.getPathSegments();
@@ -317,6 +323,4 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             oneMovieCursor.close(); //close cursor at the end
         }
     }
-
-
 }

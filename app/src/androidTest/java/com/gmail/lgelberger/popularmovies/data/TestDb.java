@@ -69,7 +69,7 @@ public class TestDb extends AndroidTestCase {
 
         deleteTheDatabase(); //mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME); //delete the old database
 
-        // - LJG ZZZ  does this delete my working database once I have a working app?
+        //does this delete my working database once I have a working app?
         SQLiteDatabase db = new MovieDbHelper(
                 this.mContext).getWritableDatabase();
         assertEquals(true, db.isOpen());
@@ -127,7 +127,7 @@ public class TestDb extends AndroidTestCase {
             movieColumnHashSet.remove(columnName);
         } while (movieTableCursor.moveToNext());
 
-        // if this fails, it means that your database doesn't contain all of the required location
+        // if this fails, it means that your database doesn't contain all of the required movie
         // entry columns
         assertTrue("Error: The database doesn't contain all of the required movie entry columns",
                 movieColumnHashSet.isEmpty());
@@ -177,8 +177,6 @@ public class TestDb extends AndroidTestCase {
                 favouriteColumnHashSet.isEmpty());
 
         favouriteTableCursor.close();
-
-
         db.close(); //close the entire database at the end of the tests
     }
 
@@ -196,7 +194,7 @@ public class TestDb extends AndroidTestCase {
             where you can use the "createMovieValuesForOneMovie" function.  You can
             also make use of the validateCurrentRecord function from within TestUtilities.
          */
-    //LJG Figure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
+    //Figure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
     public void testMovieTable() {
         // First step: Get reference to writable database
         // If there's an error in those massive SQL table creation Strings,
@@ -253,7 +251,7 @@ public class TestDb extends AndroidTestCase {
             where you can use the "createMovieValuesForOneMovie" function.  You can
             also make use of the validateCurrentRecord function from within TestUtilities.
          */
-    //LJG Figure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
+    //Figure out whether this is a @SmallTest(unit test) or @MediumTest (can access more resources)
     public void testFavouriteTable() {
         // First step: Get reference to writable database
         // If there's an error in those massive SQL table creation Strings,

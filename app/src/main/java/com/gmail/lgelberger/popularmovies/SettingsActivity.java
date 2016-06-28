@@ -6,10 +6,8 @@ import android.support.v7.widget.Toolbar;
 
 /**
  * Created by Leslie on 2016-03-08.
- *
+ * <p/>
  * Modelled Off http://developer.android.com/guide/topics/ui/settings.html#Fragment
- *
- *
  */
 
 public class SettingsActivity extends AppCompatActivity { //changed from extends Activity to allow to action bar   AppCompatActivity
@@ -27,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity { //changed from extends
 
         // Display the SettingsFragment as the main content.
         getFragmentManager().beginTransaction()
-               // .replace(android.R.id.content, new SettingsFragment())
+                // .replace(android.R.id.content, new SettingsFragment())
                 .replace(R.id.movie_setting_container, new SettingsFragment())
                 .commit();
     }

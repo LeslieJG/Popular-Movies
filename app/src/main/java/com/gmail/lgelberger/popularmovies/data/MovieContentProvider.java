@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 /**
  * Created by Leslie on 2016-05-03.
@@ -91,39 +90,19 @@ public class MovieContentProvider extends ContentProvider {
 
 
     /*
-    Query will be the most complex of the required content provider methods.
-    We've given you the bones, of the query operation.
-
-    As you can see, we use our URI nature object,
-    once again to switch on the type of URI.
-
-    Note that each response from this function, will return a cursor that
-    corresponds to the incoming query as defined by the URI.
-
-    This is the only function where we will have to fill out a different
-    response for every type of URI in the content provider,
-    as several of them are used in queries only.
-
-    We'll see more on this later, when we cover inserting and
-    updating the database.
-
-    Uncomment the test basic weather query function within test provider and
-    run this code when you're finished, to make sure all of this is working well.
-
     * @param uri :Query Uri (should match one of the URI's in UriMatcher()
      * @param projection :Which Columns in Table to Query
      * @param selection :Columns for "where" clause
      * @param selectionArgs : Values for "where" clause
      * @param sortOrder : Sort order of returned column data
      * @return :Cursor with table data from query
-
      */
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         //for debugging 2 pane layout on tablet
-        Log.v(LOG_TAG, " Content Provider Query uri is " + uri);
+       // Log.v(LOG_TAG, " Content Provider Query uri is " + uri);
 
         Cursor retCursor; //the cursor with the database information to be returned
 
@@ -357,7 +336,7 @@ public class MovieContentProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
 
-                //LJG ZZZ
+                //If the actual movie poster jpg is to be stored
                 //will have to add one for Movie Poster JPG to return MIME type image/jpg
                 //this needs more research. Implement after the rest of the Content Provider is up and running
         }

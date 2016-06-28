@@ -50,7 +50,5 @@ public class TestMovieContract extends AndroidTestCase {
                 MovieContract.FavouriteEntry.getIdFromUri(movieUri),
                 Long.toString(TEST_MOVIE_ID));
     }
-
-
 }
 

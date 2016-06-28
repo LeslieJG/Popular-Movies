@@ -99,7 +99,6 @@
         <!-- Thick Horizontal divider -->
 
 
-
         <!-- TRAILERS-->
         <!-- Video Button Container-->
         <LinearLayout
@@ -110,15 +109,15 @@
 
         <!-- Horizontal divider -->
 
-       <!-- <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
-            android:background="@color/colorDivider">
+        <!-- <View
+             android:layout_width="match_parent"
+             android:layout_height="1dp"
+             android:layout_marginBottom="16dp"
+             android:layout_marginTop="16dp"
+             android:background="@color/colorDivider">
 
 
-        </View>-->
+         </View>-->
         <!-- Horizontal divider -->
 
 

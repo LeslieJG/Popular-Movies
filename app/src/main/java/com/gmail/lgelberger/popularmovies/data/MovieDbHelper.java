@@ -54,11 +54,6 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
-                // Why AutoIncrement here, and not above?
-                // Unique keys will be auto-generated in either case.  But for weather
-                // forecasting, it's reasonable to assume the user will want information
-                // for a certain date and all dates *following*, so the forecast data
-                // should be sorted accordingly.
                 MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //don't think I need AUTOINCREMENT ? It just limits the number of movies stored in database - but that limit is huge 10^19
                 MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
               //  MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
@@ -82,33 +77,21 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_3 + " TEXT  " +
                 ");";
 
-        /* From original sunshine
-        Useful stuff in case I need just one entry for each movie (to avoid having duplicate entries for same movie
-        I'm leaving this out for now.
+                         /* From original sunshine
+                         Useful stuff in case I need just one entry for each movie (to avoid having duplicate entries for same movie
+                         I'm leaving this out for now.
                         // To assure the application have just one weather entry per day
                         // per location, it's created a UNIQUE constraint with REPLACE strategy
                         " UNIQUE (" + WeatherEntry.COLUMN_DATE + ", " +
                         WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";*/
 
         final String SQL_CREATE_FAVOURITE_TABLE = "CREATE TABLE " + MovieContract.FavouriteEntry.TABLE_NAME + " (" +
-                // Why AutoIncrement here, and not above?
-                // Unique keys will be auto-generated in either case.  But for weather
-                // forecasting, it's reasonable to assume the user will want information
-                // for a certain date and all dates *following*, so the forecast data
-                // should be sorted accordingly.
                 MovieContract.FavouriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //don't think I need AUTOINCREMENT ? It just limits the number of movies stored in database - but that limit is huge 10^19
                 MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " + //all the "NOT NULL" are constraints that prevent null entries being put into database
-                //  MovieContract.MovieEntry.COLUMN_API_MOVIE_ID + " INTEGER NOT NULL, " +
-
-                // MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID + "  INTEGER NOT NULL UNIQUE, " + //ensuring I only have one row for each single movie
-              //  MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID + "  INTEGER NOT NULL , " + //ensuring I only have one row for each single movie
                 MovieContract.FavouriteEntry.COLUMN_API_MOVIE_ID + "  INTEGER UNIQUE ON CONFLICT REPLACE , " + //ensuring I only have one row for each single movie
-
-
-
                 MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_URL + " TEXT NOT NULL, " +
                 MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
-                //figure out how to store the damn poster image itself
+                //figure out how to store the  poster image itself
                 MovieContract.FavouriteEntry.COLUMN_ORIGINAL_TITLE + " TEXT NOT NULL, " +
                 MovieContract.FavouriteEntry.COLUMN_PLOT_SYNOPSIS + " TEXT NOT NULL, " +
                 MovieContract.FavouriteEntry.COLUMN_VOTE_AVERAGE + " TEXT NOT NULL, " +

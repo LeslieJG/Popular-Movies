@@ -16,8 +16,7 @@ using this to show how to layout each view in GridView-->
         android:gravity="center"
         android:orientation="vertical"
         android:padding="24dp"
-        android:text="@string/grid_items_movies_layout_movie_name_under_poster"
-        />
+        android:text="@string/grid_items_movies_layout_movie_name_under_poster" />
 
     <ImageView
         android:id="@+id/grid_item_poster"

@@ -18,20 +18,11 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
-
-    <!-- Below is overwritten for sw600dp and landscape-->
+    <!-- Below is overwritten for sw600dp and landscape - Determines how many columns the grid should
+    have depending on size/orientation-->
     <style name="GridViewStyle">
         <item name="android:numColumns">2</item>
     </style>
-
-    <!-- Used for Review Styles in Detail Fragment -->
-<!--    <style name="HorizontalDividerStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:layout_marginBottom">16dp</item>
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:background">@color/colorDivider</item>
-    </style>-->
 
     <!-- For Movie Review Text in Detail Fragment-->
     <style name="MovieReviewTextTheme">

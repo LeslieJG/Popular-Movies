@@ -31,20 +31,19 @@ import java.util.List;
 
 /**
  * This Displays the movie details including a poster and other text details
- * <p>
+ * <p/>
  * Implements a Cursor Loader to provide a cursor (from the database)
- * <p>
+ * <p/>
  * Fragment gets the movieQueryUri from the arguments the fragment is created with.
  * Fragement is created in either MainActivity or DetailActivity depending on 2-Pane of 1-Pane view
- * <p>
+ * <p/>
  * Will not be using a CursorAdapter as it is only for List/grid views.
  * I will just be displaying one db row worth of data.
- * <p>
+ * <p/>
  * Implementing Multiple Button Click listener as per
  * http://stackoverflow.com/questions/25905086/multiple-buttons-onclicklistener-android
  */
 public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
-
     // Cursor Loader  ID
     private static final int MOVIE_DETAIL_LOADER = 0;
 
@@ -53,9 +52,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
 
     private Cursor mCursor;
-
-
-    // private static final int BUTTON_1_ID = 1;
 
     //////Adding the views
     // General Movie information views
@@ -97,8 +93,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     final static int BUTTON_1_ID = 400;
     final static int BUTTON_2_ID = 401;
     final static int BUTTON_3_ID = 402;
-
-
 
     //For YouTube movie Id keys - to play trailers
     private String mTrailerYoutubeKey1;
@@ -181,7 +175,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     static final int COL_MOVIE_VIDEO_3 = 17;
     /////////////////////////////////////////////////////////
 
-
+    //constructor
     public DetailActivityFragment() {
     }
 
@@ -189,34 +183,30 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.v(LOG_TAG, " OnCreateView called"); //debugging double rotation
+        //Log.v(LOG_TAG, " OnCreateView called"); //debugging double rotation
 
         //get the MovieQuery Uri from the fragment itself (it should have been created with one)
-        Bundle arguments = getArguments(); //get arguments from when fragement created
+        Bundle arguments = getArguments(); //get arguments from when fragment created
         if (arguments != null) { //if there are some arguments
             movieQueryUri = arguments.getParcelable(DetailActivityFragment.MOVIE_DETAIL_URI); //get the movieQuery URI passed in
-            //the movieQueryUri of the form content://com.gmail.lgelberger.popularmovies/movie/182
+            //the movieQueryUri of the form
+            // content://com.gmail.lgelberger.popularmovies/movie/182  or
+            // content://com.gmail.lgelberger.popularmovies/favourite/182
             //and is the Uri to our local content provider to look up movie details in the local database
-            //need to make this an API call, so we need to use this URI to look up in the database what the API call ID is!
-
 
             //decide which content provider URI we are using and set the projections accordingly
             List<String> uriPathSegments = movieQueryUri.getPathSegments();
-            if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)){ //don't need to update favourites
+            if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)) {
                 projection = FAVOURITE_COLUMNS;
             } else if (uriPathSegments.contains(MovieContract.PATH_MOVIE)) {
                 projection = MOVIE_COLUMNS;
             } else {
                 Log.e(LOG_TAG, "invalid Detail URI passed in as argument");
             }
-
         }
 
 
-
-
-
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragement
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false); // the rootview of the Fragment
 
         //assign all the general detail views
         mPosterView = (ImageView) rootView.findViewById(R.id.imageview_poster_thumbnail);
@@ -225,14 +215,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mVoteAverageView = ((TextView) rootView.findViewById(R.id.textview_user_rating));
         mReleaseDateView = ((TextView) rootView.findViewById(R.id.textview_release_date));
 
-        mAddToFavouritesButton = ((Button) rootView.findViewById(R.id.favourites_button) );
+        mAddToFavouritesButton = ((Button) rootView.findViewById(R.id.favourites_button));
         mAddToFavouritesButton.setOnClickListener(this);
         mAddToFavouritesButton.setId(BUTTON_ADD_TO_REVIEWS);
 
         //Trailer and Reviews Containers
         mButtonContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_video_button_container);
         mReviewsContainer = (LinearLayout) rootView.findViewById(R.id.linear_layout_reviews_container);
-
 
         //Trailers Title
         mTrailersTitle = new TextView(getContext());
@@ -282,12 +271,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mReview_2.setId(REVIEW_2_CONTENT_ID);
         mReview_3.setId(REVIEW_3_CONTENT_ID);
 
-
         //Individual Reviews Containers.
         mReviewLayout1 = new LinearLayout(getContext());
         mReviewLayout2 = new LinearLayout(getContext());
         mReviewLayout3 = new LinearLayout(getContext());
-
 
         //first one is width, height
         LinearLayout.LayoutParams reviewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
@@ -313,9 +300,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //perhaps keep a copy
-
-        Log.v(LOG_TAG, "In onActivityCreated - movieQueryUri is currently " + movieQueryUri);
+        // Log.v(LOG_TAG, "In onActivityCreated - movieQueryUri is currently " + movieQueryUri);
 
         //Initialize the Loader with a LoaderManager  - Arguments - Loader ID, Bundle, Class that implements callback method
         getLoaderManager().initLoader(MOVIE_DETAIL_LOADER, null, this);
@@ -325,25 +310,22 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     //returns a cursor loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        Log.v(LOG_TAG, " onCreateLoader, movieQueryUri = " + movieQueryUri);
+        //Log.v(LOG_TAG, " onCreateLoader, movieQueryUri = " + movieQueryUri);
 
         //only return cursor if the query URI was passed in - if no URI passed in, do nothing
         // Bundle arguments = getArguments(); //get arguments from when fragment created
         if (movieQueryUri == null) { //if there are no arguments -->>>>>There ARE argument, just the Query is not set yet?
-            Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is NULL!!!!!!! -No Cursor Loader Created"); //debugging
+            //Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is NULL!!!!!!! -No Cursor Loader Created"); //debugging
             return null;
         } else { //movieQueryUri is not null
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
-            Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is not Null - Creating New Cursor Loader");
+            //Log.v(LOG_TAG, "onCreateLoader, movieQueryUri is not Null - Creating New Cursor Loader");
 
             return new CursorLoader(
                     getActivity(), //context
-                    // intent.getData(),  // Query URI
                     movieQueryUri, //Uri retrieved from fragment argument
-                  //  MOVIE_COLUMNS, //projection
-                    projection,
+                    projection, //projection depended on type of URI above
                     null,
                     null,
                     null //sort order - just one movie, so no need to sort
@@ -355,18 +337,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     //do all UI updates here!
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor movieDetailCursor) {
-        Log.v(LOG_TAG, "In onLoadFinished - Method Called");
+        //Log.v(LOG_TAG, "In onLoadFinished - Method Called");
 
-        //DO it the other way - it data then load views
         if (movieDetailCursor != null && movieDetailCursor.moveToFirst()) { //if  is not empty and exists
-            //  if(movieDetailCursor != null ){ //if  is not empty and exists
-            Log.v(LOG_TAG, "In OnLoadFinished - updating UI from Cursor");
+            //Log.v(LOG_TAG, "In OnLoadFinished - updating UI from Cursor");
 
-
-            //also get a copy of the cursor for making Content Values later on
-            //perhaps make the content values here?
+            // get a copy of the cursor for making Content Values later on
             mCursor = movieDetailCursor;
-
 
             ///////////////////////////////////////////////////////////////////
             //Update UI
@@ -389,7 +366,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mVoteAverageView.setText(movieDetailCursor.getString(COL_VOTE_AVERAGE));
             mReleaseDateView.setText(movieDetailCursor.getString(COL_RELEASE_DATE));
 
-
             //get the Movie Reviews
             mReviewAuthor_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1_AUTHOR));
             mReview_1.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_1));
@@ -398,17 +374,15 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mReviewAuthor_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3_AUTHOR));
             mReview_3.setText(movieDetailCursor.getString(COL_MOVIE_REVIEW_3));
 
-
             //get the YouTubeKeys for each video
             mTrailerYoutubeKey1 = movieDetailCursor.getString(COL_MOVIE_VIDEO_1);
             mTrailerYoutubeKey2 = movieDetailCursor.getString(COL_MOVIE_VIDEO_2);
             mTrailerYoutubeKey3 = movieDetailCursor.getString(COL_MOVIE_VIDEO_3);
 
-
             //TRAILERS
             //Add the Trailers Title if there are trailers and it hasn't been added yet
             if (mTrailerYoutubeKey1 != null && mTrailersTitle != mButtonContainer.findViewById(TRAILERS_TITLE_ID)) {
-             //   mButtonContainer.addView(horiztonalThickLine());
+                //   mButtonContainer.addView(horiztonalThickLine());
                 mButtonContainer.addView(mTrailersTitle); //only add trailers title if there are trailers and it has not been added before
             }
 
@@ -426,7 +400,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 mButtonContainer.addView(mButtonVideo3);
             }
 
-
             //Review Strings for testing if any reviews available
             String reviewString1 = movieDetailCursor.getString(COL_MOVIE_REVIEW_1);
             String reviewString2 = movieDetailCursor.getString(COL_MOVIE_REVIEW_2);
@@ -434,7 +407,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
             //REVIEWS
             //Only add Header title if there are reviews, and if title hasn't already been added
-            if (reviewString1 != null  &&  mReviewsTitle != mReviewsContainer.findViewById(REVIEWS_TITLE_ID)) {
+            if (reviewString1 != null && mReviewsTitle != mReviewsContainer.findViewById(REVIEWS_TITLE_ID)) {
                 mReviewsContainer.addView(horiztonalLine());
                 mReviewsContainer.addView(mReviewsTitle);
             }
@@ -467,10 +440,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 mReviewsContainer.addView(mReviewLayout3); //added the Review Author with title
                 mReviewsContainer.addView(mReview_3); //added the actual review
             }
-
-
-
-
         }
     }
 
@@ -502,111 +471,77 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
             case BUTTON_1_ID:
-                // do your code
                 //  mButtonVideo1.setText("Clicked Button 1");
                 Intent youTubeIntent1 = new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey1));
                 startActivity(youTubeIntent1);
                 break;
 
             case BUTTON_2_ID:
-                // do your code
                 // mButtonVideo2.setText("Clicked Button 2");
                 Intent youTubeIntent2 = new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey2));
                 startActivity(youTubeIntent2);
                 break;
 
             case BUTTON_3_ID:
-                // do your code
-                //   mButtonVideo3.setText("Clicked Button 3");
+                // mButtonVideo3.setText("Clicked Button 3");
                 Intent youTubeIntent3 = new Intent(Intent.ACTION_VIEW, buildYouTubeUri(mTrailerYoutubeKey3));
                 startActivity(youTubeIntent3);
                 break;
 
             case BUTTON_ADD_TO_REVIEWS:
-               // Toast.makeText(getContext(), "Pressed Add to reviews Button", Toast.LENGTH_LONG).show();
+                // Toast.makeText(getContext(), "Pressed Add to reviews Button", Toast.LENGTH_LONG).show();
 
-               //for now check to make sure that sort order (i.e. MovieURI is not favourites
-                //if not add movie
-                //later should just add movie and make database replace duplicate movies so that I can't duplicate movies
-                // - I think it is just a condition set when first making the database
-                if (!isFavouriteDetailMovieDisplayed(movieQueryUri)){ //if the movie is not from favourites
+                //for now check to make sure that sort order is not favourites
+                if (!isFavouriteDetailMovieDisplayed(movieQueryUri)) { //if the movie is not from favourites
                     //add it to favourites database
 
-                    //change the detailURI from MovieEntry to Favourites Entry
-                    //make this it's own method at some point
-                   /* String movieID = MovieContract.MovieEntry.getIdFromUri(movieQueryUri);
-                    Uri movieUriChangedToFavourites = MovieContract.FavouriteEntry.buildMovieUriWithAppendedID(Long.valueOf(movieID));
-
-*/
-
-
-
-
-                    //make content values from Cursor that came in
-                    //perhaps just get a copy of the cursor that came in with onLoadFinished
-                    //then convert cursor to content values with
-                    //DatabaseUtils.cursorRowToContentValues(cursor, contentValues);
-                    //just use the above line and it will put the contents of the above cursor into the given content values
-
-                    ContentValues movieTotalContentValues = new ContentValues();
-                   if ( mCursor.moveToFirst()){
-                        Log.v(LOG_TAG, "converting cursor to content values soon ---- cursor is valid");
-
+                    ContentValues movieTotalContentValues = new ContentValues(); //for holding content values taken from cursor for detail display
+                    if (mCursor.moveToFirst()) {   //moving cursor to first - and confirming it has data
+                        // Log.v(LOG_TAG, "converting cursor to content values soon ---- cursor is valid");
                     } else {
-                       Log.v(LOG_TAG, "cursor is not valid, can't be converted to content values");
-                   }
+                        // Log.v(LOG_TAG, "cursor is not valid, can't be converted to content values");
+                        return; //no cursor, no data - do nothing
+                    }
 
-                    //can delete above, just remember to move mCursor to first.
-                    DatabaseUtils.cursorRowToContentValues(mCursor, movieTotalContentValues); //LJG ZZZ currently erroring off find out why!
+                    DatabaseUtils.cursorRowToContentValues(mCursor, movieTotalContentValues);//put the contents of the cursor into content Values
 
-                    //LJG ZZZ  do I need to strip out the _id tag too???? probabaly
                     //strip out the _ID tag so that the _ID tag will be created by favourites database
                     movieTotalContentValues.remove(MovieContract.FavouriteEntry._ID);
 
+                    //then insert the row into favourites database table to store it in favourites
+                    if (movieTotalContentValues != null) { //if there are content values to store
+                        getContext().getContentResolver().insert(MovieContract.FavouriteEntry.CONTENT_URI,
+                                movieTotalContentValues); //insert into favourite table
 
-                    //then insert the row
-
-                    if (movieTotalContentValues != null){
-
-                         getContext().getContentResolver().insert(MovieContract.FavouriteEntry.CONTENT_URI,
-                                movieTotalContentValues);
-
-                        Log.v(LOG_TAG, "Review Button Pressed and added to Favourites");
+                        // Log.v(LOG_TAG, "Review Button Pressed and added to Favourites");
                     }
-
-
-
                 }
-
-
                 break;
-            default:
+            default: //just in case I want to add some default behaviour later
                 break;
         }
 
     }
 
 
+    ////////////////////////////////Private Helper Methods/////////////////////////////////////
 
-   /*
-   Helper method to convert dp to pixels. Needed for progammatically setting layout heights in pixels
 
-   Inspiration from: http://stackoverflow.com/questions/5959870/programatically-set-height-on-layoutparams-as-density-independent-pixels
-   and
-   http://stackoverflow.com/questions/7793436/give-padding-with-setpadding-with-dip-unit-not-px-unit
-    */
+    /*
+    Helper method to convert dp to pixels. Needed for programmatically setting layout heights in pixels
+
+    Inspiration from: http://stackoverflow.com/questions/5959870/programatically-set-height-on-layoutparams-as-density-independent-pixels
+    and
+    http://stackoverflow.com/questions/7793436/give-padding-with-setpadding-with-dip-unit-not-px-unit
+     */
     private int getPixelsFromDip(int dip) {
-        //http://stackoverflow.com/questions/5959870/programatically-set-height-on-layoutparams-as-density-independent-pixels
-        //  int pixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,1 , getResources().getDisplayMetrics());
-
         int pixels = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 dip,
                 getResources().getDisplayMetrics()
         );
-        // Toast.makeText(getContext(), "COnverting " + dip + " dp to " + pixels +" pixels", Toast.LENGTH_LONG).show();
+        // Toast.makeText(getContext(), "Converting " + dip + " dp to " + pixels +" pixels", Toast.LENGTH_LONG).show();
         return pixels;
     }
 
@@ -632,16 +567,14 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     }
 
 
-    //Temperary helper method
-    //will be deleted when database conditions for how to deal with duplicated in favourite table
-    //is set up
-    private boolean isFavouriteDetailMovieDisplayed (Uri movieQueryUriPassedIn) {
+    //Temporary helper method
+    //for determening if the incoming DetailActivityFragment incoming URI is to display from the favourites database table
+    private boolean isFavouriteDetailMovieDisplayed(Uri movieQueryUriPassedIn) {
         List<String> uriPathSegments = movieQueryUriPassedIn.getPathSegments();
-        if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)){ //don't need to update favourites
+        if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)) { //don't need to update favourites
             return true;
         }
         return false;  //otherwise return false
     }
-
 }
 

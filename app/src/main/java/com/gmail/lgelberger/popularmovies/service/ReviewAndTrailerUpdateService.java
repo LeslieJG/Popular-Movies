@@ -76,8 +76,6 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         //skip for now - add later
 
         //get URLs for API query
-       /* URL reviewApiQueryUrl = ServiceApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, true);
-        URL trailerApiQueryUrl = ServiceApiUtility.makeReviewsAndTrailerAPIQueryURL(mContext, apiMovieID, false);*/
         URL reviewApiQueryUrl = makeReviewsAndTrailerAPIQueryURL( apiMovieID, true);
         URL trailerApiQueryUrl = makeReviewsAndTrailerAPIQueryURL(apiMovieID, false);
 
@@ -138,7 +136,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         final String TMBD_RESULTS = mContext.getString(R.string.movie_json_key_results);
         final String TMDB_TRAILER = mContext.getString(R.string.movie_json_key_youtube_key);
 
-        Log.v(LOG_TAG, "The Trailers JSON is " + movieTrailerJsonStr);
+        //Log.v(LOG_TAG, "The Trailers JSON is " + movieTrailerJsonStr);
 
         ContentValues movieTrailersCVFromJSON = new ContentValues(); // Make the Content Values that will be updating database rows
         //assume no Reviews - so load up with NoReviews for all
@@ -181,7 +179,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         final String TMDB_AUTHOR = mContext.getString(R.string.movie_json_key_review_author);
         final String TMDB_CONTENT = mContext.getString(R.string.movie_json_key_review_content);
 
-        Log.v(LOG_TAG, "The Reviews JSON is " + movieReviewJsonStr);
+      //  Log.v(LOG_TAG, "The Reviews JSON is " + movieReviewJsonStr);
 
         ContentValues movieReviewCVFromJSON = new ContentValues(); // Make the Content Values that will be updating database rows
 
@@ -247,13 +245,9 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.v(LOG_TAG, "In makeReviewsAndTrailerAPIQueryURL, The Query url is " + url);
+      //  Log.v(LOG_TAG, "In makeReviewsAndTrailerAPIQueryURL, The Query url is " + url);
 
         return url;
     }
-
-
-
-
 
 }

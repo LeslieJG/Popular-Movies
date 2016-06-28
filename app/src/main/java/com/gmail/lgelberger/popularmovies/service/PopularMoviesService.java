@@ -56,18 +56,6 @@ public class PopularMoviesService extends IntentService {
     Context mContext = this; //explicitly state context - allows for easier porting from AsyncTask to Service
     String jsonFromApi; //just adding this to hold JSON string returned from API call - perhaps it will be changed on refactoring
 
-    /////////////////////Database projection constants///////////////
-    //For making good use of database Projections specify the columns we need
-    private static final String[] MOVIE_COLUMNS = {
-            MovieContract.MovieEntry._ID,
-            MovieContract.MovieEntry.COLUMN_API_MOVIE_ID
-    };
-
-    // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
-    static final int COL_MOVIE_ID = 0;
-    static final int COL_API_MOVIE_ID = 1;
-    /////////////////////////////////////////////////////////
-
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -98,7 +86,7 @@ public class PopularMoviesService extends IntentService {
             Log.e(LOG_TAG, "No URL passed in");
             return; //nothing to do - just exit
         }
-        Log.v(LOG_TAG, "URL for API call is " + url.toString()); //for figureing out types of calls needed - delete later on
+       // Log.v(LOG_TAG, "URL for API call is " + url.toString()); //for figuring out types of calls needed - delete later on
         //url should be one of the following types
         //   http://api.themoviedb.org/3/movie/popular?api_key=[My API Key]
         //   http://api.themoviedb.org/3/movie/top_rated?api_key=[My API Key]
@@ -110,7 +98,7 @@ public class PopularMoviesService extends IntentService {
         }
 
         int rowsDeleted = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null); //delete entire database
-        Log.v(LOG_TAG, " - Database deleted after API call"); //for debugging tablet rotated twice
+      //  Log.v(LOG_TAG, " - Database deleted after API call"); //for debugging tablet rotated twice
 
         try {
             ContentValues[] myTempContentValues = getMovieDataFromJson(jsonFromApi);
@@ -179,15 +167,6 @@ public class PopularMoviesService extends IntentService {
             //also load all the other stuff I need into database
             movieContentValueArrayFromJSON[i].put(MovieContract.MovieEntry.COLUMN_API_MOVIE_ID, movieDetails.getString(TMDB_API_ID));
 
-            ///////////////////LJG ZZZ at a later time load the following 3 extra items into the database (their are columns existing for this)
-            // need to load: MoviePoster.jpg     MovieReview     MovieVideo
-            //load up the MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT , " + //I'm allowing this to be null if needed until I can
-            //figure out how to store the damn poster image itself
-
-            //load into database MovieContract.MovieEntry.COLUMN_MOVIE_REVIEW_1 + " TEXT , " +  //I'm allowing this to be null if needed until I can
-            //figure out how to store the movie reviews  (perhaps just a URL?)
-
-            //load into database   MovieContract.MovieEntry.COLUMN_MOVIE_VIDEO_1 + " TEXT  " +  //I'm allowing this to be null if needed until I can
         }
 
         return movieContentValueArrayFromJSON;

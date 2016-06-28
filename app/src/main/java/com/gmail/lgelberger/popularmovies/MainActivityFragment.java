@@ -32,22 +32,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     OnMovieSelectedListener movieListener; //refers to the containing activity of this fragment.
     // We will pass the selected movie Uri through this listener to the containing activity to deal with
 
-    ///////////////////////////
-    //need to access shared pref to look at sort order
-    // String MOVE_SORT_ORDER_KEY = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
-
-    //store sort order as local variable
-    //String sortOrder = null; // for storing sort order from changed preferences. Needed to decided which database to use
+    //store sort order as local variable for easier decision making
+    //Needed to decided which database to use
     int sortOrder = 0; //default value
     final static int MOST_POPULAR = 1;
     final static int HIGHEST_RATED = 2;
     final static int FAVOURITES = 3;
-
     // do switch statements when needed off sort order
-
-
-    ////////////////////////////////////
-
 
     int mGridItemSelected = GridView.INVALID_POSITION; //to hold current position to place grid at proper position after rotation
     private final String SELECTED_KEY = "selected_position"; //key for storing mGridItemSelected into savedInstanceState
@@ -60,7 +51,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here,
-
 
     //Step 1/3 of making Cursor Loader - Create Loader ID
     private static final int MOVIE_LOADER = 0;
@@ -135,17 +125,17 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     /////////////////////////////////////////////////////////
 
     /*
-    GridView
-How to auto-fit properly - also add the following to the xml file for GridView
-To learn more, you can also try to set it equals to auto_fit. By doing so, your app can have the ability to judge the number of columns it should show based on the screen size (or different orientation). Try it! :)
-and width to wrap content
+    GridView - This information is for future upgrades to help get GridView to auto fit the columns - not currently used
+    How to auto-fit properly - also add the following to the xml file for GridView
+    To learn more, you can also try to set it equals to auto_fit. By doing so, your app can have the ability to judge the number of columns it should show based on the screen size (or different orientation). Try it! :)
+    and width to wrap content
 
-http://stackoverflow.com/questions/6912922/android-how-does-gridview-auto-fit-find-the-number-of-columns/7874011#7874011
+    http://stackoverflow.com/questions/6912922/android-how-does-gridview-auto-fit-find-the-number-of-columns/7874011#7874011
 
-The solution is to measure your column size before setting the GridView's column width. Here is a quick way to measure Views offscreen:
-(where cell is the specific grid cell in the GridView to measure
-public int measureCellWidth( Context context, View cell )
-{
+    The solution is to measure your column size before setting the GridView's column width. Here is a quick way to measure Views offscreen:
+    (   where cell is the specific grid cell in the GridView to measure
+    public int measureCellWidth( Context context, View cell )
+    {
 
     // We need a fake parent
     FrameLayout buffer = new FrameLayout( context );
@@ -160,22 +150,23 @@ public int measureCellWidth( Context context, View cell )
     buffer.removeAllViews();
 
     return width;
-}
-And then you just set the GridView's column width:
-gridView.setColumnWidth( width );
-You can use setColumnWidth() right after you use setAdapter() on your GridView. –
-*/
+    }
+    And then you just set the GridView's column width:
+    gridView.setColumnWidth( width );
+    You can use setColumnWidth() right after you use setAdapter() on your GridView. –
+    */
 
 
-    /*
-    Interface that All activities hosting this fragment must implement
-    i.e Container Activity must implement this interface
-
-    Modelled on https://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
+    /**
+     * Interface that All activities hosting this fragment must implement
+     * i.e Container Activity must implement this interface
+     * <p/>
+     * Modelled on https://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
      */
     public interface OnMovieSelectedListener {
         public void OnMovieSelected(Uri movieUri);
     }
+
 
     /*
     When this fragment is attached to the activity, ensure that it implements onMovieSelectedListener interface
@@ -203,12 +194,11 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //inflate the fragment view
 
-        Log.v(LOG_TAG, "In onCreateView of MainFragment");
+        // Log.v(LOG_TAG, "In onCreateView of MainFragment");
 
         movieAdapter = new MovieCursorAdapter(getActivity(), null, 0); //make a new MovieAdapter (cursor adapter)
         gridView = (GridView) rootView.findViewById(R.id.gridview_movies); // Get a reference to the gridView,
         // and attach this adapter to it.
-
         gridView.setAdapter(movieAdapter); ////set adapter to GridView
 
 
@@ -224,20 +214,18 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
                 Cursor selectedMoviecursor = (Cursor) adapterView.getItemAtPosition(gridItemClicked);
-
                 Uri detailMovieUri;
-
 
                 if (selectedMoviecursor != null) {
                     Long detailMovieDatabaseID = selectedMoviecursor.getLong(COL_MOVIE_ID); //get the database _ID of the movie clicked
 
                     //LJG BUILD the detail URI from the correct Table depending on current sort order!
-                    switch (sortOrder){
+                    switch (sortOrder) {
                         case FAVOURITES:
                             detailMovieUri = MovieContract.FavouriteEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
                             break;
                         case MOST_POPULAR:
-                        case HIGHEST_RATED:
+                        case HIGHEST_RATED: //if it is either Most Popular OR Highest Rated
                             detailMovieUri = MovieContract.MovieEntry.buildMovieUriWithAppendedID(detailMovieDatabaseID); //make the detail query URI
                             break;
                         default:
@@ -245,16 +233,12 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
                             return;
                     }
 
-
-
-
-
                     movieListener.OnMovieSelected(detailMovieUri);//pass the URI to containing activity
                     // which will then pass it on to the detail activity or fragment depending on the layout
                 }
 
                 mGridItemSelected = gridItemClicked; //set out local member variable with the item clicked id to recover after rotation
-                Log.v(LOG_TAG, "Selected Grid Item Number: " + mGridItemSelected);
+                //  Log.v(LOG_TAG, "Selected Grid Item Number: " + mGridItemSelected);
             }
         });
 
@@ -265,119 +249,20 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
         // or magically appeared to take advantage of room, but data or place in the app was never
         // actually *lost*.
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-            // The listview probably hasn't even been populated yet.  Actually perform the
-            // swapout in onLoadFinished.
+            // The ListView probably hasn't even been populated yet.  Actually perform the
+            // swap out in onLoadFinished.
             mGridItemSelected = savedInstanceState.getInt(SELECTED_KEY);
-            Log.v(LOG_TAG, "Retreived that last GridItem clicked was " + mGridItemSelected);
+            // Log.v(LOG_TAG, "Retreived that last GridItem clicked was " + mGridItemSelected);
         }
-
-        //currently not using this for display after rotation - can delete later on
-        if (savedInstanceState != null && savedInstanceState.containsKey(FIRST_VISIBLE_POSITION_KEY)) {
-            //restore FirstVisisblePosition
-            mGridItemFirstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION_KEY);
-            Log.v(LOG_TAG, "Retrieved mGridItemFirstVisiblePosition - it is " + mGridItemFirstVisiblePosition);
-        }
-
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext()); //initializing sharedPref
         //get default shared pref doesn't require a file name - it goes for the default file name
 
-        //registering a shared Pref listener
-        //get default shared pref doesn't require a file name - it goes for the default file name
-        // prefListener = new MyPreferenceChangeListener();
-
-
-        /*sharedPref.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
-                String movieSortOrderKey = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
-              //  SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-              //  String sortOrderFromPref = preferences.getString(movieSortOrderKey, null); //optional default value set to null
-                Log.v(LOG_TAG, "Shared Preferences changed - they are now " + sharedPreferences.getString(movieSortOrderKey, null));
-
-                sortOrder = getSortOrderFromPreferences(); //set the sort order from preferences to one of the final int values
-                restartTheCursorLoader(); //restarts the loader to do a new content provider query
-
-            }
-        }); //registering the listener to allow for API calls when sort order changes
-*/
         prefListener = new MyPreferenceChangeListener();
-        // sharedPref.registerOnSharedPreferenceChangeListener(new MyPreferenceChangeListener());
         sharedPref.registerOnSharedPreferenceChangeListener(prefListener);
-
-
         sortOrder = getSortOrderFromPreferences(); //set the sort order from preferrences to one of the final int values
-
-
         return rootView;
     }
-
-
-    //Helper method to restart the cursor loader if sort order has changed
-    private void restartTheCursorLoader() {
-        //if preferences change restart the cursorloader so it can point to the correct database table
-        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);  //Loader ID, optional Bundle, Object that implements the loader callbacks
-
-    }
-
-
-    /**
-     * My Own OnSharedPreferenceChangeListener
-     * Put on it's own for easier debugging
-     * updates Movie Images if movie sort order is changed in settings
-     */
-    private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
-            if (key.equals(getContext().getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
-                String movieSortOrder = prefs.getString(key, "");
-
-                Log.v(LOG_TAG, "in MainActivityFragment PrefChangeListener - sort order is now " + movieSortOrder);
-                //update database if sort order is  "popular" or "top rated" and NOT Favourites
-                // updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
-
-                sortOrder = getSortOrderFromPreferences(); //set the sort order from preferences to one of the final int values
-                restartTheCursorLoader(); //restarts the loader to do a new content provider query
-
-            }
-        }
-    }
-
-
-    /*
-    Private helper method to get the sort order constants from Shared Preferences
-
-     */
-    private int getSortOrderFromPreferences() {
-
-
-        // Find out shared preferences for movie sort order - to decided which URI to use to query content provider
-        String movieSortOrderKey = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String sortOrderFromPref = preferences.getString(movieSortOrderKey, null); //optional default value set to null
-
-        int sortOrder;
-
-        if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_popular))) {
-            sortOrder = this.MOST_POPULAR;
-        } else if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_top_rated))) {
-            sortOrder = this.HIGHEST_RATED;
-        } else if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_favourites))) {
-            sortOrder = this.FAVOURITES;
-        } else {
-            //  Log.v(LOG_TAG, "sort order from Prefs not valid. It is "+ sortOrderFromPref);
-            sortOrder = 0;
-        }
-        Log.v(LOG_TAG, "in getSortOrderFromPreferences - sort order from Prefs is " + sortOrderFromPref + " --> and the sortOrder is set to " + sortOrder);
-
-
-        return sortOrder;
-
-    }
-
-    ;
 
 
     /*
@@ -385,7 +270,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.v(LOG_TAG, "in onSaveInstanceState");
+       // Log.v(LOG_TAG, "in onSaveInstanceState");
 
         // When tablets rotate, the currently selected list item needs to be saved.
         // When no item is selected, mPosition will be set to GridView.INVALID_POSITION,
@@ -406,7 +291,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     // Must be in onCreate in Activity or onActivityCreated in Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        Log.v(LOG_TAG, "in onActivityCreated - should I look for and update the sort order here?");
+       // Log.v(LOG_TAG, "in onActivityCreated - should I look for and update the sort order here?");
         getLoaderManager().initLoader(MOVIE_LOADER, null, this);  //Loader ID, optional Bundle, Object that implements the loader callbacks
         super.onActivityCreated(savedInstanceState);
     }
@@ -414,7 +299,6 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
     ////////////////////////////////////Loader Call back methods needed to implement CursorLoader //////////////////
     /////////////////Step 2/3 to create a CursorLoader ////////////////////////////////////////////
-
     //Returns a cursor Loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -446,7 +330,7 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
 
         }
 
-        Log.v(LOG_TAG, "In onCreateLoader - sortOrder can't be determined. It is " + sortOrder);
+        Log.e(LOG_TAG, "In onCreateLoader - sortOrder can't be determined. It is " + sortOrder);
         return null; //if this happens something went wrong
 
     }
@@ -496,27 +380,62 @@ You can use setColumnWidth() right after you use setAdapter() on your GridView. 
     }
 
 
+    /////////////////////////////Private Helper Methods//////////////////////////////////////////
 
-
-   /* *//**
+    /**
      * My Own OnSharedPreferenceChangeListener
      * Put on it's own for easier debugging
      * updates Movie Images if movie sort order is changed in settings
-     *//*
+     */
     private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
-            if (key.equals(getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
-                movieSortOrder = prefs.getString(key, "");
+            if (key.equals(getActivity().getApplicationContext().getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
+                String movieSortOrder = prefs.getString(key, "");
 
-                //update database if sort order is  "popular" or "top rated" and NOT Favourites
-                updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
+                //Log.v(LOG_TAG, "in MainActivityFragment PrefChangeListener - sort order is now " + movieSortOrder);
+                sortOrder = getSortOrderFromPreferences(); //set the sort order from preferences to one of the final int values
+                restartTheCursorLoader(); //restarts the loader to do a new content provider query
             }
         }
     }
-    */
 
+    /*
+    Helper method to restart the cursor loader if sort order has changed
+    Moved it out of MyPreferenceChangeListener so we could access "this"  - the object the that implements
+    the loader callbacks - which MainActivityFragment does, but the private class MyPreferenceChangeListener does NOT
+     */
+    private void restartTheCursorLoader() {
+        //if preferences change restart the cursor loader so it can point to the correct database table
+        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);  //Loader ID, optional Bundle, Object that implements the loader callbacks
+    }
+
+
+    /*
+    Private helper method to get the sort order constants from Shared Preferences
+     */
+    private int getSortOrderFromPreferences() {
+        // Find out shared preferences for movie sort order - to decided which URI to use to query content provider
+        String movieSortOrderKey = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String sortOrderFromPref = preferences.getString(movieSortOrderKey, null); //optional default value set to null
+
+        int sortOrder;
+        if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_popular))) {
+            sortOrder = this.MOST_POPULAR;
+        } else if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_top_rated))) {
+            sortOrder = this.HIGHEST_RATED;
+        } else if (sortOrderFromPref.equals(getContext().getString(R.string.movie_query_favourites))) {
+            sortOrder = this.FAVOURITES;
+        } else {
+            //  Log.v(LOG_TAG, "sort order from Prefs not valid. It is "+ sortOrderFromPref);
+            sortOrder = 0;
+        }
+        // Log.v(LOG_TAG, "in getSortOrderFromPreferences - sort order from Prefs is " + sortOrderFromPref + " --> and the sortOrder is set to " + sortOrder);
+
+        return sortOrder;
+    }
 }
 
 

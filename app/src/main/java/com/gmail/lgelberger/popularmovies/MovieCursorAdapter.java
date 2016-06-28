@@ -13,9 +13,9 @@ import com.squareup.picasso.Picasso;
 
 /**
  * Created by Leslie on 2016-05-19.
- * <p>
- * Trying to make a cursor adapter to populate the GridView of movies, instead of my old MovieAdapter which extended ArrayAdapter
- * <p>
+ * <p/>
+ * a cursor adapter to populate the GridView of movies, replaced the old MovieAdapter which extended ArrayAdapter
+ * <p/>
  * Modified from https://coderwall.com/p/fmavhg/android-cursoradapter-with-custom-layout-and-how-to-use-it
  */
 public class MovieCursorAdapter extends CursorAdapter {
@@ -61,17 +61,10 @@ public class MovieCursorAdapter extends CursorAdapter {
 
     /*
             This is where we fill-in the views with the contents of the cursor.
-
             set the elements of the view
          */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-
-        // our view is pretty simple here --- just a text view
-        // we'll keep the UI functional with a simple (and slow!) binding.
-
-        //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
-
         //get a reference to ViewHolder from the current (passed in) View that we are working with
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
@@ -83,6 +76,7 @@ public class MovieCursorAdapter extends CursorAdapter {
         String movieTitleString = cursor.getString(MainActivityFragment.COL_MOVIE_TITLE); //get data to put into text view
         String moviePosterUrl = cursor.getString(MainActivityFragment.COL_MOVIE_POSTER_URL); //get data to put into image view
 
+        //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
         //set the views to proper values
         movieTitle.setText(movieTitleString);
         Picasso.with(context).load(moviePosterUrl).into(moviePosterView);

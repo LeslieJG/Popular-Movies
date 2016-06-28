@@ -32,7 +32,6 @@ import com.gmail.lgelberger.popularmovies.data.MovieContract;
  * during the onResume() and onPause() callbacks, respectively:
  */
 
-
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     //added to have reference to movie_sort_order_key
     final String LOG_TAG = SettingsFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
@@ -46,24 +45,20 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         addPreferencesFromResource(R.xml.preferences);
 
 
-
-        Preference button = (Preference)findPreference(getString(R.string.delete_favourites_key));
+        Preference button = (Preference) findPreference(getString(R.string.delete_favourites_key));
         button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                //code for what you want it to do
-                Toast.makeText(getActivity().getApplicationContext(), "Pressed the Delete Favourites Button", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Favourites List Deleted", Toast.LENGTH_LONG).show();
                 Log.v(LOG_TAG, "Pressed the Delete Favourites Button");
-
                 getActivity().getApplicationContext().getContentResolver().delete(MovieContract.FavouriteEntry.CONTENT_URI,
-                        null, null);
+                        null, null); //perhaps put this in if (isAdded()) {} block to ensure that the fragment is
+                //attached to an activity?
 
-              ///LJG Add delete the entire Favourites Database here!
-
+                ///LJG Add delete the entire Favourites Database here!
                 return true;
             }
         });
-
     }
 
 
@@ -75,11 +70,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
      * will change the preference summary if changed
      *
      * @param sharedPreferences Shared Preferences
-     * @param key Shared Preference Key
+     * @param key               Shared Preference Key
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-         final String LOG_TAG = SettingsFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
+        final String LOG_TAG = SettingsFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
         final String MOVE_SORT_ORDER_KEY = getString(R.string.movie_sort_order_key);
         final String DELETE_FAVOURITES_KEY = getString(R.string.delete_favourites_key);
 
@@ -95,8 +90,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
             pref.setSummary(sharedPreferences.getString(key, "")); // Set summary to be the user-description for the selected value
         }
-
-
     }
 
 
@@ -106,7 +99,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onResume() {
         super.onResume();
-
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
     }
@@ -118,7 +110,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onPause() {
         super.onPause();
-
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }

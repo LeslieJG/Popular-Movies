@@ -32,10 +32,10 @@ public class DetailActivity extends AppCompatActivity {
         });*/
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //allows up button
-        //may produce 'java.lang.NullPointerException' LJG ZZZ Deal with this?
+        //may produce 'java.lang.NullPointerException' Deal with this?
 
         //dynamically add the detail fragment
-        if (savedInstanceState == null){ //if the fragment hasn't already been created
+        if (savedInstanceState == null) { //if the fragment hasn't already been created
 
             //get intent data and pass it to fragment
             // Create the detail fragment and add it to the activity
@@ -53,7 +53,6 @@ public class DetailActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
 
 
     //added the following to make the overflow icon on toolbar

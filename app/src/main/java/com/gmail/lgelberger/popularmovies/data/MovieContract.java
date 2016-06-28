@@ -83,7 +83,7 @@ public class MovieContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        //ZZZ LJG I think this is for making cursors?
+        //for making cursors?
         // for each of the return types, we ask for 1 record (item) or a list of records (dir)
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
@@ -109,8 +109,7 @@ public class MovieContract {
 
 
     /*
-    Inner Class that defines the contents of some other, as yet unknown table
-    I left this in here for now in case it is needed later on
+    Inner Class that defines the contents of favourites table
      */
     public static final class FavouriteEntry implements BaseColumns {
         public static final String TABLE_NAME = "favourites";
@@ -158,7 +157,7 @@ public class MovieContract {
         }
 
 
-        //ZZZ LJG I think this is for making cursors?
+        //for making cursors?
         // for each of the return types, we ask for 1 record (item) or a list of records (dir)
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVOURITE;
@@ -182,16 +181,3 @@ public class MovieContract {
 
     }
 }
-
-
-//ZZZ I will need to:
-// Write to the database (add the a row of movie data whenever the user selects a movie to be
-// one of their "favourites"
-// Read a list of movie posters and names (I will read the whole list)
-// Read the details of just ONE movie to make a detailed view once the user has clicked on
-// a movie poster and the app displays the movie details
-//  ZZZ LJG  WHAT IF I JUST make my URIs simple to start
-// content://com.gmail.lgelberger.popularmovies/movie - to access the entire table
-// content://com.gmail.lgelberger.popularmovies/movie/4 - to access a single row
-// and perhaps some uri's to add rows or modify rows?
-

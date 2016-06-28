@@ -12,7 +12,7 @@ import android.os.Build;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-// LJG ZZZ make sure all tests will see if contentObserver is registered correctly!
+//make sure all tests will see if contentObserver is registered correctly!
 
 /**
  * Created by Leslie on 2016-05-08.
@@ -20,7 +20,7 @@ import android.util.Log;
  * Used to test the Movie data Content Provider
  * <p/>
  * Modelled after Udacity Sunshine app
- * Note: This is not a complete set of tests of the Sunshine ContentProvider, but it does test
+ * Note: This is not a complete set of tests of the  ContentProvider, but it does test
  * that at least the basic functionality has been implemented correctly.
  */
 public class TestMovieContentProvider extends AndroidTestCase {
@@ -53,7 +53,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 null,
                 null
         );
-       /* delete any other table in database if needed;*/
+
         //delete FavouriteEntryTable
         mContext.getContentResolver().delete(
                 MovieContract.FavouriteEntry.CONTENT_URI,
@@ -351,7 +351,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
 
 
-        //LJG is this needed???
+        //is this needed???
         // Has the NotificationUri been set correctly? --- we can only test this easily against API
         // level 19 or greater because getNotificationUri was added in API level 19.
         if (Build.VERSION.SDK_INT >= 19) {
@@ -469,7 +469,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
 
 
-        //LJG is this needed???
+        //is this needed???
         // Has the NotificationUri been set correctly? --- we can only test this easily against API
         // level 19 or greater because getNotificationUri was added in API level 19.
         if (Build.VERSION.SDK_INT >= 19) {
@@ -875,14 +875,4 @@ public class TestMovieContentProvider extends AndroidTestCase {
 
         cursor.close();
     }
-
-
-
-
-
-
-
-
-
-
 }

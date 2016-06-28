@@ -9,30 +9,29 @@ The merge tag above is a root view that is ignored when the activity_main uses <
 this view into itself-->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
+
     android:orientation="horizontal"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <!--  android:baselineAligned="false"
+    Added baselineAligned False to prevent children from going under toolbar
+    Doesn't work :(
 
-
+    But putting
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    >
-<!--  android:baselineAligned="false"
-Added baselineAligned False to prevent children from going under toolbar
-Doesn't work :(
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
-But putting
-xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-
-    works
-    allows it to stay Below toolbar - WHY????
+        works
+        allows it to stay Below toolbar - WHY????
 
 
 
 
 
--->
+    -->
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
 
@@ -59,11 +58,11 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/movie_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="4" >
+        android:layout_weight="4">
 
 
     </FrameLayout>
 
 </LinearLayout>
 
-<!-- merge-->
+    <!-- merge-->
