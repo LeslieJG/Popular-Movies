@@ -18,7 +18,7 @@ import java.util.Set;
 
 
 /*
-    Modelled After Udacty Sunshine Test Utilities Function
+    Modelled After Udacity Sunshine Test Utilities Function
     These are functions and some test data to make it easier to test the database and
     Content Provider.
  */
@@ -243,7 +243,7 @@ public class TestUtilities extends AndroidTestCase {
 ////////////////////////////////////////////////////////////////////////////////
     //Favourite Entry Table helper methods - These are just duplicate methods to the ones above.
     // In case Favourite Entry Table changes columns in the future, I'm keeping these helper methods
-    //separate from the Movie Entry Table heler test methods
+    //separate from the Movie Entry Table helper test methods
 
     /**
      * Use  to create some default movieValues for the database and content Provider tests tests.

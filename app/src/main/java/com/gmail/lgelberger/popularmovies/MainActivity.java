@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     private SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here, to be able
 
-    private String movieSortOrder; //to hold a reference to current sort order preference - retireved from Preferences
+    private String movieSortOrder; //to hold a reference to current sort order preference - retrieved from Preferences
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             movieSortOrder = sharedPref.getString(MOVIE_SORT_ORDER_KEY, "");
 
             updateDatabaseFromApiIfNeeded(this, movieSortOrder); //update the database with new API call if needed
-          //  Log.v(LOG_TAG, "savedInstanceState is NULL - Doing API call!!!! SHould I really be doing this?");
+          //  Log.v(LOG_TAG, "savedInstanceState is NULL - Doing API call!!!! Should I really be doing this?");
         } else {
           //  Log.v(LOG_TAG, "savedInstanceState is Not null - No API call");
         }
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             URL movieQueryURL = makeMovieApiQueryURL(context, movieSortOrder); //make the API url
             String movieQueryURLAsString = movieQueryURL.toString();
 
-            //Start the PopularMoviesService to update entre MovieEntry Database from API
+            //Start the PopularMoviesService to update entire MovieEntry Database from API
             Intent intent = new Intent(context, PopularMoviesService.class);  //make explicit intent for my service
             intent.putExtra(PopularMoviesService.MOVIE_API_QUERY_EXTRA_KEY, //put extra with key MOVIE_API_QUERY_EXTRA_KEY
                     movieQueryURLAsString); //put in the movieQueryURL -
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         //only update Reviews and Movies if the movieDetailDbUri is from MovieEntry table (which is the API called table)
         //and NOT the favouriteEntry Table URI
-        //if it is the Favourite entry, then do nothing - do NOT procede any further
+        //if it is the Favourite entry, then do nothing - do NOT proceed any further
         List<String> uriPathSegments = movieDetailDbUri.getPathSegments();
         if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)){ //don't need to update favourites
            //Log.v(LOG_TAG, "in updateOneMovieReviewsAndTrailersFromApi - NOT doing api call as movieDetailDbUri is "+ movieDetailDbUri.toString());

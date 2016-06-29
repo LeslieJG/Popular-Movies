@@ -35,7 +35,7 @@ import java.util.List;
  * Implements a Cursor Loader to provide a cursor (from the database)
  * <p/>
  * Fragment gets the movieQueryUri from the arguments the fragment is created with.
- * Fragement is created in either MainActivity or DetailActivity depending on 2-Pane of 1-Pane view
+ * Fragment is created in either MainActivity or DetailActivity depending on 2-Pane of 1-Pane view
  * <p/>
  * Will not be using a CursorAdapter as it is only for List/grid views.
  * I will just be displaying one db row worth of data.
@@ -47,7 +47,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     // Cursor Loader  ID
     private static final int MOVIE_DETAIL_LOADER = 0;
 
-    private static final String LOG_TAG = "DETAIL_ACT_FRAGEMENT";
+    private static final String LOG_TAG = "DETAIL_ACT_FRAGMENT";
     static final String MOVIE_DETAIL_URI = "MOVIE_DETAIL_URI"; // Movie Detail URI key (for getting arguments from fragment)
     private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
 
@@ -85,7 +85,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private static final int REVIEW_3_CONTAINER_ID = 702;
 
     //Trailer views
-    //holding reference to the Video Button Container - to inlfate buttons as needed
+    //holding reference to the Video Button Container - to inflate buttons as needed
     private LinearLayout mButtonContainer;
     private Button mButtonVideo1;
     private Button mButtonVideo2;
@@ -131,7 +131,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     };
 
     //identical to above just with FavouriteEntry column names
-    //prehaps make this a part of a projection map at some point?
+    //perhaps make this a part of a projection map at some point?
     private static final String[] FAVOURITE_COLUMNS = {
             MovieContract.FavouriteEntry._ID,
             MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE,
@@ -408,7 +408,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             //REVIEWS
             //Only add Header title if there are reviews, and if title hasn't already been added
             if (reviewString1 != null && mReviewsTitle != mReviewsContainer.findViewById(REVIEWS_TITLE_ID)) {
-                mReviewsContainer.addView(horiztonalLine());
+                mReviewsContainer.addView(horizontalLine());
                 mReviewsContainer.addView(mReviewsTitle);
             }
 
@@ -423,7 +423,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
             //only load 2nd review if there is a review, and if the review content hasn't been loaded into container yet
             if (reviewString2 != null && mReview_2 != mReviewsContainer.findViewById(REVIEW_2_CONTENT_ID)) {
-                mReviewsContainer.addView(horiztonalLine());
+                mReviewsContainer.addView(horizontalLine());
                 mReviewLayout2.addView(author());
                 mReviewLayout2.addView(mReviewAuthor_2);
 
@@ -433,7 +433,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
             //only load 3rd review if there is a review, and if the review content hasn't been loaded into container yet
             if (reviewString3 != null && mReview_3 != mReviewsContainer.findViewById(REVIEW_3_CONTENT_ID)) {
-                mReviewsContainer.addView(horiztonalLine());
+                mReviewsContainer.addView(horizontalLine());
                 mReviewLayout3.addView(author());
                 mReviewLayout3.addView(mReviewAuthor_3);
 
@@ -547,7 +547,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
 
     //For returning a Horizontal Line - 1dp
-    private View horiztonalLine() {
+    private View horizontalLine() {
         View horizontalLine = new View(getContext());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 getPixelsFromDip(1));
@@ -568,7 +568,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
 
     //Temporary helper method
-    //for determening if the incoming DetailActivityFragment incoming URI is to display from the favourites database table
+    //for determining if the incoming DetailActivityFragment incoming URI is to display from the favourites database table
     private boolean isFavouriteDetailMovieDisplayed(Uri movieQueryUriPassedIn) {
         List<String> uriPathSegments = movieQueryUriPassedIn.getPathSegments();
         if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)) { //don't need to update favourites

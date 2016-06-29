@@ -31,7 +31,7 @@ import java.net.URL;
  * and load the information into the MovieEntry Database
  * <p/>
  * In The Future it might be good to just do the API calls and not load the reviews
- * into the database, but instead using a ResultReciever call-back to the calling Fragment
+ * into the database, but instead using a ResultReceiver call-back to the calling Fragment
  * and just load the data directly into the views from API call. This would allow for more than the 3 reviews
  * and 3 trailers currently in the database.
  * <p/>
@@ -64,7 +64,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
 
         //Get the API movie ID
         apiMovieID = intent.getStringExtra(REVIEW_TRAILER_API_ID_EXTRA);//get the incoming API movie ID - to get the data from API
-        databaseMovieID = intent.getStringExtra(REVIEW_TRAILER_DB_ID_EXTRA); //get the incoming movies _ID in local database to allow for easier updating databse
+        databaseMovieID = intent.getStringExtra(REVIEW_TRAILER_DB_ID_EXTRA); //get the incoming movies _ID in local database to allow for easier updating database
 
         //check to make sure we have valid data
         if (apiMovieID == null || databaseMovieID == null) {
@@ -229,7 +229,7 @@ public class ReviewAndTrailerUpdateService extends IntentService {
         //boolean statement ? true result : false result;
         String reviewOrTrailer = makeReviewURL == true ?
                 mContext.getString(R.string.movie_query_reviews) : //if true then  reviews URL string
-                mContext.getString(R.string.movie_query_traliers);//if false then  trailers URL string
+                mContext.getString(R.string.movie_query_trailers);//if false then  trailers URL string
 
         URL url = null; //url to be built
 

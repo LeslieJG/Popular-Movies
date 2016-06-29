@@ -32,7 +32,7 @@ public class TestMovieContract extends AndroidTestCase {
     ///////////////////////////////////////////////////////////////
     //Testing the Favourites Table
 
-    public void testBuildFavourieMovieUriWithAppendedID () {
+    public void testBuildFavouriteMovieUriWithAppendedID() {
         Uri movieUri = MovieContract.FavouriteEntry.buildMovieUriWithAppendedID(TEST_MOVIE_ID);
 
         assertEquals("Error: Movie ID not properly appended to the end of the Uri",

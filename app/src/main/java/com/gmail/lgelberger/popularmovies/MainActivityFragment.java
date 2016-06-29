@@ -1,6 +1,7 @@
 package com.gmail.lgelberger.popularmovies;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -21,7 +22,7 @@ import android.widget.GridView;
 import com.gmail.lgelberger.popularmovies.data.MovieContract;
 
 /**
- * Fragment containing the gridview of Movies displayed from the local database
+ * Fragment containing the GridView of Movies displayed from the local database
  * <p/>
  * Implementing a Cursor Loader to provide a cursor (from the database)
  * Using a CursorAdapter  for grid views.
@@ -45,13 +46,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     GridView gridView = null; //making a reference to the GridView
 
     int mGridItemFirstVisiblePosition = GridView.INVALID_POSITION; //trying to maintain scroll state after rotation when no selection
-    private final String FIRST_VISIBLE_POSITION_KEY = "first_visisble_position";
+    private final String FIRST_VISIBLE_POSITION_KEY = "first_visible_position";
 
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName(); //name of MainActivityFragment class for error logging
 
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here,
     String sortOrderPrefKey; //sort order key stored in shared preferences
+
+    Context mContext; //to have a reference to the context
 
     //Step 1/3 of making Cursor Loader - Create Loader ID
     private static final int MOVIE_LOADER = 0;
@@ -81,7 +84,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     };
 
     //identical to above just with FavouriteEntry column names
-    //prehaps make this a part of a projection map at some point?
+    //perhaps make this a part of a projection map at some point?
     private static final String[] FAVOURITE_COLUMNS = {
             MovieContract.FavouriteEntry._ID,
             MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE,
@@ -195,6 +198,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         PreferenceManager.setDefaultValues(getActivity().getApplicationContext(), R.xml.preferences, false); //trying to set default values for all of app
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);  //inflate the fragment view
 
+        mContext = getActivity().getApplicationContext();
+
         // Log.v(LOG_TAG, "In onCreateView of MainFragment");
 
         movieAdapter = new MovieCursorAdapter(getActivity(), null, 0); //make a new MovieAdapter (cursor adapter)
@@ -253,17 +258,17 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             // The ListView probably hasn't even been populated yet.  Actually perform the
             // swap out in onLoadFinished.
             mGridItemSelected = savedInstanceState.getInt(SELECTED_KEY);
-            // Log.v(LOG_TAG, "Retreived that last GridItem clicked was " + mGridItemSelected);
+            // Log.v(LOG_TAG, "Retrieved that last GridItem clicked was " + mGridItemSelected);
         }
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext()); //initializing sharedPref
         //get default shared pref doesn't require a file name - it goes for the default file name
 
-        //get the sort order key from Preferrences
+        //get the sort order key from Preferences
         sortOrderPrefKey = (getActivity().getApplicationContext().getString(R.string.movie_sort_order_key));
         prefListener = new MyPreferenceChangeListener();
         sharedPref.registerOnSharedPreferenceChangeListener(prefListener);
-        sortOrder = getSortOrderFromPreferences(); //set the sort order from preferrences to one of the final int values
+        sortOrder = getSortOrderFromPreferences(); //set the sort order from preferences to one of the final int values
         return rootView;
     }
 
@@ -420,7 +425,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
      */
     private int getSortOrderFromPreferences() {
         // Find out shared preferences for movie sort order - to decided which URI to use to query content provider
-        String movieSortOrderKey = getContext().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
+       // String movieSortOrderKey = mContext.getResources().getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
+        String movieSortOrderKey = mContext.getString(R.string.movie_sort_order_key); //key for accessing Shared Preferences
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String sortOrderFromPref = preferences.getString(movieSortOrderKey, null); //optional default value set to null
 

@@ -24,7 +24,7 @@ public class ServiceApiUtility {
      * Used by ReviewAndTrailerUpdateService and PopularMoviesService
      *  To connect to network and fetch JSON results from API
      *
-     * @param apiQueryUrl URL needed for Sepecific API call
+     * @param apiQueryUrl URL needed for Specific API call
      * @return JSON result of API call
      */
     public static String fetchJsonFromApi(URL apiQueryUrl) {

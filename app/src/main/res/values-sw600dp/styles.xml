@@ -4,7 +4,7 @@
     <style name="GridViewStyle">
         <item name="android:numColumns">2</item>
 
-        <!-- Below allows the 2 Pane mode to have selectedable gird items-->
+        <!-- Below allows the 2 Pane mode to have selectable gird items-->
         <item name="android:choiceMode">singleChoice</item>
     </style>
 </resources>

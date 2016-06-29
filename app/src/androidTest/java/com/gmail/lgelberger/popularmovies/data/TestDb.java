@@ -28,7 +28,7 @@ import java.util.HashSet;
  * Modelled After Udacity Sunshine app on 7 April 2016
  * For testing PopularMovies database.
  * There are two tales, MovieEntry - used for storing the general movies from API calls
- * Favourite Movies - used for storing the user selected favouites they choose.
+ * Favourite Movies - used for storing the user selected favourites they choose.
  */
 public class TestDb extends AndroidTestCase {
 

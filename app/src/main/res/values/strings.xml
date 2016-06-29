@@ -15,7 +15,7 @@
     <string name="movie_query_key_api_key" translatable="false">api_key</string>
 
     <string name="movie_query_reviews" translatable="false">reviews</string>
-    <string name="movie_query_traliers" translatable="false">videos</string>
+    <string name="movie_query_trailers" translatable="false">videos</string>
     <string name="movie_query_favourites" translatable="false">favourites</string>
 
     <!-- values for building movie poster url  -->

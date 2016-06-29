@@ -79,7 +79,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 null,
                 null
         );
-        assertEquals("Error: Records not deleted from Favourtie table during delete", 0, cursor.getCount());
+        assertEquals("Error: Records not deleted from Favourite table during delete", 0, cursor.getCount());
 
         cursor.close();
     }
@@ -680,7 +680,7 @@ public class TestMovieContentProvider extends AndroidTestCase {
                 null    // sort order
         );
 
-        TestUtilities.validateCursor("testUpdatMovie.  Error validating Movie entry update.",
+        TestUtilities.validateCursor("testUpdateMovie.  Error validating Movie entry update.",
                 cursor, updatedValues); //check to see that the values are updated properly
 
         cursor.close();
