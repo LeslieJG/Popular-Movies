@@ -23,6 +23,7 @@ using this to show how to layout each view in GridView-->
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:src="@drawable/test_movie_poster" />
+        android:src="@drawable/test_movie_poster"
+        android:contentDescription="@string/thumbnail_of_movie_poster"/>
 
 </RelativeLayout>

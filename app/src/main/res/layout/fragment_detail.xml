@@ -26,7 +26,9 @@
                 android:layout_height="160dp"
                 android:adjustViewBounds="true"
                 android:paddingBottom="16dp"
-                android:paddingRight="16dp" />
+                android:paddingRight="16dp"
+                android:contentDescription="@string/thumbnail_of_movie_poster"
+                tools:ignore="RtlSymmetry" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -77,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/textview_release_date"
                     android:layout_below="@id/textview_release_date"
-                    android:text="Add To Favourites" />
+                    android:text="@string/detail_view_add_to_favourites_button" />
             </RelativeLayout>
         </LinearLayout>
 

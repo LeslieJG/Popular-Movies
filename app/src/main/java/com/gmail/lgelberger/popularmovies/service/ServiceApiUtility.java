@@ -28,7 +28,7 @@ public class ServiceApiUtility {
      * @return JSON result of API call
      */
     public static String fetchJsonFromApi(URL apiQueryUrl) {
-        Log.v(LOG_TAG, "fetchJsonFromApi - doing it now");
+        //Log.v(LOG_TAG, "fetchJsonFromApi - doing it now");
         //If we get to here then we need to make the API call to get data (i.e the data is not already in database)
         String movieJsonStr = null; // Will contain the raw JSON response as a string.
 

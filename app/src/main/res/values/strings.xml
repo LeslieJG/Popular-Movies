@@ -68,9 +68,20 @@
     <string name="detail_view_release_date_label">Release Date:</string>
     <string name="detail_view_release_date_content_label">Release Date content</string>
     <string name="detail_view_overview_label">Overview</string>
+    <string name="detail_view_add_to_favourites_button">Add To Favourites</string>
+
+    <!-- Detail Activity Fragment resources [CHAR LIMIT = 30]-->
+    <string name="detail_fragment_trailer_title">Trailers</string>
+    <string name="detail_fragment_reviews_title">Reviews</string>
+    <string name="detail_fragment_trailer_button_1_text">Play Trailer #1</string>
+    <string name="detail_fragment_trailer_button_2_text">Play Trailer #2</string>
+    <string name="detail_fragment_trailer_button_3_text">Play Trailer #3</string>
+    <string name="detail_fragment_review_author_title">"Author:    "</string>
+
 
     <!-- Grid View resources [CHAR LIMIT=30]-->
     <string name="grid_items_movies_layout_movie_name_under_poster">Movie name</string>
+    <string name="thumbnail_of_movie_poster">Thumbnail of movie poster</string>
 
 
 </resources>

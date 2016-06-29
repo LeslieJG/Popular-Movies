@@ -51,6 +51,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here,
+    String sortOrderPrefKey; //sort order key stored in shared preferences
 
     //Step 1/3 of making Cursor Loader - Create Loader ID
     private static final int MOVIE_LOADER = 0;
@@ -164,7 +165,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
      * Modelled on https://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
      */
     public interface OnMovieSelectedListener {
-        public void OnMovieSelected(Uri movieUri);
+        void OnMovieSelected(Uri movieUri);
     }
 
 
@@ -258,6 +259,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext()); //initializing sharedPref
         //get default shared pref doesn't require a file name - it goes for the default file name
 
+        //get the sort order key from Preferrences
+        sortOrderPrefKey = (getActivity().getApplicationContext().getString(R.string.movie_sort_order_key));
         prefListener = new MyPreferenceChangeListener();
         sharedPref.registerOnSharedPreferenceChangeListener(prefListener);
         sortOrder = getSortOrderFromPreferences(); //set the sort order from preferrences to one of the final int values
@@ -391,7 +394,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             //   if (isAdded()) { //just makes sure that fragment is attached to an Activity
-            if (key.equals(getActivity().getApplicationContext().getString(R.string.movie_sort_order_key))) { //LJG ZZZ should only do API call if sort order is NOT Favourites
+            if (key.equals(sortOrderPrefKey)) { //LJG ZZZ should only do API call if sort order is NOT Favourites
                 String movieSortOrder = prefs.getString(key, "");
 
                 //Log.v(LOG_TAG, "in MainActivityFragment PrefChangeListener - sort order is now " + movieSortOrder);

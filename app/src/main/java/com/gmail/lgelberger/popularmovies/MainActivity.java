@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     private Boolean mTwoPane; //used to indicate if we are using a two pane main layout (i.e. if it is a tablet)
 
-    SharedPreferences sharedPref; //declaring shared pref here
+    private SharedPreferences sharedPref; //declaring shared pref here
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener; //listening for changes to pref here, to be able
 
     private String movieSortOrder; //to hold a reference to current sort order preference - retireved from Preferences
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             if (key.equals(getString(R.string.movie_sort_order_key))) { //should only do API call if sort order is NOT Favourites
                 movieSortOrder = prefs.getString(key, "");
 
-                Log.v(LOG_TAG, "in MainActivity PrefChangeListener - sort order is now " + movieSortOrder);
+                //Log.v(LOG_TAG, "in MainActivity PrefChangeListener - sort order is now " + movieSortOrder);
                 //update database if sort order is  "popular" or "top rated" and NOT Favourites
                 updateDatabaseFromApiIfNeeded(getApplicationContext(), movieSortOrder);
             }
@@ -211,11 +211,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
        // if (movieSortOrder == (getString(R.string.movie_query_favourites))) { //if sort order is favourites
         if (movieSortOrder.equals(getString(R.string.movie_query_favourites))) { //if sort order is favourites
             //No need to do api call as favourites are stored locally
-            Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder + " so NOT doing API call");
+            //  Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder + " so NOT doing API call");
             return;
         }
 
-        Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder);
+        //  Log.v(LOG_TAG, "In updateDatabaseFromApiIfNeeded, Sort order is " + movieSortOrder);
 
         //check internet connectivity
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             intent.putExtra(PopularMoviesService.MOVIE_API_QUERY_EXTRA_KEY, //put extra with key MOVIE_API_QUERY_EXTRA_KEY
                     movieQueryURLAsString); //put in the movieQueryURL -
             context.startService(intent);
-            Log.v(LOG_TAG, "in updateDatabaseFromApiIfNeeded, starting PopularMoviesService");
+          //  Log.v(LOG_TAG, "in updateDatabaseFromApiIfNeeded, starting PopularMoviesService");
 
             //Log.v(LOG_TAG, "starting Sort Order API call");
         } else { //no internet connection
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.v(LOG_TAG, "In makeMovieApiQueryURL, The Query url is " + url);
+        //Log.v(LOG_TAG, "In makeMovieApiQueryURL, The Query url is " + url);
         return url;
     }
 
@@ -278,14 +278,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
      * @param context          Application context for accessing Strings
      * @param movieDetailDbUri The database Uri for one movie
      */
-    public static void updateOneMovieReviewsAndTrailersFromApi(Context context, Uri movieDetailDbUri) {
+    private static void updateOneMovieReviewsAndTrailersFromApi(Context context, Uri movieDetailDbUri) {
 
         //only update Reviews and Movies if the movieDetailDbUri is from MovieEntry table (which is the API called table)
         //and NOT the favouriteEntry Table URI
         //if it is the Favourite entry, then do nothing - do NOT procede any further
         List<String> uriPathSegments = movieDetailDbUri.getPathSegments();
         if (uriPathSegments.contains(MovieContract.PATH_FAVOURITE)){ //don't need to update favourites
-           Log.v(LOG_TAG, "in updateOneMovieReviewsAndTrailersFromApi - NOT doing api call as movieDetailDbUri is "+ movieDetailDbUri.toString());
+           //Log.v(LOG_TAG, "in updateOneMovieReviewsAndTrailersFromApi - NOT doing api call as movieDetailDbUri is "+ movieDetailDbUri.toString());
             return; //don't do API call
 
         }

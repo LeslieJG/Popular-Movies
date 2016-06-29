@@ -47,7 +47,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     // Cursor Loader  ID
     private static final int MOVIE_DETAIL_LOADER = 0;
 
-    static final String LOG_TAG = "DETAIL_ACT_FRAGEMENT";
+    private static final String LOG_TAG = "DETAIL_ACT_FRAGEMENT";
     static final String MOVIE_DETAIL_URI = "MOVIE_DETAIL_URI"; // Movie Detail URI key (for getting arguments from fragment)
     private Uri movieQueryUri; // will hold the Uri for the cursorLoader query
 
@@ -62,10 +62,10 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private TextView mReleaseDateView;
 
     private Button mAddToFavouritesButton;
-    final static int BUTTON_ADD_TO_REVIEWS = 200;
+    private final static int BUTTON_ADD_TO_REVIEWS = 200;
 
     //Review views
-    LinearLayout mReviewsContainer;
+    private LinearLayout mReviewsContainer;
     private TextView mReviewAuthor_1;
     private TextView mReview_1;
     private TextView mReviewAuthor_2;
@@ -86,13 +86,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     //Trailer views
     //holding reference to the Video Button Container - to inlfate buttons as needed
-    LinearLayout mButtonContainer;
-    Button mButtonVideo1;
-    Button mButtonVideo2;
-    Button mButtonVideo3;
-    final static int BUTTON_1_ID = 400;
-    final static int BUTTON_2_ID = 401;
-    final static int BUTTON_3_ID = 402;
+    private LinearLayout mButtonContainer;
+    private Button mButtonVideo1;
+    private Button mButtonVideo2;
+    private Button mButtonVideo3;
+    private final static int BUTTON_1_ID = 400;
+    private final static int BUTTON_2_ID = 401;
+    private final static int BUTTON_3_ID = 402;
 
     //For YouTube movie Id keys - to play trailers
     private String mTrailerYoutubeKey1;
@@ -101,11 +101,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
     //Titles
     private TextView mTrailersTitle;
-    final static int TRAILERS_TITLE_ID = 500;
+    private final static int TRAILERS_TITLE_ID = 500;
     private TextView mReviewsTitle;
-    final static int REVIEWS_TITLE_ID = 501;
+    private final static int REVIEWS_TITLE_ID = 501;
 
-    String[] projection; //to store the appropriate content provider projection, either MOVIE_COLUMNS or FAVOURITE_COLUMNS
+    private String[] projection; //to store the appropriate content provider projection, either MOVIE_COLUMNS or FAVOURITE_COLUMNS
 
     /////////////////////Database projection constants///////////////
     //For making good use of database Projections specify the columns we need
@@ -230,33 +230,33 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mTrailersTitle.setLayoutParams(textViewTitleParams);
         mTrailersTitle.setTypeface(null, Typeface.BOLD);
         mTrailersTitle.setId(TRAILERS_TITLE_ID);
-        mTrailersTitle.setText("Trailers");
+        mTrailersTitle.setText(R.string.detail_fragment_trailer_title);
 
         //Reviews Title
         mReviewsTitle = new TextView(getContext());
         mReviewsTitle.setLayoutParams(textViewTitleParams);
         mReviewsTitle.setTypeface(null, Typeface.BOLD);
         mReviewsTitle.setId(REVIEWS_TITLE_ID);
-        mReviewsTitle.setText("Reviews");
+        mReviewsTitle.setText(R.string.detail_fragment_reviews_title);
 
         //Define the buttons
         mButtonVideo1 = new Button(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT); //allows clicked button to change width without affected the other buttons
         mButtonVideo1.setLayoutParams(buttonParams);
-        mButtonVideo1.setText("Play Trailer #1");
+        mButtonVideo1.setText(R.string.detail_fragment_trailer_button_1_text);
         mButtonVideo1.setId(BUTTON_1_ID);
         mButtonVideo1.setOnClickListener(this);  //this fragment implements onClickListener
 
         mButtonVideo2 = new Button(getContext());
         mButtonVideo2.setLayoutParams(buttonParams);
-        mButtonVideo2.setText("Play Trailer #2");
+        mButtonVideo2.setText(R.string.detail_fragment_trailer_button_2_text);
         mButtonVideo2.setId(BUTTON_2_ID);
         mButtonVideo2.setOnClickListener(this);  //this fragment implements onClickListener
 
         mButtonVideo3 = new Button(getContext());
         mButtonVideo3.setLayoutParams(buttonParams);
-        mButtonVideo3.setText("Play Trailer #3");
+        mButtonVideo3.setText(R.string.detail_fragment_trailer_button_3_text);
         mButtonVideo3.setId(BUTTON_3_ID);
         mButtonVideo3.setOnClickListener(this);  //this fragment implements onClickListener
 
@@ -446,7 +446,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     //nothing to do here. No Cursor Adapter to swap cursor
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.v(LOG_TAG, " onLoaderReset");
+        //Log.v(LOG_TAG, " onLoaderReset");
     }
 
 
@@ -562,7 +562,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     //For returning a textview with Author in it
     private TextView author() {
         TextView authorTextView = new TextView(getContext());
-        authorTextView.setText("Author:    ");
+        authorTextView.setText(R.string.detail_fragment_review_author_title);
         return authorTextView;
     }
 
