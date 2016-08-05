@@ -1,4 +1,4 @@
-# Project_2_Popular_Movies
+# Popular_Movies
 Android App
 
 To run the app properly. 
